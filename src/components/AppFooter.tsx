@@ -68,7 +68,7 @@ export const AppFooter: React.FC<AppFooterProps> = ({
         <TransitionLink
           to="/"
           className="group inline-flex items-center gap-2 cursor-pointer transition-opacity hover:opacity-95 shrink-0"
-          title="Sahaj — Return to Gateway"
+          data-tooltip="Sahaj — Return to Gateway"
           aria-label="Sahaj Logo"
         >
           <BrandLogo size={36} animated />

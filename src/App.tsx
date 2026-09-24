@@ -11,6 +11,7 @@ import { FlyingIpBadge } from './components/FlyingIpBadge';
 import { AppHeader } from './components/AppHeader';
 import { AppFooter } from './components/AppFooter';
 import { LiquidCursorEffect } from './components/LiquidCursorEffect';
+import { GlassTooltip } from './components/GlassTooltip';
 import { HomePage } from './pages/HomePage';
 import { ResumePage } from './pages/ResumePage';
 import { RedirectPage } from './pages/RedirectPage';
@@ -122,6 +123,9 @@ const AppLayout: React.FC = () => {
 
       {/* Localized Liquid Cursor Effect (subtle underwater displacement attached directly to cursor) */}
       <LiquidCursorEffect />
+
+      {/* Professional Motion Glass Tooltip (suppresses default browser tooltips and incorporates motion insignia) */}
+      <GlassTooltip />
 
       {/* Main route view container */}
       <div className="relative min-h-screen">

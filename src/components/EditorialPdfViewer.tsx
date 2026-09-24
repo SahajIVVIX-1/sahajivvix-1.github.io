@@ -239,7 +239,7 @@ export const EditorialPdfViewer: React.FC<EditorialPdfViewerProps> = ({
               type="button"
               onClick={handleZoomOut}
               disabled={loading || zoomLevel <= 0.65}
-              title="Zoom out"
+              data-tooltip="Zoom Out — Scale Document Preview"
               aria-label="Zoom out"
               className="w-7 h-7 flex items-center justify-center rounded-full hover:bg-neutral-200/50 active:scale-95 text-neutral-600 disabled:opacity-30 disabled:pointer-events-none transition-colors text-base font-medium cursor-pointer"
             >
@@ -250,7 +250,7 @@ export const EditorialPdfViewer: React.FC<EditorialPdfViewerProps> = ({
               type="button"
               onClick={handleZoomReset}
               disabled={loading}
-              title="Reset Zoom to 100%"
+              data-tooltip="Reset Zoom — Standard 100% Scale"
               aria-label="Reset zoom"
               className="px-2 py-0.5 rounded-full hover:bg-neutral-200/50 text-[11px] font-mono font-medium text-neutral-700 transition-colors cursor-pointer"
             >
@@ -261,7 +261,7 @@ export const EditorialPdfViewer: React.FC<EditorialPdfViewerProps> = ({
               type="button"
               onClick={handleZoomIn}
               disabled={loading || zoomLevel >= 1.8}
-              title="Zoom in"
+              data-tooltip="Zoom In — Enlarge Document View"
               aria-label="Zoom in"
               className="w-7 h-7 flex items-center justify-center rounded-full hover:bg-neutral-200/50 active:scale-95 text-neutral-600 disabled:opacity-30 disabled:pointer-events-none transition-colors text-base font-medium cursor-pointer"
             >

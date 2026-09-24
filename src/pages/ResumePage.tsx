@@ -364,7 +364,7 @@ export const ResumePage: React.FC = () => {
                 type="button"
                 onClick={handleZoomOut}
                 disabled={pdfLoading || zoomLevel <= 0.65}
-                title="Zoom out"
+                data-tooltip="Zoom Out — Scale Document Preview"
                 aria-label="Zoom out"
                 className="w-5 h-5 flex items-center justify-center rounded-full hover:bg-neutral-200/70 active:scale-95 text-neutral-600 disabled:opacity-30 disabled:pointer-events-none transition-colors text-sm font-medium cursor-pointer"
               >
@@ -375,7 +375,7 @@ export const ResumePage: React.FC = () => {
                 type="button"
                 onClick={handleZoomReset}
                 disabled={pdfLoading}
-                title="Reset Zoom to 100%"
+                data-tooltip="Reset Zoom — Standard 100% Scale"
                 aria-label="Reset zoom"
                 className="px-1.5 py-0.5 rounded-sm hover:bg-neutral-200/70 text-[11px] font-mono font-medium text-neutral-700 transition-colors cursor-pointer"
               >
@@ -386,7 +386,7 @@ export const ResumePage: React.FC = () => {
                 type="button"
                 onClick={handleZoomIn}
                 disabled={pdfLoading || zoomLevel >= 1.8}
-                title="Zoom in"
+                data-tooltip="Zoom In — Enlarge Document View"
                 aria-label="Zoom in"
                 className="w-5 h-5 flex items-center justify-center rounded-full hover:bg-neutral-200/70 active:scale-95 text-neutral-600 disabled:opacity-30 disabled:pointer-events-none transition-colors text-sm font-medium cursor-pointer"
               >

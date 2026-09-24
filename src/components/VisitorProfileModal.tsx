@@ -415,7 +415,7 @@ export const VisitorProfileTrigger: React.FC<VisitorProfileTriggerProps> = ({
       aria-label="Inspect Visitor Intelligence Profile"
       aria-expanded={isOpen}
       className={`group relative inline-flex items-center justify-center w-9 h-9 sm:w-10 sm:h-10 bg-transparent border-0 outline-none shadow-none cursor-pointer transition-transform duration-200 hover:scale-115 active:scale-90 select-none shrink-0 ${className}`}
-      title="Visitor Intelligence Profile"
+      data-tooltip="Visitor Intelligence Profile — Live Session Telemetry"
     >
       <RadialBurstLoader
         size={26}

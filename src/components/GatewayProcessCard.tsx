@@ -220,7 +220,7 @@ export const GatewayProcessCard: React.FC<GatewayProcessCardProps> = ({
             <button
               type="button"
               onClick={onTogglePause}
-              title={isPaused ? 'Resume auto-redirect' : 'Pause auto-redirect to inspect'}
+              data-tooltip={isPaused ? 'Resume Navigation — Auto-redirect pipeline' : 'Pause Navigation — Inspect diagnostics'}
               className="inline-flex items-center space-x-1.5 px-3.5 py-1.5 rounded-full border border-neutral-200 hover:border-neutral-300 bg-neutral-50 hover:bg-neutral-100 text-xs font-medium text-neutral-700 transition-colors active:scale-95 cursor-pointer"
             >
               {isPaused ? (

@@ -5,6 +5,8 @@ export interface BrandLogoProps {
   readonly size?: number;
   /** Visual presentation style: 'mark' (pure sculptural vector) or 'badge' (minimalist squircle container). Default is 'mark'. */
   readonly variant?: 'mark' | 'badge';
+  /** Motion style variant: 'sway' (classic floating sway), 'kinetic-prism' (dynamic prismatic sweep and flex), 'orbital-pulse' (subtle rotation and aura breathing). Default is 'sway'. */
+  readonly motionVariant?: 'sway' | 'kinetic-prism' | 'orbital-pulse';
   /** Additional CSS classes */
   readonly className?: string;
   /** Whether motion identity is enabled. Default is true. */
@@ -31,12 +33,14 @@ const S_TRACK =
 export const BrandLogo: React.FC<BrandLogoProps> = ({
   size = 36,
   variant = 'mark',
+  motionVariant = 'sway',
   className = '',
   animated = true,
   onClick,
 }) => {
   const idPrefix = useId().replace(/:/g, '');
   const [isClicked, setIsClicked] = useState<boolean>(false);
+  const [isHovered, setIsHovered] = useState<boolean>(false);
 
   const handleClick = (e: React.MouseEvent<HTMLSpanElement>) => {
     if (onClick) onClick(e);
@@ -44,16 +48,40 @@ export const BrandLogo: React.FC<BrandLogoProps> = ({
     setTimeout(() => setIsClicked(false), 500);
   };
 
+  // Select animation timings and styles based on motionVariant
+  const getGleamDuration = () => {
+    if (isHovered) return '1.8s';
+    if (motionVariant === 'kinetic-prism') return '2.4s';
+    if (motionVariant === 'orbital-pulse') return '4.2s';
+    return '3.6s';
+  };
+
+  const getSparkDuration = () => {
+    if (isHovered) return '2.0s';
+    if (motionVariant === 'kinetic-prism') return '2.6s';
+    if (motionVariant === 'orbital-pulse') return '4.5s';
+    return '3.8s';
+  };
+
+  const getMainAnimation = () => {
+    if (!animated) return 'none';
+    if (motionVariant === 'kinetic-prism') return 'logo-float-sway 3.2s ease-in-out infinite';
+    if (motionVariant === 'orbital-pulse') return 'logo-float-sway 5.2s ease-in-out infinite';
+    return 'logo-float-sway 4.5s ease-in-out infinite';
+  };
+
   return (
     <span
       onClick={handleClick}
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
       className={`relative inline-flex items-center justify-center select-none shrink-0 cursor-pointer group ${
         animated
-          ? 'transition-all duration-300 ease-out hover:scale-110 active:scale-95'
+          ? 'transition-transform duration-300 ease-out hover:scale-115 active:scale-95'
           : ''
       } ${isClicked ? 'scale-95' : ''} ${className}`}
       style={{ width: size, height: size }}
-      aria-label="Sahaj Logo"
+      aria-label="Sahaj Brand Logo"
       role="img"
     >
       <svg
@@ -250,7 +278,7 @@ export const BrandLogo: React.FC<BrandLogoProps> = ({
         <g
           filter={`url(#${idPrefix}-ambient-glow)`}
           style={{
-            animation: animated ? 'logo-float-sway 4.5s ease-in-out infinite' : 'none',
+            animation: getMainAnimation(),
             transformOrigin: '50px 50px',
             willChange: 'transform',
           }}
@@ -319,7 +347,7 @@ export const BrandLogo: React.FC<BrandLogoProps> = ({
               strokeDasharray="42 155"
               className="pointer-events-none"
               style={{
-                animation: 'logo-gleam-glide 3.6s ease-in-out infinite',
+                animation: `logo-gleam-glide ${getGleamDuration()} ease-in-out infinite`,
               }}
             />
           )}
@@ -334,7 +362,7 @@ export const BrandLogo: React.FC<BrandLogoProps> = ({
             >
               <animateMotion
                 path={S_TRACK}
-                dur="3.8s"
+                dur={getSparkDuration()}
                 repeatCount="indefinite"
                 rotate="auto"
               />

@@ -68,7 +68,7 @@ export const AppHeader: React.FC<AppHeaderProps> = ({
             <TransitionLink
               to="/"
               className="font-editorial text-xl font-medium tracking-tight text-[#1A1A1A] hover:opacity-80 transition-opacity cursor-pointer shrink-0"
-              title="Return to Personal Gateway"
+              data-tooltip="Return to Personal Gateway — Home Portal"
             >
               Sahaj
             </TransitionLink>
@@ -92,7 +92,7 @@ export const AppHeader: React.FC<AppHeaderProps> = ({
                 type="button"
                 onClick={() => setIsVisitorModalOpen(true)}
                 className="inline-flex items-center space-x-2 px-3 py-1 rounded-full bg-white hover:bg-neutral-50 border border-neutral-300 hover:border-neutral-400 shadow-xs hover:shadow-sm text-neutral-800 hover:text-neutral-950 transition-all cursor-pointer group active:scale-95"
-                title="Visitor telemetry — Click to inspect network profile"
+                data-tooltip="Visitor Telemetry — Click to inspect network profile"
               >
                 <span className="relative flex h-2 w-2">
                   <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
