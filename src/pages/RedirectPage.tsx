@@ -1,54 +1,90 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { useRedirect } from '../hooks/useRedirect';
-import { useRedirectExecutor } from '../hooks/useRedirectExecutor';
 import { isExternalRedirect } from '../config/redirects';
 import { NotFoundPage } from './NotFoundPage';
 import { PortalShell } from '../components/PortalShell';
 import { EditorialHero } from '../components/EditorialHero';
+import { useTransition } from '../context/TransitionContext';
 
 const ResumePage = React.lazy(() => import('./ResumePage'));
 
 /**
  * Reusable route page handling all redirect destinations.
- * Uses the warm editorial layout with large serif typography and organic framing shapes.
- * Triggers the cinematic flower curtain transition before executing browser navigation.
+ * Smoothly progresses from initial connection to 100% without abrupt jumps.
+ * Once 100% is reached, the butterfly curtain glides in to the center,
+ * and the browser immediately executes the direct redirect.
  */
 export const RedirectPage: React.FC = () => {
   const { matched, destination, isExecutable, isInternal, status } = useRedirect();
-  const [progress, setProgress] = useState(18);
+  const { phase, executeRedirectWithTransition } = useTransition();
+
+  const [progress, setProgress] = useState(12);
   const [statusLabel, setStatusLabel] = useState('PREPARING DESTINATION');
-
-  // Realistic sequential state progression
-  useEffect(() => {
-    if (!isExecutable) return;
-
-    const t1 = window.setTimeout(() => {
-      setProgress(72);
-      setStatusLabel('CONNECTING');
-    }, 200);
-
-    const t2 = window.setTimeout(() => {
-      setProgress(100);
-      setStatusLabel('REDIRECTING');
-    }, 540);
-
-    return () => {
-      window.clearTimeout(t1);
-      window.clearTimeout(t2);
-    };
-  }, [isExecutable]);
+  const redirectTriggeredRef = useRef(false);
 
   // If this destination is an internal page (such as Resume), render the internal page directly
   if (matched && isInternal && destination?.slug.toLowerCase() === 'resume') {
     return <ResumePage />;
   }
 
-  // Isolated execution hook triggers transition and navigation only if destination is executable
-  useRedirectExecutor({
-    enabled: isExecutable,
-    targetUrl: isExternalRedirect(destination) ? destination.destinationUrl : undefined,
-    statusDelayMs: 600,
-  });
+  // Smooth, organic progress progression that starts ONLY when page is revealed
+  useEffect(() => {
+    if (!isExecutable || !matched || !destination || redirectTriggeredRef.current) {
+      return;
+    }
+
+    // Do NOT advance progress while the initial entrance curtain is still opening
+    if (phase === 'entering') {
+      return;
+    }
+
+    const destName = destination.displayName.toUpperCase();
+
+    // Step 1: 36% - Resolving gateway
+    const t1 = window.setTimeout(() => {
+      setProgress(36);
+      setStatusLabel('RESOLVING GATEWAY');
+    }, 220);
+
+    // Step 2: 64% - Connecting to destination service
+    const t2 = window.setTimeout(() => {
+      setProgress(64);
+      setStatusLabel(`CONNECTING TO ${destName}`);
+    }, 540);
+
+    // Step 3: 88% - Link verified
+    const t3 = window.setTimeout(() => {
+      setProgress(88);
+      setStatusLabel('LINK VERIFIED');
+    }, 880);
+
+    // Step 4: 100% - Ready to redirect
+    const t4 = window.setTimeout(() => {
+      setProgress(100);
+      setStatusLabel('DESTINATION READY');
+    }, 1200);
+
+    // Step 5: After reaching 100%, the butterflies glide in to the center,
+    // and as soon as they meet, the direct redirect happens!
+    const t5 = window.setTimeout(() => {
+      if (
+        isExternalRedirect(destination) &&
+        destination.destinationUrl &&
+        !redirectTriggeredRef.current
+      ) {
+        redirectTriggeredRef.current = true;
+        executeRedirectWithTransition(destination.destinationUrl);
+      }
+    }, 1420);
+
+    return () => {
+      window.clearTimeout(t1);
+      window.clearTimeout(t2);
+      window.clearTimeout(t3);
+      window.clearTimeout(t4);
+      window.clearTimeout(t5);
+    };
+  }, [isExecutable, matched, destination, phase, executeRedirectWithTransition]);
 
   if (!matched || !destination || status === 'not_found') {
     return <NotFoundPage />;
