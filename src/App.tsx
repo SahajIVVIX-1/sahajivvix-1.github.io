@@ -19,8 +19,8 @@ const AppLayout: React.FC = () => {
       {/* Persistent living winged butterflies that overlay background words (z-[15] idle, z-40 transition) */}
       <OrganicShapes showFloatingWords={false} />
 
-      {/* Main route view container rendered on top of butterflies when idle (z-20) */}
-      <div className="relative z-20 min-h-screen">
+      {/* Main route view container (header and footer inside are z-50 to stay on top of butterflies) */}
+      <div className="relative min-h-screen">
         <Suspense fallback={<div className="min-h-screen bg-[#FAF8F5]" />}>
           <Routes location={displayLocation}>
             <Route path="/" element={<HomePage />} />

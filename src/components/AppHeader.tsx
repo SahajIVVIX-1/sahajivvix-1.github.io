@@ -22,7 +22,7 @@ export const AppHeader: React.FC<AppHeaderProps> = ({
 }) => {
   return (
     <header
-      className={`fixed top-0 inset-x-0 z-40 transition-all duration-300 ease-out ${className}`}
+      className={`fixed top-0 inset-x-0 z-50 transition-all duration-300 ease-out ${className}`}
     >
       {/* 
         High-blur light & transparent glass layer:
