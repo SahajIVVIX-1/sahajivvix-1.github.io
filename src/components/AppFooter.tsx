@@ -23,7 +23,7 @@ export const AppFooter: React.FC<AppFooterProps> = ({
     <footer
       className={`${
         sticky ? 'sticky bottom-0' : 'relative'
-      } z-30 w-full transition-all duration-300 ease-out ${className}`}
+      } z-50 w-full transition-all duration-300 ease-out ${className}`}
     >
       {/* 
         High-blur light & transparent glass layer:

@@ -11,6 +11,8 @@ export interface EditorialPdfViewerProps {
   readonly pdfUrl: string;
   readonly className?: string;
   readonly onLoaded?: (info: { numPages: number }) => void;
+  readonly externalZoom?: number;
+  readonly hideBuiltInControls?: boolean;
 }
 
 interface PageState {
@@ -26,16 +28,24 @@ interface PageState {
  * - Multiplies canvas resolution by devicePixelRatio for razor-sharp typography in the center.
  * - Minimal, quiet controls for Zoom and Page Tracking.
  */
+const computeDefaultWidth = (): number => {
+  if (typeof window === 'undefined') return 860;
+  return Math.min(Math.max(window.innerWidth - 48, 320), 860);
+};
+
 export const EditorialPdfViewer: React.FC<EditorialPdfViewerProps> = ({
   pdfUrl,
   className = '',
   onLoaded,
+  externalZoom,
+  hideBuiltInControls = false,
 }) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const [pdfDoc, setPdfDoc] = useState<pdfjsLib.PDFDocumentProxy | null>(null);
   const [numPages, setNumPages] = useState<number>(0);
-  const [zoomLevel, setZoomLevel] = useState<number>(1.0);
-  const [containerWidth, setContainerWidth] = useState<number>(860);
+  const [internalZoom, setInternalZoom] = useState<number>(1.0);
+  const zoomLevel = externalZoom !== undefined ? externalZoom : internalZoom;
+  const [containerWidth, setContainerWidth] = useState<number>(computeDefaultWidth);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
   const [pagesState, setPagesState] = useState<PageState[]>([]);
@@ -54,6 +64,8 @@ export const EditorialPdfViewer: React.FC<EditorialPdfViewerProps> = ({
       const rect = el.getBoundingClientRect();
       if (rect.width > 0) {
         setContainerWidth(Math.floor(rect.width));
+      } else if (typeof window !== 'undefined') {
+        setContainerWidth(Math.min(Math.max(window.innerWidth - 48, 320), 860));
       }
     };
 
@@ -186,15 +198,15 @@ export const EditorialPdfViewer: React.FC<EditorialPdfViewerProps> = ({
 
   // Zoom controls
   const handleZoomIn = () => {
-    setZoomLevel((prev) => Math.min(Number((prev + 0.15).toFixed(2)), 1.8));
+    setInternalZoom((prev) => Math.min(Number((prev + 0.15).toFixed(2)), 1.8));
   };
 
   const handleZoomOut = () => {
-    setZoomLevel((prev) => Math.max(Number((prev - 0.15).toFixed(2)), 0.65));
+    setInternalZoom((prev) => Math.max(Number((prev - 0.15).toFixed(2)), 0.65));
   };
 
   const handleZoomReset = () => {
-    setZoomLevel(1.0);
+    setInternalZoom(1.0);
   };
 
   return (
@@ -203,58 +215,60 @@ export const EditorialPdfViewer: React.FC<EditorialPdfViewerProps> = ({
       className={`relative w-full flex flex-col items-center select-none ${className}`}
     >
       {/* ============================================================ */}
-      {/* Minimal Floating Control Bar (Clean, no harsh box)           */}
+      {/* Minimal Floating Control Bar (Hidden when integrated in header) */}
       {/* ============================================================ */}
-      <div className="sticky top-16 md:top-20 z-20 mb-8 flex items-center justify-between gap-3 px-4 py-1.5 rounded-full bg-[#FAF8F5]/85 border border-neutral-200/60 shadow-[0_4px_20px_rgba(26,26,26,0.04)] backdrop-blur-md transition-all duration-200">
-        {/* Page status */}
-        <div className="flex items-center space-x-1.5 text-xs font-mono text-neutral-600 pl-1">
-          <span className="text-neutral-400 font-sans text-[11px] uppercase tracking-wider">
-            Doc
-          </span>
-          <span className="font-semibold text-neutral-800">
-            {loading ? '...' : `1 / ${numPages || 1}`}
-          </span>
+      {!hideBuiltInControls ? (
+        <div className="sticky top-16 md:top-20 z-20 mb-8 flex items-center justify-between gap-3 px-4 py-1.5 rounded-full bg-[#FAF8F5]/85 border border-neutral-200/60 shadow-[0_4px_20px_rgba(26,26,26,0.04)] backdrop-blur-md transition-all duration-200">
+          {/* Page status */}
+          <div className="flex items-center space-x-1.5 text-xs font-mono text-neutral-600 pl-1">
+            <span className="text-neutral-400 font-sans text-[11px] uppercase tracking-wider">
+              Doc
+            </span>
+            <span className="font-semibold text-neutral-800">
+              {loading ? '...' : `1 / ${numPages || 1}`}
+            </span>
+          </div>
+
+          {/* Minimal Divider */}
+          <div className="h-3 w-[1px] bg-neutral-200" aria-hidden="true" />
+
+          {/* Zoom Controls */}
+          <div className="flex items-center space-x-1">
+            <button
+              type="button"
+              onClick={handleZoomOut}
+              disabled={loading || zoomLevel <= 0.65}
+              title="Zoom out"
+              aria-label="Zoom out"
+              className="w-7 h-7 flex items-center justify-center rounded-full hover:bg-neutral-200/50 active:scale-95 text-neutral-600 disabled:opacity-30 disabled:pointer-events-none transition-colors text-base font-medium cursor-pointer"
+            >
+              −
+            </button>
+
+            <button
+              type="button"
+              onClick={handleZoomReset}
+              disabled={loading}
+              title="Reset Zoom to 100%"
+              aria-label="Reset zoom"
+              className="px-2 py-0.5 rounded-full hover:bg-neutral-200/50 text-[11px] font-mono font-medium text-neutral-700 transition-colors cursor-pointer"
+            >
+              {Math.round(zoomLevel * 100)}%
+            </button>
+
+            <button
+              type="button"
+              onClick={handleZoomIn}
+              disabled={loading || zoomLevel >= 1.8}
+              title="Zoom in"
+              aria-label="Zoom in"
+              className="w-7 h-7 flex items-center justify-center rounded-full hover:bg-neutral-200/50 active:scale-95 text-neutral-600 disabled:opacity-30 disabled:pointer-events-none transition-colors text-base font-medium cursor-pointer"
+            >
+              +
+            </button>
+          </div>
         </div>
-
-        {/* Minimal Divider */}
-        <div className="h-3 w-[1px] bg-neutral-200" aria-hidden="true" />
-
-        {/* Zoom Controls */}
-        <div className="flex items-center space-x-1">
-          <button
-            type="button"
-            onClick={handleZoomOut}
-            disabled={loading || zoomLevel <= 0.65}
-            title="Zoom out"
-            aria-label="Zoom out"
-            className="w-7 h-7 flex items-center justify-center rounded-full hover:bg-neutral-200/50 active:scale-95 text-neutral-600 disabled:opacity-30 disabled:pointer-events-none transition-colors text-base font-medium cursor-pointer"
-          >
-            −
-          </button>
-
-          <button
-            type="button"
-            onClick={handleZoomReset}
-            disabled={loading}
-            title="Reset Zoom to 100%"
-            aria-label="Reset zoom"
-            className="px-2 py-0.5 rounded-full hover:bg-neutral-200/50 text-[11px] font-mono font-medium text-neutral-700 transition-colors cursor-pointer"
-          >
-            {Math.round(zoomLevel * 100)}%
-          </button>
-
-          <button
-            type="button"
-            onClick={handleZoomIn}
-            disabled={loading || zoomLevel >= 1.8}
-            title="Zoom in"
-            aria-label="Zoom in"
-            className="w-7 h-7 flex items-center justify-center rounded-full hover:bg-neutral-200/50 active:scale-95 text-neutral-600 disabled:opacity-30 disabled:pointer-events-none transition-colors text-base font-medium cursor-pointer"
-          >
-            +
-          </button>
-        </div>
-      </div>
+      ) : null}
 
       {/* ============================================================ */}
       {/* Loading Skeleton / Error Fallback (No harsh boxes)           */}
