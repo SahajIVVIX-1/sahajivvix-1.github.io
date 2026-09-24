@@ -2,10 +2,11 @@ import React, { useEffect, useState } from 'react';
 import { useRedirect } from '../hooks/useRedirect';
 import { useRedirectExecutor } from '../hooks/useRedirectExecutor';
 import { isExternalRedirect } from '../config/redirects';
-import { ResumePage } from './ResumePage';
 import { NotFoundPage } from './NotFoundPage';
 import { PortalShell } from '../components/PortalShell';
 import { EditorialHero } from '../components/EditorialHero';
+
+const ResumePage = React.lazy(() => import('./ResumePage'));
 
 /**
  * Reusable route page handling all redirect destinations.
@@ -55,7 +56,7 @@ export const RedirectPage: React.FC = () => {
 
   if (status === 'disabled') {
     return (
-      <PortalShell>
+      <PortalShell pageSubtitle="gateway status">
         <EditorialHero
           intro="destination offline ~"
           heading={destination.displayName}
@@ -67,7 +68,7 @@ export const RedirectPage: React.FC = () => {
   }
 
   return (
-    <PortalShell>
+    <PortalShell pageSubtitle="gateway connecting">
       <EditorialHero
         intro="connecting you to ~"
         heading={destination.displayName}

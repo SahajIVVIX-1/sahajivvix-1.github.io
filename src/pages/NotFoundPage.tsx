@@ -5,7 +5,7 @@ import { EditorialHero } from '../components/EditorialHero';
 
 export const NotFoundPage: React.FC = () => {
   return (
-    <PortalShell>
+    <PortalShell pageSubtitle="page not found">
       <EditorialHero
         intro="error 404 ~"
         heading="Not Found"
