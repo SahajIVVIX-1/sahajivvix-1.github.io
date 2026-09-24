@@ -81,17 +81,17 @@ export const EditorialProgressBar: React.FC<{
   const clampedProgress = Math.min(Math.max(progress, 0), 100);
 
   return (
-    <div className="w-64 sm:w-72 mx-auto pt-3 space-y-2 select-none">
-      {/* Percentage and minimal tracker */}
-      <div className="flex items-center justify-between text-[11px] font-mono tracking-wider text-neutral-400">
-        <span className="uppercase text-[10px] tracking-widest text-neutral-400">Gateway</span>
-        <span className="tabular-nums font-medium text-neutral-600">
+    <div className="w-72 sm:w-80 mx-auto pt-3 space-y-2.5 select-none">
+      {/* Percentage and tracker with strong contrast */}
+      <div className="flex items-center justify-between text-xs font-mono tracking-wider text-neutral-700">
+        <span className="uppercase text-[11px] font-semibold tracking-widest text-neutral-700">Gateway Progress</span>
+        <span className="tabular-nums font-bold text-[#1A1A1A]">
           {Math.round(clampedProgress)}%
         </span>
       </div>
 
-      {/* Thin editorial line track: ──────────────●──────── */}
-      <div className="relative w-full h-[2px] bg-neutral-200/90 rounded-full">
+      {/* High-visibility track */}
+      <div className="relative w-full h-[4px] bg-neutral-200 rounded-full overflow-visible">
         {/* Fill line */}
         <div
           className="absolute top-0 left-0 h-full bg-[#1A1A1A] rounded-full transition-all duration-300 ease-out"
@@ -100,14 +100,14 @@ export const EditorialProgressBar: React.FC<{
 
         {/* Sliding Dot (●) */}
         <div
-          className="absolute top-1/2 -translate-y-1/2 -translate-x-1/2 w-2.5 h-2.5 rounded-full bg-[#E04D3E] shadow-[0_0_8px_rgba(224,77,62,0.45)] transition-all duration-300 ease-out will-change-transform"
+          className="absolute top-1/2 -translate-y-1/2 -translate-x-1/2 w-3.5 h-3.5 rounded-full bg-[#E04D3E] shadow-[0_0_10px_rgba(224,77,62,0.6)] transition-all duration-300 ease-out will-change-transform"
           style={{ left: `${clampedProgress}%` }}
         />
       </div>
 
-      {/* Target destination URL display in subtle monospace */}
+      {/* Target destination URL display in readable monospace */}
       {destinationUrl ? (
-        <p className="text-[11px] font-mono text-neutral-400 truncate max-w-full text-center pt-1">
+        <p className="text-xs font-mono font-medium text-neutral-800 truncate max-w-full text-center pt-1.5">
           {destinationUrl}
         </p>
       ) : null}

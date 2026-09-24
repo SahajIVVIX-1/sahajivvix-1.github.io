@@ -109,7 +109,9 @@ export const TransitionProvider: React.FC<{ readonly children: React.ReactNode }
     }
   }, [phase, isEntranceOpen]);
 
-  // Determine whether page content should be revealed
+  // Determine whether page content should be revealed:
+  // As butterflies transition outward from center (opening) or when idle/entered,
+  // the page content smoothly emerges and floats up (Resume page transition rule).
   const isContentVisible =
     phase === 'idle' ||
     phase === 'opening' ||

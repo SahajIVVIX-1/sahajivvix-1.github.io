@@ -573,7 +573,8 @@ export const FloatingWords: React.FC<FloatingWordsProps> = ({ className = '' }) 
     sampleRandomWords(PERIMETER_SLOTS.length)
   );
 
-  // Hidden state: true during navigation curtain transition
+  // Hidden state: true during navigation curtain closing or external redirecting.
+  // As butterflies transition outside (phase === 'opening'), the background words smoothly come up.
   const isHidden = phase === 'closing' || phase === 'redirecting';
 
   // Timer ref to ensure route transition swaps happen strictly when opacity has reached 0 in background
