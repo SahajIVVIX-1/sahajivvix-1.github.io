@@ -25,50 +25,51 @@ export interface FontArchetype {
 }
 
 /**
- * 7 distinct, beautiful typographic personalities.
- * Optical sizing is balanced across all fonts so transitions stay centered and proportional.
+ * 7 distinct, refined typographic personalities.
+ * Optical sizing and weight are strictly unified across all fonts
+ * so transitions stay subtle, calm, and seamless without attracting sudden attention.
  */
 const FONT_ARCHETYPES: readonly FontArchetype[] = [
   {
     id: 'editorial-serif-italic',
     name: 'Playfair Display Italic',
-    classes: 'font-editorial italic font-normal text-xs md:text-sm leading-none',
-    tracking: 'tracking-[0.03em]',
+    classes: 'font-editorial italic font-normal text-xs md:text-[13px] leading-none',
+    tracking: 'tracking-[0.02em]',
   },
   {
     id: 'cormorant-literary',
     name: 'Cormorant Garamond Italic',
-    classes: 'font-cormorant italic font-medium text-xs md:text-sm leading-none',
+    classes: 'font-cormorant italic font-normal text-xs md:text-[13px] leading-none',
     tracking: 'tracking-[0.02em]',
   },
   {
     id: 'syne-avantgarde',
     name: 'Syne Modern Geometric',
-    classes: 'font-syne font-semibold text-xs md:text-sm leading-none',
-    tracking: 'tracking-[0.05em]',
+    classes: 'font-syne font-normal text-xs md:text-[13px] leading-none',
+    tracking: 'tracking-[0.02em]',
   },
   {
     id: 'geometric-sans',
     name: 'Plus Jakarta Sans',
-    classes: 'font-sans font-medium text-xs md:text-sm leading-none',
-    tracking: 'tracking-[0.04em]',
+    classes: 'font-sans font-normal text-xs md:text-[13px] leading-none',
+    tracking: 'tracking-[0.02em]',
   },
   {
     id: 'space-mono',
     name: 'Space Mono',
-    classes: 'font-space-mono font-normal text-[11px] md:text-xs leading-none',
-    tracking: 'tracking-tight',
+    classes: 'font-space-mono font-normal text-xs md:text-[12px] leading-none',
+    tracking: 'tracking-normal',
   },
   {
     id: 'handwriting-script',
     name: 'Caveat Cursive',
-    classes: 'font-handwriting font-medium text-sm md:text-base leading-none',
-    tracking: 'tracking-wide',
+    classes: 'font-handwriting font-normal text-xs md:text-[13px] leading-none',
+    tracking: 'tracking-normal',
   },
   {
     id: 'editorial-serif-upright',
     name: 'Playfair Display Book',
-    classes: 'font-editorial font-normal text-xs md:text-sm leading-none',
+    classes: 'font-editorial font-normal text-xs md:text-[13px] leading-none',
     tracking: 'tracking-normal',
   },
 ];
@@ -405,8 +406,8 @@ const MorphingWordSlot: React.FC<MorphingWordSlotProps> = ({ slot, word, slotInd
     let isCancelled = false;
     let timerId: NodeJS.Timeout;
 
-    // Organic initial stagger across perimeter (1.5s to 16s) so words never change all at once
-    const initialDelay = 1500 + ((slotIndex * 1150) % 15000) + Math.floor(Math.random() * 1500);
+    // Organic initial stagger across perimeter (10s to 45s) so words never change all at once
+    const initialDelay = 10000 + ((slotIndex * 3700) % 35000) + Math.floor(Math.random() * 5000);
 
     const triggerMorph = () => {
       if (isCancelled) return;
@@ -432,14 +433,14 @@ const MorphingWordSlot: React.FC<MorphingWordSlotProps> = ({ slot, word, slotInd
         return nextFonts;
       });
 
-      // 2. In the next frame, flip active layer to initiate smooth 2.2s cross-fade
+      // 2. In the next frame, flip active layer to initiate smooth, seamless 3.6s cross-fade
       requestAnimationFrame(() => {
         if (isCancelled) return;
         setActiveLayer(targetLayer);
       });
 
-      // 3. Schedule next morph within 15 to 20 seconds (15,000ms – 20,000ms)
-      const nextStayDuration = 15000 + Math.floor(Math.random() * 5000);
+      // 3. Schedule next morph within 38 to 60 seconds (calm, never distracting)
+      const nextStayDuration = 38000 + Math.floor(Math.random() * 22000);
       timerId = setTimeout(triggerMorph, nextStayDuration);
     };
 
@@ -518,13 +519,12 @@ const MorphingWordSlot: React.FC<MorphingWordSlotProps> = ({ slot, word, slotInd
           >
             {/* Layer 0 */}
             <span
-              className={`col-start-1 row-start-1 inline-block whitespace-nowrap ${archetype0.classes} ${archetype0.tracking} will-change-[transform,opacity,filter]`}
+              className={`col-start-1 row-start-1 inline-block whitespace-nowrap ${archetype0.classes} ${archetype0.tracking} will-change-[opacity,filter]`}
               style={{
                 transition:
-                  'opacity 2200ms cubic-bezier(0.4, 0, 0.2, 1), filter 2200ms cubic-bezier(0.4, 0, 0.2, 1), transform 2200ms cubic-bezier(0.4, 0, 0.2, 1)',
+                  'opacity 3600ms cubic-bezier(0.4, 0, 0.2, 1), filter 3600ms cubic-bezier(0.4, 0, 0.2, 1)',
                 opacity: activeLayer === 0 ? 1 : 0,
-                filter: activeLayer === 0 ? 'blur(0px)' : 'blur(2.6px)',
-                transform: activeLayer === 0 ? 'scale(1)' : 'scale(1.03)',
+                filter: activeLayer === 0 ? 'blur(0px)' : 'blur(1px)',
                 pointerEvents: activeLayer === 0 ? 'auto' : 'none',
               }}
             >
@@ -534,13 +534,12 @@ const MorphingWordSlot: React.FC<MorphingWordSlotProps> = ({ slot, word, slotInd
             {/* Layer 1 */}
             <span
               aria-hidden={activeLayer !== 1}
-              className={`col-start-1 row-start-1 inline-block whitespace-nowrap ${archetype1.classes} ${archetype1.tracking} will-change-[transform,opacity,filter]`}
+              className={`col-start-1 row-start-1 inline-block whitespace-nowrap ${archetype1.classes} ${archetype1.tracking} will-change-[opacity,filter]`}
               style={{
                 transition:
-                  'opacity 2200ms cubic-bezier(0.4, 0, 0.2, 1), filter 2200ms cubic-bezier(0.4, 0, 0.2, 1), transform 2200ms cubic-bezier(0.4, 0, 0.2, 1)',
+                  'opacity 3600ms cubic-bezier(0.4, 0, 0.2, 1), filter 3600ms cubic-bezier(0.4, 0, 0.2, 1)',
                 opacity: activeLayer === 1 ? 1 : 0,
-                filter: activeLayer === 1 ? 'blur(0px)' : 'blur(2.6px)',
-                transform: activeLayer === 1 ? 'scale(1)' : 'scale(0.97)',
+                filter: activeLayer === 1 ? 'blur(0px)' : 'blur(1px)',
                 pointerEvents: activeLayer === 1 ? 'auto' : 'none',
               }}
             >

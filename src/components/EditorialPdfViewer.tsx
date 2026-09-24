@@ -1,6 +1,7 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import * as pdfjsLib from 'pdfjs-dist';
 import workerUrl from 'pdfjs-dist/build/pdf.worker.min.mjs?url';
+import { ButterflyLoader } from './ButterflyIcon';
 
 // Configure PDF.js worker
 if (typeof window !== 'undefined') {
@@ -275,10 +276,7 @@ export const EditorialPdfViewer: React.FC<EditorialPdfViewerProps> = ({
       {/* ============================================================ */}
       {loading ? (
         <div className="w-full max-w-[840px] aspect-[1/1.414] rounded-3xl bg-white/40 flex flex-col items-center justify-center p-8 space-y-4">
-          <div className="w-8 h-8 rounded-full border-2 border-neutral-300 border-t-[#E04D3E] animate-spin" />
-          <p className="font-editorial italic text-base text-neutral-500">
-            Rendering document ~
-          </p>
+          <ButterflyLoader size="md" label="Rendering document ~" />
         </div>
       ) : null}
 

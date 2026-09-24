@@ -7,6 +7,12 @@
     <meta property="og:title" content="Sahaj — Personal Digital Gateway" />
     <meta property="og:description" content="Personal URL redirect gateway and link hub" />
     <title>Sahaj — Personal Gateway</title>
+    <!-- Favicon & Touch Icons -->
+    <link rel="icon" type="image/png" href="/favicon.png" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="apple-touch-icon" href="/favicon.png" />
+    <meta name="theme-color" media="(prefers-color-scheme: light)" content="#FAF8F5" />
+    <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#141416" />
     <!-- Editorial Serif, Cormorant, Syne, Space Mono, and Handwritten Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -29,7 +35,7 @@
       }
     </style>
   </head>
-  <body class="min-h-screen bg-[#FAF8F5] text-[#1A1A1A] antialiased selection:bg-[#7EC9DB]/30 selection:text-[#1A1A1A]">
+  <body class="min-h-screen bg-[#FAF8F5] text-[#1A1A1A] antialiased select-none" oncontextmenu="return false;" onselectstart="return false;" ondragstart="return false;">
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
   </body>

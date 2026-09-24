@@ -98,19 +98,19 @@ export const ResumePage: React.FC = () => {
         isExiting ? 'opacity-0 scale-[0.98]' : 'opacity-100 scale-100'
       } pt-6 md:pt-10 pb-20 md:pb-28`}
       headerRight={
-        <div className="flex items-center space-x-2.5">
+        <div className="flex items-center space-x-2 sm:space-x-2.5 shrink-0">
           {/* Dynamic morphing toggle button: Open Resume <-> Close Preview */}
           <button
             type="button"
             onClick={isOpen ? handleCloseResume : handleOpenResume}
-            className={`inline-flex items-center space-x-2 px-3.5 py-1.5 text-xs font-medium rounded-full shadow-sm transition-all duration-300 ease-out active:scale-95 cursor-pointer ${
+            className={`inline-flex items-center space-x-1.5 sm:space-x-2 px-3 sm:px-3.5 py-1.5 text-xs font-medium rounded-full shadow-xs transition-all duration-300 ease-out active:scale-95 cursor-pointer shrink-0 whitespace-nowrap ${
               isOpen
                 ? 'bg-white/95 hover:bg-neutral-100 text-neutral-800 border border-neutral-300'
                 : 'bg-white/80 hover:bg-white text-neutral-800 border border-neutral-200 hover:border-neutral-300'
             }`}
           >
             {/* Morphing SVG Icon */}
-            <span className="relative w-3.5 h-3.5 flex items-center justify-center">
+            <span className="relative w-3.5 h-3.5 flex items-center justify-center shrink-0">
               <svg
                 className={`w-3.5 h-3.5 absolute inset-0 transition-all duration-300 ease-out ${
                   isOpen ? 'opacity-0 rotate-90 scale-75' : 'opacity-100 rotate-0 scale-100'
@@ -146,7 +146,7 @@ export const ResumePage: React.FC = () => {
             </span>
 
             {/* Morphing text */}
-            <span className="transition-all duration-300 ease-out">
+            <span className="transition-all duration-300 ease-out whitespace-nowrap">
               {isOpen ? 'Close Preview' : 'Open Resume'}
             </span>
           </button>
@@ -157,7 +157,7 @@ export const ResumePage: React.FC = () => {
             download={RESUME_CONFIG.downloadFilename}
             variant="primary"
             size="sm"
-            className="shadow-sm text-xs transition-all duration-300 ease-out hover:shadow-md active:scale-95"
+            className="shadow-xs text-xs whitespace-nowrap transition-all duration-300 ease-out hover:shadow-md active:scale-95 shrink-0 px-3 sm:px-4"
           >
             Download PDF
           </Button>
@@ -210,14 +210,14 @@ export const ResumePage: React.FC = () => {
       {/* Smoothly collapses and fades out when Open Resume is clicked */}
       {/* ============================================================ */}
       <div
-        className={`w-full transition-all duration-500 ease-in-out overflow-hidden ${
+        className={`w-full transition-all duration-500 ease-in-out ${
           isOpen
-            ? 'max-h-0 opacity-0 -translate-y-4 pointer-events-none scale-[0.98] mb-0'
-            : 'max-h-[800px] opacity-100 translate-y-0 scale-100 my-4 sm:my-8'
+            ? 'max-h-0 opacity-0 -translate-y-4 pointer-events-none scale-[0.98] mb-0 overflow-hidden'
+            : 'max-h-[800px] opacity-100 translate-y-0 scale-100 my-4 sm:my-8 overflow-visible'
         }`}
       >
         <div
-          className={`w-full max-w-2xl mx-auto grid grid-cols-1 sm:grid-cols-2 gap-4 transition-all duration-500 ease-out delay-300 ${
+          className={`w-full max-w-2xl mx-auto p-2.5 pt-3 pb-3 grid grid-cols-1 sm:grid-cols-2 gap-4 transition-all duration-500 ease-out delay-300 ${
             mounted ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'
           }`}
         >
@@ -232,11 +232,11 @@ export const ResumePage: React.FC = () => {
                 handleOpenResume();
               }
             }}
-            className="group relative p-6 sm:p-7 rounded-3xl bg-white/70 hover:bg-white border border-neutral-200/80 hover:border-[#1A1A1A] transition-all duration-300 ease-out shadow-[0_4px_24px_rgba(26,26,26,0.03)] hover:shadow-[0_12px_32px_rgba(26,26,26,0.08)] hover:scale-[1.01] flex flex-col justify-between text-left cursor-pointer active:scale-[0.99]"
+            className="group relative p-6 sm:p-7 rounded-3xl bg-white border border-neutral-200/90 hover:border-neutral-400 transition-all duration-300 ease-out shadow-[0_2px_16px_rgba(0,0,0,0.03)] hover:shadow-[0_8px_28px_rgba(0,0,0,0.07)] flex flex-col justify-between text-left cursor-pointer active:scale-[0.99] focus:outline-none focus-visible:ring-2 focus-visible:ring-neutral-400"
           >
             <div className="space-y-3">
               <div className="flex items-center justify-between">
-                <span className="w-10 h-10 rounded-2xl bg-[#7EC9DB]/15 text-[#1A1A1A] flex items-center justify-center transition-transform duration-300 group-hover:scale-110">
+                <span className="w-10 h-10 rounded-2xl bg-[#7EC9DB]/15 text-[#1A1A1A] flex items-center justify-center transition-transform duration-300 group-hover:scale-105">
                   <svg
                     className="w-5 h-5 text-neutral-800"
                     fill="none"
@@ -262,7 +262,7 @@ export const ResumePage: React.FC = () => {
               </div>
 
               <div>
-                <h3 className="font-editorial text-2xl text-[#1A1A1A] group-hover:text-black transition-colors">
+                <h3 className="font-editorial text-2xl text-[#1A1A1A]">
                   Open Resume
                 </h3>
                 <p className="text-xs text-neutral-500 mt-1.5 leading-relaxed">
@@ -281,13 +281,13 @@ export const ResumePage: React.FC = () => {
           <a
             href={RESUME_CONFIG.downloadPath}
             download={RESUME_CONFIG.downloadFilename}
-            className="group relative p-6 sm:p-7 rounded-3xl bg-white/70 hover:bg-white border border-neutral-200/80 hover:border-[#E04D3E] transition-all duration-300 ease-out shadow-[0_4px_24px_rgba(26,26,26,0.03)] hover:shadow-[0_12px_32px_rgba(224,77,62,0.12)] hover:scale-[1.01] flex flex-col justify-between text-left cursor-pointer active:scale-[0.99]"
+            className="group relative p-6 sm:p-7 rounded-3xl bg-white border border-neutral-200/90 hover:border-neutral-400 transition-all duration-300 ease-out shadow-[0_2px_16px_rgba(0,0,0,0.03)] hover:shadow-[0_8px_28px_rgba(0,0,0,0.07)] flex flex-col justify-between text-left cursor-pointer active:scale-[0.99] focus:outline-none focus-visible:ring-2 focus-visible:ring-neutral-400"
           >
             <div className="space-y-3">
               <div className="flex items-center justify-between">
-                <span className="w-10 h-10 rounded-2xl bg-[#E04D3E]/10 text-[#E04D3E] flex items-center justify-center transition-transform duration-300 group-hover:scale-110">
+                <span className="w-10 h-10 rounded-2xl bg-orange-50 text-orange-600 flex items-center justify-center transition-transform duration-300 group-hover:scale-105">
                   <svg
-                    className="w-5 h-5 text-[#E04D3E]"
+                    className="w-5 h-5 text-orange-600"
                     fill="none"
                     viewBox="0 0 24 24"
                     stroke="currentColor"
@@ -300,13 +300,13 @@ export const ResumePage: React.FC = () => {
                     />
                   </svg>
                 </span>
-                <span className="text-[11px] font-mono text-[#E04D3E] bg-[#E04D3E]/10 px-2 py-0.5 rounded-full">
+                <span className="text-[11px] font-mono text-orange-600 bg-orange-50 px-2 py-0.5 rounded-full">
                   Resume_WIcon.pdf
                 </span>
               </div>
 
               <div>
-                <h3 className="font-editorial text-2xl text-[#1A1A1A] group-hover:text-[#E04D3E] transition-colors">
+                <h3 className="font-editorial text-2xl text-[#1A1A1A]">
                   Download PDF
                 </h3>
                 <p className="text-xs text-neutral-500 mt-1.5 leading-relaxed">
@@ -315,7 +315,7 @@ export const ResumePage: React.FC = () => {
               </div>
             </div>
 
-            <div className="pt-6 flex items-center text-xs font-medium text-[#E04D3E] group-hover:translate-x-1.5 transition-transform duration-300">
+            <div className="pt-6 flex items-center text-xs font-medium text-neutral-700 group-hover:text-[#1A1A1A] group-hover:translate-x-1.5 transition-all duration-300">
               <span>Save File Directly</span>
               <span className="ml-1 text-sm">↓</span>
             </div>
@@ -446,59 +446,49 @@ export const ResumePage: React.FC = () => {
             </p>
           </div>
 
-          {/* Prominent Download Button and Close Preview Button */}
+          {/* Balanced Action Buttons: Download PDF and Close Preview */}
           <div className="flex flex-col sm:flex-row items-center justify-center gap-3 pt-2">
             <Button
               href={RESUME_CONFIG.downloadPath}
               download={RESUME_CONFIG.downloadFilename}
               variant="primary"
-              size="lg"
-              className="shadow-md hover:shadow-lg text-sm px-8 transition-all duration-300 hover:scale-[1.02] active:scale-95"
+              size="md"
+              className="inline-flex items-center justify-center gap-2 px-6 py-2.5 rounded-full text-sm font-medium shadow-sm hover:shadow-md transition-all duration-300 hover:scale-[1.02] active:scale-95"
             >
-              <span className="flex items-center space-x-2">
-                <svg
-                  className="w-4 h-4"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                  strokeWidth={2}
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"
-                  />
-                </svg>
-                <span>Download PDF (Resume_WIcon.pdf)</span>
-              </span>
+              <svg
+                className="w-4 h-4 shrink-0"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+                strokeWidth={2}
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"
+                />
+              </svg>
+              <span>Download PDF</span>
             </Button>
 
             <button
               type="button"
               onClick={handleCloseResume}
-              className="px-5 py-2.5 rounded-full border border-neutral-300 hover:border-neutral-500 bg-white/70 hover:bg-white text-xs font-medium text-neutral-700 transition-all duration-300 hover:scale-[1.02] active:scale-95 cursor-pointer shadow-sm"
+              className="inline-flex items-center justify-center gap-1.5 px-6 py-2.5 rounded-full border border-neutral-300 hover:border-neutral-500 bg-white/80 hover:bg-white text-sm font-medium text-neutral-800 transition-all duration-300 hover:scale-[1.02] active:scale-95 cursor-pointer shadow-sm"
             >
-              Close Preview ↑
+              <span>Close Preview</span>
+              <span className="text-xs">↑</span>
             </button>
           </div>
 
-          {/* Signatures & Auxiliary links */}
-          <div className="pt-4 flex flex-wrap items-center justify-center gap-4 text-xs text-neutral-500">
+          {/* Verification Badge */}
+          <div className="pt-3 flex items-center justify-center text-xs text-neutral-500">
             <div className="flex items-center space-x-2">
               <span className="w-2 h-2 rounded-full bg-emerald-500" />
               <span className="font-mono text-[11px] text-neutral-600">
                 Digital Signature Verified (2026 Edition)
               </span>
             </div>
-            <span className="text-neutral-300">·</span>
-            <a
-              href={RESUME_CONFIG.viewerPath}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="hover:text-[#1A1A1A] underline decoration-neutral-300 underline-offset-4 transition-colors"
-            >
-              Open raw PDF in new tab
-            </a>
           </div>
         </div>
       </div>

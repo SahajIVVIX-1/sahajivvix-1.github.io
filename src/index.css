@@ -7,6 +7,22 @@ body,
 * {
   scrollbar-width: none !important;
   -ms-overflow-style: none !important;
+  -webkit-user-select: none !important;
+  -moz-user-select: none !important;
+  -ms-user-select: none !important;
+  user-select: none !important;
+  -webkit-touch-callout: none !important;
+  -webkit-user-drag: none !important;
+}
+
+::selection {
+  background: transparent !important;
+  color: inherit !important;
+}
+
+::-moz-selection {
+  background: transparent !important;
+  color: inherit !important;
 }
 
 ::-webkit-scrollbar,
@@ -604,6 +620,14 @@ body,
 /* ================================================================ */
 /* MORPHING BUTTERFLY LUXURY COLOR MORPHING                         */
 /* ================================================================ */
+.morphing-creature {
+  overflow: visible !important;
+}
+
+.morphing-creature * {
+  overflow: visible !important;
+}
+
 .morphing-creature stop {
   transition: stop-color 2.4s cubic-bezier(0.4, 0, 0.2, 1);
 }
@@ -612,6 +636,162 @@ body,
 .morphing-creature path,
 .morphing-creature line {
   transition: fill 2.4s cubic-bezier(0.4, 0, 0.2, 1), stroke 2.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* ================================================================ */
+/* BUTTERFLY LOADER & MICRO-FLUTTER                                 */
+/* ================================================================ */
+@keyframes butterfly-flutter {
+  0% {
+    transform: scale(0.94) translateY(1.5px) rotate(-2deg);
+  }
+  50% {
+    transform: scale(1.06) translateY(-2px) rotate(1deg);
+  }
+  100% {
+    transform: scale(0.96) translateY(1px) rotate(2deg);
+  }
+}
+
+/* ================================================================ */
+/* RADIAL BURST / SPOKE LOADER WAVE & BLOOM VARIANT                */
+/* ================================================================ */
+@keyframes radial-burst-ray {
+  0%, 100% {
+    transform: scaleY(0.48);
+    opacity: 0.82;
+  }
+  50% {
+    transform: scaleY(1.15);
+    opacity: 1;
+  }
+}
+
+@keyframes radial-burst-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes radial-burst-bloom-a {
+  0%, 100% {
+    transform: scaleY(0.5);
+    opacity: 0.75;
+  }
+  50% {
+    transform: scaleY(1.22);
+    opacity: 1;
+  }
+}
+
+@keyframes radial-burst-bloom-b {
+  0%, 100% {
+    transform: scaleY(1.18);
+    opacity: 1;
+  }
+  50% {
+    transform: scaleY(0.52);
+    opacity: 0.8;
+  }
+}
+
+/* ================================================================ */
+/* HEADER & FOOTER SMOOTH CROSSFADE                                 */
+/* ================================================================ */
+@keyframes crossfade-enter {
+  0% {
+    opacity: 0;
+    transform: translateY(3px) scale(0.98);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+/* ================================================================ */
+/* BRAND LOGO VISIBLE MOTION IDENTITY                               */
+/* ================================================================ */
+/* Floating & Swaying Motion: Visibly floating living presence */
+@keyframes logo-float-sway {
+  0%, 100% {
+    transform: translateY(0px) rotate(0deg) scale(1);
+  }
+  25% {
+    transform: translateY(-3.5px) rotate(2.4deg) scale(1.035);
+  }
+  50% {
+    transform: translateY(-0.8px) rotate(0deg) scale(1.01);
+  }
+  75% {
+    transform: translateY(2.8px) rotate(-2.4deg) scale(0.975);
+  }
+}
+
+/* Upper Curve Fluid Flex: Visible shape-shifting of the top loop */
+@keyframes logo-upper-flex {
+  0%, 100% {
+    transform: translate(0px, 0px) scale(1, 1) rotate(0deg);
+  }
+  50% {
+    transform: translate(2.5px, -3px) scale(1.06, 0.95) rotate(2.8deg);
+  }
+}
+
+/* Lower Curve Fluid Flex: Opposing phase shape-shifting of the bottom loop */
+@keyframes logo-lower-flex {
+  0%, 100% {
+    transform: translate(0px, 0px) scale(1, 1) rotate(0deg);
+  }
+  50% {
+    transform: translate(-2.5px, 3px) scale(0.95, 1.06) rotate(-2.8deg);
+  }
+}
+
+/* Traveling Specular Gleam: Visibly gliding polished reflection across the S */
+@keyframes logo-gleam-glide {
+  0% {
+    stroke-dashoffset: 240;
+    opacity: 0;
+  }
+  15% {
+    opacity: 0.85;
+  }
+  50% {
+    opacity: 0.95;
+  }
+  85% {
+    opacity: 0.8;
+  }
+  100% {
+    stroke-dashoffset: -240;
+    opacity: 0;
+  }
+}
+
+/* Center Crossover Soft Energy Glow Pulse */
+@keyframes logo-crossover-pulse {
+  0%, 100% {
+    filter: drop-shadow(0 2px 5px rgba(255, 90, 0, 0.35));
+  }
+  50% {
+    filter: drop-shadow(0 3px 9px rgba(255, 110, 0, 0.65));
+  }
+}
+
+/* Ambient Radiant Warmth */
+@keyframes logo-ambient-surface {
+  0%, 100% {
+    opacity: 0.25;
+    transform: scale(0.96);
+  }
+  50% {
+    opacity: 0.55;
+    transform: scale(1.1);
+  }
 }
 
 /* ================================================================ */

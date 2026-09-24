@@ -443,7 +443,9 @@ export const MorphingWingedCreature: React.FC<MorphingWingedCreatureProps> = ({
     <svg
       ref={svgRef}
       viewBox="0 0 600 520"
-      className={`w-full h-full select-none pointer-events-none morphing-creature ${className}`}
+      className={`w-full h-full select-none pointer-events-none morphing-creature overflow-visible ${className}`}
+      style={{ overflow: 'visible' }}
+      overflow="visible"
       fill="none"
       shapeRendering="geometricPrecision"
       xmlns="http://www.w3.org/2000/svg"

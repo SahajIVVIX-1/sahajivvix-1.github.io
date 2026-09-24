@@ -1,7 +1,6 @@
 import React, { ReactNode } from 'react';
 import { useTransition } from '../context/TransitionContext';
-import { AppHeader } from './AppHeader';
-import { AppFooter } from './AppFooter';
+import { useSetHeaderFooter } from '../context/HeaderFooterContext';
 
 export interface PortalShellProps {
   readonly children: ReactNode;
@@ -15,12 +14,14 @@ export interface PortalShellProps {
   readonly centerContent?: boolean;
   readonly backgroundVariant?: 'full' | 'subtle';
   readonly stickyFooter?: boolean;
+  readonly fixedFooter?: boolean;
 }
 
 /**
  * Core visual shell providing an elegant editorial layout,
  * warm ivory background, frosted blurred header and footer, and minimal typography.
  * Supports smooth content fade during butterfly transitions.
+ * Coordinates with HeaderFooterContext so header & footer elements enter and exit with liquid smoothness.
  */
 export const PortalShell: React.FC<PortalShellProps> = ({
   children,
@@ -33,9 +34,21 @@ export const PortalShell: React.FC<PortalShellProps> = ({
   maxWidth = '4xl',
   centerContent = true,
   stickyFooter = false,
+  fixedFooter = true,
 }) => {
   const { phase } = useTransition();
   const isContentHidden = phase === 'closing' || phase === 'redirecting';
+
+  // Synchronize header & footer configurations with the persistent layout-level header/footer
+  useSetHeaderFooter({
+    pageSubtitle,
+    footerSubtitle,
+    headerRight,
+    showHeader,
+    showFooter,
+    fixedFooter,
+    stickyFooter,
+  });
 
   const maxWidthClass =
     maxWidth === '5xl'
@@ -47,25 +60,18 @@ export const PortalShell: React.FC<PortalShellProps> = ({
       : 'max-w-4xl';
 
   return (
-    <div className="relative min-h-screen w-full flex flex-col justify-between overflow-x-hidden selection:bg-[#7EC9DB]/35 selection:text-[#1A1A1A]">
-      {/* Top Editorial Frosted Blurred Header Bar (Fixed on top, does not scroll with scroll) */}
+    <div className="relative min-h-screen w-full flex flex-col justify-between overflow-x-hidden select-none">
+      {/* Layout spacer for fixed header so content clears the persistent frosted bar */}
       {showHeader ? (
-        <>
-          <AppHeader
-            pageSubtitle={pageSubtitle}
-            headerRight={headerRight}
-          />
-          {/* Layout spacer for fixed header */}
-          <div className="h-20 sm:h-24 w-full shrink-0 pointer-events-none" aria-hidden="true" />
-        </>
+        <div className="h-20 sm:h-24 w-full shrink-0 pointer-events-none" aria-hidden="true" />
       ) : null}
 
       {/* Center Editorial Composition Frame */}
       <main
         className={`relative z-20 flex-1 w-full ${maxWidthClass} mx-auto px-4 sm:px-6 md:px-8 ${
           centerContent
-            ? 'py-10 md:py-16 flex flex-col items-center justify-center text-center'
-            : 'py-8 md:py-12 flex flex-col items-center'
+            ? 'py-8 md:py-12 flex flex-col items-center justify-center text-center'
+            : 'py-6 md:py-10 flex flex-col items-center'
         } transition-all duration-300 ease-out ${
           isContentHidden ? 'opacity-0 scale-[0.98]' : 'opacity-100 scale-100'
         } ${contentClassName}`}
@@ -73,12 +79,9 @@ export const PortalShell: React.FC<PortalShellProps> = ({
         {children}
       </main>
 
-      {/* Bottom Editorial Frosted Blurred Footer Bar */}
-      {showFooter ? (
-        <AppFooter
-          footerSubtitle={footerSubtitle}
-          sticky={stickyFooter}
-        />
+      {/* Bottom Layout spacer matching fixed footer so content never clips behind footer */}
+      {showFooter && fixedFooter ? (
+        <div className="h-20 sm:h-24 w-full shrink-0 pointer-events-none" aria-hidden="true" />
       ) : null}
     </div>
   );

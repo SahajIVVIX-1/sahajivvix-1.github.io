@@ -45,12 +45,12 @@ export const OrganicShapes: React.FC<OrganicShapesProps> = ({
   const [paletteIndex, setPaletteIndex] = useState<number>(0);
 
   // Refs for tracking live coordinates without React re-renders
-  const currentLeftRef = useRef<CreatureTransform>({ x: -400, y: 200, rot: -15, scale: 0.9 });
-  const currentRightRef = useRef<CreatureTransform>({ x: 1800, y: 300, rot: 15, scale: 0.9 });
+  const currentLeftRef = useRef<CreatureTransform>({ x: -400, y: 200, rot: -15, scale: 1.05 });
+  const currentRightRef = useRef<CreatureTransform>({ x: 1800, y: 300, rot: 15, scale: 1.05 });
 
   // Snapshots at transition phase boundaries
-  const snapshotLeftRef = useRef<CreatureTransform>({ x: -400, y: 200, rot: -15, scale: 0.9 });
-  const snapshotRightRef = useRef<CreatureTransform>({ x: 1800, y: 300, rot: 15, scale: 0.9 });
+  const snapshotLeftRef = useRef<CreatureTransform>({ x: -400, y: 200, rot: -15, scale: 1.05 });
+  const snapshotRightRef = useRef<CreatureTransform>({ x: 1800, y: 300, rot: 15, scale: 1.05 });
 
   // Transition timing
   const transitionStartRef = useRef<number>(0);
@@ -106,8 +106,8 @@ export const OrganicShapes: React.FC<OrganicShapesProps> = ({
       const vh = window.innerHeight;
       const isMobile = vw < 640;
 
-      // Butterfly dimensions
-      const width = Math.min(Math.max(vw * (isMobile ? 0.62 : 0.44), 320), 620);
+      // Butterfly dimensions - balanced, refined editorial presence
+      const width = Math.min(Math.max(vw * (isMobile ? 0.68 : 0.48), 360), 680);
       const height = width * (520 / 600);
 
       const globalTime = now / 1000;
@@ -119,7 +119,7 @@ export const OrganicShapes: React.FC<OrganicShapesProps> = ({
       // Left Butterfly: 14s cycle, glides smoothly across upper to middle left margin
       const angleLeft = (globalTime / 14) * Math.PI * 2;
       const idleLeftX =
-        (isMobile ? -width * 0.42 : -width * 0.28) +
+        (isMobile ? -width * 0.40 : -width * 0.28) +
         Math.cos(angleLeft) * (isMobile ? width * 0.12 : width * 0.18) +
         mouseOffsetRef.current.x * 32;
       const idleLeftY =
@@ -127,13 +127,13 @@ export const OrganicShapes: React.FC<OrganicShapesProps> = ({
         Math.sin(angleLeft) * (vh * (isMobile ? 0.24 : 0.32)) +
         mouseOffsetRef.current.y * 22;
       const idleLeftRot = -4 + Math.sin(angleLeft) * 12 + mouseOffsetRef.current.x * 10;
-      const idleLeftScale = 1.0 + Math.cos(angleLeft) * 0.04;
+      const idleLeftScale = 1.05 + Math.cos(angleLeft) * 0.04;
 
       // Right Butterfly: 18s cycle, opposing phase, glides across right margin
       const angleRight = (globalTime / 18) * Math.PI * 2 + Math.PI;
       const idleRightX =
         vw -
-        (isMobile ? width * 0.58 : width * 0.72) -
+        (isMobile ? width * 0.60 : width * 0.72) -
         Math.cos(angleRight) * (isMobile ? width * 0.12 : width * 0.18) -
         mouseOffsetRef.current.x * 32;
       const idleRightY =
@@ -141,7 +141,7 @@ export const OrganicShapes: React.FC<OrganicShapesProps> = ({
         Math.sin(angleRight) * (vh * (isMobile ? 0.24 : 0.32)) -
         mouseOffsetRef.current.y * 22;
       const idleRightRot = 4 - Math.sin(angleRight) * 12 + mouseOffsetRef.current.x * 10;
-      const idleRightScale = 1.0 + Math.cos(angleRight) * 0.04;
+      const idleRightScale = 1.05 + Math.cos(angleRight) * 0.04;
 
       // ================================================================
       // 2. Target Center Meeting Positions (Curtain)
@@ -149,12 +149,12 @@ export const OrganicShapes: React.FC<OrganicShapesProps> = ({
       const centerLeftX = (vw - width) * 0.5 - (isMobile ? width * 0.15 : width * 0.20);
       const centerLeftY = (vh - height) * 0.5;
       const centerLeftRot = 12;
-      const centerLeftScale = isMobile ? 1.30 : 1.38;
+      const centerLeftScale = isMobile ? 1.35 : 1.44;
 
       const centerRightX = (vw - width) * 0.5 + (isMobile ? width * 0.15 : width * 0.20);
       const centerRightY = (vh - height) * 0.5;
       const centerRightRot = -12;
-      const centerRightScale = isMobile ? 1.28 : 1.35;
+      const centerRightScale = isMobile ? 1.33 : 1.41;
 
       // Detect phase transition trigger
       if (phase !== lastPhaseRef.current) {
@@ -164,13 +164,13 @@ export const OrganicShapes: React.FC<OrganicShapesProps> = ({
             x: -width * 0.95,
             y: (vh - height) * 0.35,
             rot: -24,
-            scale: 0.9,
+            scale: 1.0,
           };
           snapshotRightRef.current = {
             x: vw + width * 0.15,
             y: (vh - height) * 0.55,
             rot: 20,
-            scale: 0.9,
+            scale: 1.0,
           };
           currentLeftRef.current = { ...snapshotLeftRef.current };
           currentRightRef.current = { ...snapshotRightRef.current };
@@ -354,8 +354,8 @@ export const OrganicShapes: React.FC<OrganicShapesProps> = ({
       {/* ============================================================ */}
       <div
         ref={leftShapeRef}
-        className="absolute top-0 left-0 will-change-transform pointer-events-none filter drop-shadow-[0_12px_36px_rgba(0,0,0,0.22)]"
-        style={{ zIndex: 20 }}
+        className="absolute top-0 left-0 will-change-transform pointer-events-none filter drop-shadow-[0_12px_36px_rgba(0,0,0,0.22)] overflow-visible"
+        style={{ zIndex: 20, overflow: 'visible' }}
       >
         <MorphingWingedCreature
           palette={currentPair.parent1}
@@ -369,8 +369,8 @@ export const OrganicShapes: React.FC<OrganicShapesProps> = ({
       {/* ============================================================ */}
       <div
         ref={rightShapeRef}
-        className="absolute top-0 left-0 will-change-transform pointer-events-none filter drop-shadow-[0_12px_36px_rgba(0,0,0,0.22)]"
-        style={{ zIndex: 20 }}
+        className="absolute top-0 left-0 will-change-transform pointer-events-none filter drop-shadow-[0_12px_36px_rgba(0,0,0,0.22)] overflow-visible"
+        style={{ zIndex: 20, overflow: 'visible' }}
       >
         <MorphingWingedCreature
           palette={currentPair.parent2}
