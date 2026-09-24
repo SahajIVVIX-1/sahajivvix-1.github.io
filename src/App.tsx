@@ -7,6 +7,7 @@ import {
 } from './context/HeaderFooterContext';
 import { OrganicShapes } from './components/OrganicShapes';
 import { FloatingWords } from './components/FloatingWords';
+import { FlyingIpBadge } from './components/FlyingIpBadge';
 import { AppHeader } from './components/AppHeader';
 import { AppFooter } from './components/AppFooter';
 import { HomePage } from './pages/HomePage';
@@ -114,6 +115,9 @@ const AppLayout: React.FC = () => {
 
       {/* Persistent living winged butterflies that overlay background words (z-[15] idle, z-40 transition) */}
       <OrganicShapes showFloatingWords={false} />
+
+      {/* Cinematic Flying IP badge motion from center screen to top header breadcrumb */}
+      <FlyingIpBadge />
 
       {/* Main route view container */}
       <div className="relative min-h-screen">

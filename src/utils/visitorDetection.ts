@@ -41,6 +41,8 @@ export interface VisitorInfo {
   };
 }
 
+export type ApproximateLocation = VisitorInfo['location'];
+
 /**
  * Detect clean Operating System name from User Agent
  */

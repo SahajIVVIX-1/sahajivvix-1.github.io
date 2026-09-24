@@ -7,6 +7,7 @@ import React, {
   useState,
 } from 'react';
 import { useLocation, useNavigate, Location } from 'react-router-dom';
+import { fetchApproximateLocation } from '../utils/visitorDetection';
 
 export type TransitionPhase =
   | 'entering'
@@ -22,6 +23,11 @@ type PendingNavigation =
 export interface TransitionContextValue {
   readonly phase: TransitionPhase;
   readonly isTransitioning: boolean;
+  readonly isContentVisible: boolean;
+  readonly isEntranceOpen: boolean;
+  readonly visitorIp: string;
+  readonly isIpDocked: boolean;
+  readonly setIsIpDocked: (docked: boolean) => void;
   readonly displayLocation: Location;
   readonly navigateWithTransition: (to: string) => void;
   readonly executeRedirectWithTransition: (targetUrl: string) => void;
@@ -55,6 +61,59 @@ export const TransitionProvider: React.FC<{ readonly children: React.ReactNode }
     }
     return 'entering';
   });
+
+  // Track entrance opening: holds closed curtain with IP badge at center, then opens
+  const [isEntranceOpen, setIsEntranceOpen] = useState<boolean>(() => {
+    if (
+      typeof window !== 'undefined' &&
+      window.matchMedia('(prefers-reduced-motion: reduce)').matches
+    ) {
+      return true;
+    }
+    return false;
+  });
+
+  // Visitor IP state and header docking state
+  const [visitorIp, setVisitorIp] = useState<string>('Detecting Gateway...');
+  const [isIpDocked, setIsIpDocked] = useState<boolean>(() => {
+    if (
+      typeof window !== 'undefined' &&
+      window.matchMedia('(prefers-reduced-motion: reduce)').matches
+    ) {
+      return true;
+    }
+    return false;
+  });
+
+  // Fetch visitor IP once on application mount
+  useEffect(() => {
+    fetchApproximateLocation()
+      .then((loc) => {
+        if (loc && loc.ip) {
+          setVisitorIp(loc.ip);
+        } else {
+          setVisitorIp('Connected');
+        }
+      })
+      .catch(() => {
+        setVisitorIp('127.0.0.1');
+      });
+  }, []);
+
+  useEffect(() => {
+    if (phase === 'entering' && !isEntranceOpen) {
+      const timer = setTimeout(() => {
+        setIsEntranceOpen(true);
+      }, 420);
+      return () => clearTimeout(timer);
+    }
+  }, [phase, isEntranceOpen]);
+
+  // Determine whether page content should be revealed
+  const isContentVisible =
+    phase === 'idle' ||
+    phase === 'opening' ||
+    (phase === 'entering' && isEntranceOpen);
 
   // Display location keeps the currently displayed DOM page in sync with transitions
   const [displayLocation, setDisplayLocation] = useState<Location>(routerLocation);
@@ -187,6 +246,11 @@ export const TransitionProvider: React.FC<{ readonly children: React.ReactNode }
   const value: TransitionContextValue = {
     phase,
     isTransitioning: phase !== 'idle',
+    isContentVisible,
+    isEntranceOpen,
+    visitorIp,
+    isIpDocked,
+    setIsIpDocked,
     displayLocation,
     navigateWithTransition,
     executeRedirectWithTransition,

@@ -23,6 +23,7 @@ export interface OrganicShapesProps {
  * GPU-accelerated living winged butterfly entity flight engine.
  * - Features exactly 2 Big Butterflies (Left and Right).
  * - Real-time random shape-morphing wings with fluid silk streamers.
+ * - On direct load, both big butterflies start at center curtain with IP badge, then gracefully glide outward.
  * - On every transition, BOTH butterflies change their colors to fresh complementary palettes.
  * - Interactive mouse parallax & 3D perspective tilt attraction.
  * - Smooth center curtain transition: Both butterflies sweep into center, transform colors, and glide outward.
@@ -36,6 +37,7 @@ export const OrganicShapes: React.FC<OrganicShapesProps> = ({
 
   const {
     phase,
+    isEntranceOpen: _isEntranceOpen,
     onCurtainHitCenter,
     onCurtainOpened,
     onEntranceComplete,
@@ -45,12 +47,12 @@ export const OrganicShapes: React.FC<OrganicShapesProps> = ({
   const [paletteIndex, setPaletteIndex] = useState<number>(0);
 
   // Refs for tracking live coordinates without React re-renders
-  const currentLeftRef = useRef<CreatureTransform>({ x: -400, y: 200, rot: -15, scale: 1.05 });
-  const currentRightRef = useRef<CreatureTransform>({ x: 1800, y: 300, rot: 15, scale: 1.05 });
+  const currentLeftRef = useRef<CreatureTransform>({ x: 0, y: 0, rot: 12, scale: 1.4 });
+  const currentRightRef = useRef<CreatureTransform>({ x: 0, y: 0, rot: -12, scale: 1.4 });
 
   // Snapshots at transition phase boundaries
-  const snapshotLeftRef = useRef<CreatureTransform>({ x: -400, y: 200, rot: -15, scale: 1.05 });
-  const snapshotRightRef = useRef<CreatureTransform>({ x: 1800, y: 300, rot: 15, scale: 1.05 });
+  const snapshotLeftRef = useRef<CreatureTransform>({ x: 0, y: 0, rot: 12, scale: 1.4 });
+  const snapshotRightRef = useRef<CreatureTransform>({ x: 0, y: 0, rot: -12, scale: 1.4 });
 
   // Transition timing
   const transitionStartRef = useRef<number>(0);
@@ -160,17 +162,18 @@ export const OrganicShapes: React.FC<OrganicShapesProps> = ({
       if (phase !== lastPhaseRef.current) {
         hasTriggeredCenterRef.current = false;
         if (phase === 'entering') {
+          // Direct open: Both big butterflies start together at the center meeting point (closed curtain)
           snapshotLeftRef.current = {
-            x: -width * 0.95,
-            y: (vh - height) * 0.35,
-            rot: -24,
-            scale: 1.0,
+            x: centerLeftX,
+            y: centerLeftY,
+            rot: centerLeftRot,
+            scale: centerLeftScale,
           };
           snapshotRightRef.current = {
-            x: vw + width * 0.15,
-            y: (vh - height) * 0.55,
-            rot: 20,
-            scale: 1.0,
+            x: centerRightX,
+            y: centerRightY,
+            rot: centerRightRot,
+            scale: centerRightScale,
           };
           currentLeftRef.current = { ...snapshotLeftRef.current };
           currentRightRef.current = { ...snapshotRightRef.current };
@@ -185,54 +188,42 @@ export const OrganicShapes: React.FC<OrganicShapesProps> = ({
 
       // Handle motion by current phase
       if (phase === 'entering') {
-        const duration = 1000;
+        const holdDuration = 380; // Hold at center with IP badge
+        const openDuration = 760; // Smooth opening glide to sides as content reveals
         const elapsed = now - transitionStartRef.current;
-        const progress = Math.min(elapsed / duration, 1.0);
 
-        if (progress < 0.44) {
-          const subP = progress / 0.44;
-          const ease = easeInOutCubic(subP);
-          const inLeftX = centerLeftX - width * 0.06;
-          const inRightX = centerRightX + width * 0.06;
+        if (elapsed < holdDuration) {
+          // Gentle breathing at center while IP badge is visible
+          const breath = Math.sin((elapsed / holdDuration) * Math.PI) * 0.018;
+          currentLeftRef.current.x = centerLeftX;
+          currentLeftRef.current.y = centerLeftY;
+          currentLeftRef.current.rot = centerLeftRot;
+          currentLeftRef.current.scale = centerLeftScale * (1 + breath);
 
-          currentLeftRef.current.x =
-            snapshotLeftRef.current.x + (inLeftX - snapshotLeftRef.current.x) * ease;
-          currentLeftRef.current.y =
-            snapshotLeftRef.current.y + (centerLeftY - snapshotLeftRef.current.y) * ease;
-          currentLeftRef.current.rot =
-            snapshotLeftRef.current.rot + (10 - snapshotLeftRef.current.rot) * ease;
-          currentLeftRef.current.scale =
-            snapshotLeftRef.current.scale + (centerLeftScale * 0.95 - snapshotLeftRef.current.scale) * ease;
-
-          currentRightRef.current.x =
-            snapshotRightRef.current.x + (inRightX - snapshotRightRef.current.x) * ease;
-          currentRightRef.current.y =
-            snapshotRightRef.current.y + (centerRightY - snapshotRightRef.current.y) * ease;
-          currentRightRef.current.rot =
-            snapshotRightRef.current.rot + (-10 - snapshotRightRef.current.rot) * ease;
-          currentRightRef.current.scale =
-            snapshotRightRef.current.scale + (centerRightScale * 0.95 - snapshotRightRef.current.scale) * ease;
+          currentRightRef.current.x = centerRightX;
+          currentRightRef.current.y = centerRightY;
+          currentRightRef.current.rot = centerRightRot;
+          currentRightRef.current.scale = centerRightScale * (1 + breath);
         } else {
-          const subP = Math.min((progress - 0.44) / 0.56, 1.0);
-          const ease = easeInOutCubic(subP);
-          const inLeftX = centerLeftX - width * 0.06;
-          const inRightX = centerRightX + width * 0.06;
+          // Gracefully sweep outwards to idle flight positions as actual page content reveals!
+          const openProgress = Math.min((elapsed - holdDuration) / openDuration, 1.0);
+          const ease = easeInOutCubic(openProgress);
 
-          currentLeftRef.current.x = inLeftX + (idleLeftX - inLeftX) * ease;
+          currentLeftRef.current.x = centerLeftX + (idleLeftX - centerLeftX) * ease;
           currentLeftRef.current.y = centerLeftY + (idleLeftY - centerLeftY) * ease;
-          currentLeftRef.current.rot = 10 + (idleLeftRot - 10) * ease;
+          currentLeftRef.current.rot = centerLeftRot + (idleLeftRot - centerLeftRot) * ease;
           currentLeftRef.current.scale =
-            centerLeftScale * 0.95 + (idleLeftScale - centerLeftScale * 0.95) * ease;
+            centerLeftScale + (idleLeftScale - centerLeftScale) * ease;
 
-          currentRightRef.current.x = inRightX + (idleRightX - inRightX) * ease;
+          currentRightRef.current.x = centerRightX + (idleRightX - centerRightX) * ease;
           currentRightRef.current.y = centerRightY + (idleRightY - centerRightY) * ease;
-          currentRightRef.current.rot = -10 + (idleRightRot - (-10)) * ease;
+          currentRightRef.current.rot = centerRightRot + (idleRightRot - centerRightRot) * ease;
           currentRightRef.current.scale =
-            centerRightScale * 0.95 + (idleRightScale - centerRightScale * 0.95) * ease;
-        }
+            centerRightScale + (idleRightScale - centerRightScale) * ease;
 
-        if (progress >= 1.0) {
-          onEntranceComplete();
+          if (openProgress >= 1.0) {
+            onEntranceComplete();
+          }
         }
       } else if (phase === 'idle') {
         currentLeftRef.current.x += (idleLeftX - currentLeftRef.current.x) * 0.1;

@@ -36,8 +36,8 @@ export const PortalShell: React.FC<PortalShellProps> = ({
   stickyFooter = false,
   fixedFooter = true,
 }) => {
-  const { phase } = useTransition();
-  const isContentHidden = phase === 'closing' || phase === 'redirecting';
+  const { isContentVisible } = useTransition();
+  const isContentHidden = !isContentVisible;
 
   // Synchronize header & footer configurations with the persistent layout-level header/footer
   useSetHeaderFooter({
@@ -72,8 +72,10 @@ export const PortalShell: React.FC<PortalShellProps> = ({
           centerContent
             ? 'py-8 md:py-12 flex flex-col items-center justify-center text-center'
             : 'py-6 md:py-10 flex flex-col items-center'
-        } transition-all duration-300 ease-out ${
-          isContentHidden ? 'opacity-0 scale-[0.98]' : 'opacity-100 scale-100'
+        } transition-all duration-600 ease-[cubic-bezier(0.16,1,0.3,1)] ${
+          isContentHidden
+            ? 'opacity-0 scale-[0.98] translate-y-3 pointer-events-none'
+            : 'opacity-100 scale-100 translate-y-0 pointer-events-auto'
         } ${contentClassName}`}
       >
         {children}

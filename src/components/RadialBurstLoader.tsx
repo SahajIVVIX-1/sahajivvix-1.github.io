@@ -1,94 +1,144 @@
 import React from 'react';
 
+export type RadialBurstMotion =
+  | 'solar-iris'
+  | 'spark-sweep'
+  | 'aperture'
+  | 'spin-bloom'
+  | 'wave';
+
 export interface RadialBurstLoaderProps {
   readonly size?: number;
   readonly className?: string;
   readonly color?: string;
   readonly isRunning?: boolean;
-  readonly motion?: 'wave' | 'spin-bloom';
+  readonly motion?: RadialBurstMotion;
 }
 
 /**
  * RadialBurstLoader
- * Replicates the organic 12-spoke radial starburst loader from the user's video.
- * Supports multiple motion variants:
- * - 'wave': traveling radial wave where spokes undulate in sequence (header trigger).
- * - 'spin-bloom': smooth celestial rotation combined with alternating blooming petals (inside visitor page).
- * No circular background or container borders.
+ *
+ * Distinctive 12-spoke solar burst / flower blossom insignia with center core ring.
+ * Mathematically centered with zero coordinate distortion or CSS translation override bugs.
+ * Features multiple hypnotic animation variants:
+ * - 'solar-iris': (NEW) Celestial continuous rotation combined with an organic traveling
+ *   petal wave and breathing counter-rhythm center core.
+ * - 'spark-sweep': Traveling starlight sweep around the 12 spokes.
+ * - 'aperture': Synchronized organic breathing of all rays in unison with solar flare.
+ * - 'spin-bloom': Rotating celestial blossom with alternating blooming rays.
+ * - 'wave': Traveling radial wave where spokes undulate in sequence.
  */
 export const RadialBurstLoader: React.FC<RadialBurstLoaderProps> = ({
-  size = 26,
+  size = 28,
   className = '',
-  color = '#D46853',
+  color = '#E65100',
   isRunning = true,
-  motion = 'wave',
+  motion = 'solar-iris',
 }) => {
   // 12 spokes spaced 30 degrees apart
   const spokes = Array.from({ length: 12 }, (_, i) => i);
-  const duration = 1.2; // seconds per wave cycle
+  const cycleDuration = 1.4; // seconds per wave cycle
+
+  const isSpinning =
+    isRunning && (motion === 'solar-iris' || motion === 'spin-bloom');
 
   return (
-    <svg
-      width={size}
-      height={size}
-      viewBox="0 0 36 36"
-      fill="none"
-      xmlns="http://www.w3.org/2000/svg"
-      className={`select-none pointer-events-none ${className}`}
-      style={{ overflow: 'visible' }}
+    <div
+      className={`inline-flex items-center justify-center shrink-0 ${className}`}
+      style={{
+        width: size,
+        height: size,
+      }}
     >
-      <g
-        transform="translate(18, 18)"
+      <svg
+        width={size}
+        height={size}
+        viewBox="0 0 36 36"
+        fill="none"
+        xmlns="http://www.w3.org/2000/svg"
+        className="select-none pointer-events-none block"
         style={{
-          animation:
-            motion === 'spin-bloom' && isRunning
-              ? 'radial-burst-spin 8s linear infinite'
-              : 'none',
-          transformOrigin: '0px 0px',
+          width: size,
+          height: size,
+          overflow: 'visible',
+          animation: isSpinning ? 'solar-iris-spin 9s linear infinite' : 'none',
+          transformOrigin: 'center',
         }}
+        aria-hidden="true"
       >
-        {spokes.map((index) => {
-          const angle = index * 30;
-          const delay = (index / 12) * duration;
-          const isEven = index % 2 === 0;
+        <g transform="translate(18, 18)">
+          {/* Center Ring Core (The hollow ring seen in the insignia) */}
+          <circle
+            cx="0"
+            cy="0"
+            r="3.2"
+            stroke={color}
+            strokeWidth="2.2"
+            fill="none"
+            style={{
+              transformOrigin: '0px 0px',
+              animation:
+                isRunning && (motion === 'solar-iris' || motion === 'aperture')
+                  ? 'solar-iris-core 2.4s ease-in-out infinite'
+                  : 'none',
+            }}
+          />
 
-          // Compute ray animation based on motion variant
-          let rayAnimation = 'none';
-          let rayDelay = '0s';
+          {/* 12 Radiating Spokes */}
+          {spokes.map((index) => {
+            const angle = index * 30;
+            const delay = (index / 12) * cycleDuration;
+            const isEven = index % 2 === 0;
 
-          if (isRunning) {
-            if (motion === 'wave') {
-              rayAnimation = `radial-burst-ray ${duration}s ease-in-out infinite`;
-              rayDelay = `-${delay}s`;
-            } else if (motion === 'spin-bloom') {
-              rayAnimation = isEven
-                ? 'radial-burst-bloom-a 1.8s ease-in-out infinite'
-                : 'radial-burst-bloom-b 1.8s ease-in-out infinite';
-              rayDelay = isEven ? '0s' : '-0.9s';
+            let rayAnimation = 'none';
+            let rayDelay = '0s';
+
+            if (isRunning) {
+              if (motion === 'solar-iris') {
+                rayAnimation = `solar-iris-ray ${cycleDuration}s ease-in-out infinite`;
+                rayDelay = `-${delay}s`;
+              } else if (motion === 'spark-sweep') {
+                rayAnimation = `solar-spark-sweep ${cycleDuration}s linear infinite`;
+                rayDelay = `-${delay}s`;
+              } else if (motion === 'aperture') {
+                rayAnimation = 'solar-aperture-breath 2.2s ease-in-out infinite';
+                rayDelay = '0s';
+              } else if (motion === 'spin-bloom') {
+                rayAnimation = isEven
+                  ? 'radial-burst-bloom-a 1.8s ease-in-out infinite'
+                  : 'radial-burst-bloom-b 1.8s ease-in-out infinite';
+                rayDelay = isEven ? '0s' : '-0.9s';
+              } else if (motion === 'wave') {
+                rayAnimation = `radial-burst-ray ${cycleDuration}s ease-in-out infinite`;
+                rayDelay = `-${delay}s`;
+              }
             }
-          }
 
-          return (
-            <g key={index} transform={`rotate(${angle})`}>
-              <line
-                x1="0"
-                y1="-4.5"
-                x2="0"
-                y2="-15"
-                stroke={color}
-                strokeWidth="2.8"
-                strokeLinecap="round"
-                style={{
-                  transformOrigin: '0px 0px',
-                  animation: rayAnimation,
-                  animationDelay: rayDelay,
-                }}
-              />
-            </g>
-          );
-        })}
-      </g>
-    </svg>
+            return (
+              <g key={index} transform={`rotate(${angle})`}>
+                <g
+                  style={{
+                    transformOrigin: '0px 0px',
+                    animation: rayAnimation,
+                    animationDelay: rayDelay,
+                  }}
+                >
+                  <line
+                    x1="0"
+                    y1="-5.2"
+                    x2="0"
+                    y2="-15.5"
+                    stroke={color}
+                    strokeWidth="2.6"
+                    strokeLinecap="round"
+                  />
+                </g>
+              </g>
+            );
+          })}
+        </g>
+      </svg>
+    </div>
   );
 };
 
