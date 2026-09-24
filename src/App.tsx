@@ -10,6 +10,7 @@ import { FloatingWords } from './components/FloatingWords';
 import { FlyingIpBadge } from './components/FlyingIpBadge';
 import { AppHeader } from './components/AppHeader';
 import { AppFooter } from './components/AppFooter';
+import { LiquidCursorEffect } from './components/LiquidCursorEffect';
 import { HomePage } from './pages/HomePage';
 import { ResumePage } from './pages/ResumePage';
 import { RedirectPage } from './pages/RedirectPage';
@@ -118,6 +119,9 @@ const AppLayout: React.FC = () => {
 
       {/* Cinematic Flying IP badge motion from center screen to top header breadcrumb */}
       <FlyingIpBadge />
+
+      {/* Localized Liquid Cursor Effect (subtle underwater displacement attached directly to cursor) */}
+      <LiquidCursorEffect />
 
       {/* Main route view container */}
       <div className="relative min-h-screen">
