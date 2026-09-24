@@ -302,7 +302,7 @@ export const FloatingWords: React.FC<FloatingWordsProps> = ({ className = '' }) 
     <div
       ref={containerRef}
       aria-hidden="true"
-      className={`fixed inset-0 pointer-events-none select-none z-15 overflow-hidden transition-all duration-500 ease-out ${
+      className={`fixed inset-0 pointer-events-none select-none z-[5] overflow-hidden transition-all duration-500 ease-out ${
         isTransitioning
           ? 'opacity-0 scale-95 -translate-y-2 pointer-events-none'
           : 'opacity-100 scale-100 translate-y-0'

@@ -378,6 +378,163 @@
 }
 
 /* ================================================================ */
+/* LIVING BOTANICAL FLOWER MULTI-TIER INTERNAL MOTION              */
+/* ================================================================ */
+
+@keyframes flowerSpinCw {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes flowerSpinCcw {
+  from {
+    transform: rotate(360deg);
+  }
+  to {
+    transform: rotate(0deg);
+  }
+}
+
+@keyframes flowerPetalBreathe {
+  0%, 100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.03);
+  }
+}
+
+@keyframes flowerMidTierOscillate {
+  0%, 100% {
+    transform: rotate(0deg) scale(0.98);
+  }
+  50% {
+    transform: rotate(9deg) scale(1.025);
+  }
+}
+
+@keyframes flowerInnerCrownBreathe {
+  0%, 100% {
+    transform: scale(0.95) rotate(0deg);
+  }
+  50% {
+    transform: scale(1.06) rotate(-7deg);
+  }
+}
+
+@keyframes flowerCoreHeartbeat {
+  0%, 100% {
+    transform: scale(0.93);
+  }
+  30% {
+    transform: scale(1.07);
+  }
+  48% {
+    transform: scale(1.0);
+  }
+  64% {
+    transform: scale(1.05);
+  }
+}
+
+@keyframes flowerSporeFloatA {
+  0%, 100% {
+    transform: translate3d(0, 0, 0) scale(0.8);
+    opacity: 0.3;
+  }
+  50% {
+    transform: translate3d(-18px, -22px, 0) scale(1.2);
+    opacity: 0.9;
+  }
+}
+
+@keyframes flowerSporeFloatB {
+  0%, 100% {
+    transform: translate3d(0, 0, 0) scale(1.15);
+    opacity: 0.85;
+  }
+  50% {
+    transform: translate3d(20px, 16px, 0) scale(0.75);
+    opacity: 0.25;
+  }
+}
+
+@keyframes flowerSporeFloatC {
+  0%, 100% {
+    transform: translate3d(0, 0, 0) scale(0.85);
+    opacity: 0.4;
+  }
+  50% {
+    transform: translate3d(14px, -18px, 0) scale(1.15);
+    opacity: 0.8;
+  }
+}
+
+.animate-flower-spin-slow {
+  animation: flowerSpinCw 72s linear infinite;
+  transform-origin: 250px 250px;
+}
+
+.animate-flower-spin-slow-rev {
+  animation: flowerSpinCcw 64s linear infinite;
+  transform-origin: 250px 250px;
+}
+
+.animate-flower-mid-oscillate {
+  animation: flowerMidTierOscillate 9.5s ease-in-out infinite;
+  transform-origin: 250px 250px;
+}
+
+.animate-flower-inner-breathe {
+  animation: flowerInnerCrownBreathe 6.8s ease-in-out infinite;
+  transform-origin: 250px 250px;
+}
+
+.animate-flower-stamen-spin {
+  animation: flowerSpinCw 26s linear infinite;
+  transform-origin: 250px 250px;
+}
+
+.animate-flower-stamen-spin-rev {
+  animation: flowerSpinCcw 28s linear infinite;
+  transform-origin: 250px 250px;
+}
+
+.animate-flower-core-pulse {
+  animation: flowerCoreHeartbeat 3.6s ease-in-out infinite;
+  transform-origin: 250px 250px;
+}
+
+.animate-spore-a {
+  animation: flowerSporeFloatA 5.6s ease-in-out infinite;
+}
+
+.animate-spore-b {
+  animation: flowerSporeFloatB 6.4s ease-in-out infinite;
+}
+
+.animate-spore-c {
+  animation: flowerSporeFloatC 4.8s ease-in-out infinite;
+}
+
+/* ================================================================ */
+/* MORPHING BUTTERFLY LUXURY COLOR MORPHING                         */
+/* ================================================================ */
+.morphing-creature stop {
+  transition: stop-color 2.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.morphing-creature circle,
+.morphing-creature path,
+.morphing-creature line {
+  transition: fill 2.4s cubic-bezier(0.4, 0, 0.2, 1), stroke 2.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* ================================================================ */
 /* REDUCED MOTION OVERRIDE                                          */
 /* ================================================================ */
 @media (prefers-reduced-motion: reduce) {
@@ -400,7 +557,17 @@
   .animate-float-drift-a,
   .animate-float-drift-b,
   .animate-float-drift-c,
-  .animate-float-drift-d {
+  .animate-float-drift-d,
+  .animate-flower-spin-slow,
+  .animate-flower-spin-slow-rev,
+  .animate-flower-mid-oscillate,
+  .animate-flower-inner-breathe,
+  .animate-flower-stamen-spin,
+  .animate-flower-stamen-spin-rev,
+  .animate-flower-core-pulse,
+  .animate-spore-a,
+  .animate-spore-b,
+  .animate-spore-c {
     animation: none !important;
     transform: none !important;
   }
