@@ -1,13 +1,34 @@
-# Personal URL Redirect Service
+# Personal Redirect Gateway
 
-Professional URL redirect website hosted on GitHub Pages (`https://sahajivvix-1.github.io`).
+A clean, high-performance personal URL redirect gateway and link hub designed for GitHub Pages (`https://sahajivvix-1.github.io/`).
 
-## Architecture Overview
-- **Source of Truth:** `src/config/redirects.json` contains all redirect destinations and metadata.
-- **Clean Routing:** During build, static HTML directories are generated (e.g. `/Github/index.html`, `/LinkedIn/index.html`) to ensure clean URLs without query parameters or file extensions.
-- **Maintainability:** Adding a new redirect route only requires adding one entry into `src/config/redirects.json`.
-- **Private Repo Compatibility:** Deploys via `npm run deploy` using `gh-pages` to publish the static build output to the `gh-pages` branch while keeping the source branch clean.
+## Architecture
 
-## Available Commands
-- `npm run build`: Generates the static files into `dist/`.
-- `npm run deploy`: Builds the project and publishes the `dist/` directory to GitHub Pages (`gh-pages` branch).
+- **Framework:** React + Vite + TypeScript
+- **Styling:** Tailwind CSS
+- **Routing:** React Router DOM (route-aware dynamic resolution with SPA fallback)
+- **Centralized Configuration:** Destination definitions in `src/data/redirects.ts` and resolver in `src/config/redirects.ts`
+- **Hosting:** GitHub Pages at root base path (`/`)
+
+## Project Structure
+
+```
+src/
+├── components/       # Reusable layout and UI components
+├── pages/            # Top-level route pages (Home, Redirect, 404)
+├── config/           # Route resolvers and destination configuration
+├── data/             # Centralized redirect destination registry
+├── hooks/            # Custom React hooks (useRedirect)
+├── lib/              # General helper utilities
+├── types/            # TypeScript interfaces & domain models
+├── App.tsx           # Route definitions
+├── main.tsx          # Application entry point
+└── index.css         # Tailwind base and global reset styles
+```
+
+## Available Scripts
+
+- `npm run dev`: Starts the local development server at port 3000.
+- `npm run build`: Type-checks and creates production build in `dist/` with GitHub Pages SPA fallback.
+- `npm run preview`: Previews the production build locally.
+- `npm run deploy`: Builds and publishes the `dist/` bundle to GitHub Pages via `gh-pages`.
