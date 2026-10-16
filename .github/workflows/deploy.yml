@@ -1,0 +1,71 @@
+name: Sync & deploy
+
+# Runs every hour (and on every push to this branch). Scrapes GitHub, LeetCode, X and
+# LinkedIn, re-runs the build-time ML, checks the output, and publishes to gh-pages —
+# but only when the content actually changed, so hourly runs don't churn deploys.
+on:
+  push:
+    branches: [info.sahaj.si]
+  schedule:
+    - cron: '17 * * * *'
+  workflow_dispatch:
+  repository_dispatch:
+    types: [sync]
+
+permissions:
+  contents: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Scrape live sources
+        run: node scripts/scrape.mjs
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          RESUME_URL: ${{ vars.RESUME_URL }}
+
+      - name: Build (with build-time ML)
+        run: node scripts/build.mjs
+
+      - name: Quality gate
+        run: node scripts/check.mjs
+
+      - name: Compare with live site
+        id: diff
+        run: |
+          NEW=$(node -p "require('./dist/build.json').contentHash")
+          OLD=$(curl -fsSL --max-time 15 https://info.sahaj.si/build.json | node -p "JSON.parse(require('fs').readFileSync(0,'utf8')).contentHash" 2>/dev/null || echo none)
+          echo "new=$NEW old=$OLD"
+          if [ "$NEW" != "$OLD" ] || [ "${{ github.event_name }}" != "schedule" ]; then echo "changed=true" >> "$GITHUB_OUTPUT"; else echo "changed=false" >> "$GITHUB_OUTPUT"; fi
+
+      - name: Publish to gh-pages
+        if: steps.diff.outputs.changed == 'true'
+        uses: peaceiris/actions-gh-pages@v4
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_branch: gh-pages
+          publish_dir: ./dist
+          cname: info.sahaj.si
+          force_orphan: true
+          user_name: github-actions[bot]
+          user_email: 41898299+github-actions[bot]@users.noreply.github.com
+          commit_message: 'deploy: ${{ github.event_name }} ${{ github.sha }}'
+
+      - name: Summary
+        if: always()
+        run: |
+          echo "### Sync status" >> "$GITHUB_STEP_SUMMARY"
+          node -e "const d=require('./data/live.json');for(const [k,v] of Object.entries(d.status))console.log('- **'+k+'**: '+v.state+(v.error?' — '+v.error:''))" >> "$GITHUB_STEP_SUMMARY" || true
+          echo "- deployed: ${{ steps.diff.outputs.changed }}" >> "$GITHUB_STEP_SUMMARY"
