@@ -64,10 +64,10 @@
   .act-verbs .slots{display:inline-flex}
   .act-verbs .ell{color:#8f8bb4;white-space:pre}
   /* one 3D tile per letter: front face shows the current letter, back face carries the next one */
-  .slot{position:relative;display:inline-block;height:1.5em;perspective:2.4em;
+  .slot{position:relative;display:inline-block;height:1.5em;perspective:7em;
     transition:width .26s cubic-bezier(.4,0,.2,1)}
-  .slot .card{position:absolute;inset:0;transform-style:preserve-3d;transform-origin:50% 55%}
-  .slot .face{position:absolute;inset:0;display:flex;justify-content:center;white-space:pre;
+  .slot .card{position:absolute;inset:0;transform-style:preserve-3d;transform-origin:50% 50%;will-change:transform}
+  .slot .face{position:absolute;inset:0;transform-origin:50% 50%;display:flex;justify-content:center;white-space:pre;
     -webkit-backface-visibility:hidden;backface-visibility:hidden}
   .act-time{display:inline-block;overflow:hidden;text-align:left;font-variant-numeric:tabular-nums;
     color:#8f8cab;transition:width .35s cubic-bezier(.22,1,.36,1)}
