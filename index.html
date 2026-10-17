@@ -43,8 +43,10 @@
   }
   main,footer{z-index:1}
   main{position:relative;flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;gap:clamp(14px,2.6vh,22px);width:100%;max-width:640px;padding:clamp(32px,8vh,72px) 0 24px}
-  .logo{position:relative;display:block;width:min(clamp(76px,20vw,112px),20vh);height:auto;margin-bottom:clamp(6px,2vh,18px);
-    filter:drop-shadow(0 10px 24px rgba(0,0,0,.55))}
+  .logo{position:relative;display:block;width:min(clamp(99px,26vw,146px),26vh);height:auto;aspect-ratio:1;margin-bottom:clamp(6px,2vh,18px);
+    border-radius:20%;
+    /* hairline rim + cool halo lift the black tile off the navy without a glow behind the mark */
+    box-shadow:0 0 0 1px rgba(255,255,255,.16),0 0 0 6px rgba(150,150,210,.05),0 14px 36px rgba(0,0,0,.7),0 0 60px rgba(120,120,200,.10)}
   #loop{width:clamp(64px,16vw,88px);aspect-ratio:2/1;display:block;position:relative}
   h1,p{position:relative}
   h1{margin:0;font-family:"Source Serif 4",Georgia,"Times New Roman",serif;font-weight:700;
