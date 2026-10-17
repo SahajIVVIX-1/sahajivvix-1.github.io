@@ -6,7 +6,8 @@
 <title>Sahaj Saliya · Under maintenance</title>
 <meta name="description" content="Sahaj Saliya's AI/ML portfolio is being rebuilt. Back soon.">
 <meta name="theme-color" content="#04040b">
-<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%2304040b'/%3E%3Cpath d='M12 32c0-8 10-8 20 0s20 8 20 0-10-8-20 0-20 8-20 0z' fill='none' stroke='%23c4b5ff' stroke-width='5' stroke-linecap='round'/%3E%3C/svg%3E">
+<link rel="icon" type="image/png" href="favicon.png">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,700&family=Inter:wght@500&display=swap">
@@ -17,10 +18,11 @@
     --text:#f2f2f2; --muted:#7c8099;
   }
   *{box-sizing:border-box}
-  html,body{height:100%;margin:0}
+  html{overflow-x:clip}
+  html,body{margin:0}
   body{
-    background:var(--bg);color:var(--text);
-    display:grid;place-items:center;overflow:hidden;
+    background:var(--bg);color:var(--text);min-height:100vh;min-height:100dvh;
+    display:flex;flex-direction:column;align-items:center;justify-content:center;overflow-x:hidden;
     font-family:Inter,system-ui,-apple-system,"Segoe UI",sans-serif;
     padding:env(safe-area-inset-top) max(16px,env(safe-area-inset-right)) env(safe-area-inset-bottom) max(16px,env(safe-area-inset-left));
   }
@@ -32,16 +34,18 @@
       repeating-radial-gradient(circle at 50% 46%, rgba(255,255,255,.018) 0 1px, transparent 1px 46px),
       radial-gradient(circle at 50% 46%, #0b0b20 0, #05050e 45%, #010104 80%);
   }
-  main{position:relative;display:flex;flex-direction:column;align-items:center;text-align:center;gap:28px}
-  .halo{position:absolute;top:2%;left:50%;width:420px;height:300px;max-width:110vw;transform:translateX(-50%);
+  main{position:relative;flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;gap:clamp(14px,2.6vh,22px);width:100%;max-width:640px;padding:clamp(32px,8vh,72px) 0 24px}
+  .halo{position:absolute;top:8%;left:50%;width:360px;height:280px;max-width:80vw;transform:translateX(-50%);
     background:radial-gradient(closest-side, rgba(109,77,255,.30), transparent);filter:blur(20px);animation:breathe 4.4s ease-in-out infinite}
-  #loop{width:min(400px,86vw);aspect-ratio:2/1;display:block;position:relative}
+  .logo{position:relative;display:block;width:min(clamp(92px,24vw,148px),26vh);height:auto;margin-bottom:clamp(10px,3vh,26px);
+    filter:drop-shadow(0 0 6px rgba(255,255,255,.4)) drop-shadow(0 0 28px rgba(255,255,255,.18))}
+  #loop{width:clamp(72px,18vw,104px);aspect-ratio:2/1;display:block;position:relative}
   h1,p{position:relative}
   h1{margin:0;font-family:"Source Serif 4",Georgia,"Times New Roman",serif;font-weight:700;
-    font-size:clamp(2.1rem,6.4vw,4.2rem);line-height:1.02;letter-spacing:-.03em;font-variation-settings:"opsz" 60;text-wrap:balance}
-  p{margin:0;color:var(--muted);font-size:.95rem;letter-spacing:.01em}
+    font-size:clamp(1.75rem,7vw,3.4rem);line-height:1.02;letter-spacing:-.03em;font-variation-settings:"opsz" 60;text-wrap:balance}
+  p{margin:0;color:var(--muted);font-size:clamp(.85rem,2.6vw,.95rem);letter-spacing:.01em;max-width:44ch;text-wrap:balance}
   .dots::after{content:"";display:inline-block;width:1.2em;text-align:left;animation:dots 1.6s steps(4) infinite}
-  footer{position:fixed;bottom:calc(20px + env(safe-area-inset-bottom));left:0;right:0;text-align:center;color:#4c5068;font-size:.8rem}
+  footer{position:relative;padding:16px 0 calc(20px + env(safe-area-inset-bottom));text-align:center;color:#4c5068;font-size:.8rem}
   footer a{color:inherit;text-decoration:none;border-bottom:1px solid rgba(124,128,153,.35)}
   footer a:hover{color:var(--glow-2)}
 
@@ -56,6 +60,7 @@
 <body>
 <main>
   <div class="halo" aria-hidden="true"></div>
+  <img class="logo" src="logo.png" width="520" height="464" alt="Sahaj Saliya logo">
   <canvas id="loop" role="img" aria-label="Animated infinity loop"></canvas>
   <h1>Website under maintenance</h1>
   <p class="dots">Something new is being built. Back soon</p>
@@ -68,12 +73,12 @@
   const reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;
   let W,H,dpr;
   function size(){dpr=Math.min(2,devicePixelRatio||1);const r=c.getBoundingClientRect();W=r.width;H=r.height;c.width=W*dpr;c.height=H*dpr;x.setTransform(dpr,0,0,dpr,0,0)}
-  function pt(t){const s=Math.sin(t),k=1+s*s,a=W*.36;return[W/2+a*Math.cos(t)/k,H/2+a*s*Math.cos(t)/k*1.15]}
+  function pt(t){const s=Math.sin(t),k=1+s*s,a=W*.31;return[W/2+a*Math.cos(t)/k,H/2+a*s*Math.cos(t)/k*1.15]}
   const N=140, TAIL=Math.PI*1.25; // tail covers ~60% of the loop
   function frame(ms){
     const head=reduce?2.3:ms/1000*2.35;
     x.clearRect(0,0,W,H);
-    const th=W*.042;
+    const th=W*.05;
     // faint track
     x.globalCompositeOperation='source-over';x.lineCap='round';x.lineJoin='round';
     x.beginPath();for(let i=0;i<=200;i++){const p=pt(i/200*Math.PI*2);i?x.lineTo(p[0],p[1]):x.moveTo(p[0],p[1])}
@@ -90,9 +95,9 @@
       }
     }
     // flaring head
-    const h=pts[pts.length-1][0], g=x.createRadialGradient(h[0],h[1],0,h[0],h[1],th*3.2);
+    const h=pts[pts.length-1][0], g=x.createRadialGradient(h[0],h[1],0,h[0],h[1],th*2.6);
     g.addColorStop(0,'rgba(255,255,255,.95)');g.addColorStop(.25,'rgba(190,170,255,.55)');g.addColorStop(1,'rgba(90,60,255,0)');
-    x.fillStyle=g;x.beginPath();x.arc(h[0],h[1],th*3.2,0,7);x.fill();
+    x.fillStyle=g;x.beginPath();x.arc(h[0],h[1],th*2.6,0,7);x.fill();
     x.strokeStyle='rgba(255,255,255,.35)';x.lineWidth=1;
     x.beginPath();x.moveTo(h[0]-th*2.6,h[1]);x.lineTo(h[0]+th*2.6,h[1]);x.moveTo(h[0],h[1]-th*1.6);x.lineTo(h[0],h[1]+th*1.6);x.stroke();
     if(!reduce)requestAnimationFrame(frame);
