@@ -88,7 +88,10 @@ function diffusionName() {
       o.font = `${st.fontStyle} ${st.fontWeight} ${st.fontSize} ${st.fontFamily}`;
       o.textBaseline = 'alphabetic';
       const m = o.measureText(sp.textContent);
-      const x = r.left - box.left, y = r.top - box.top + (m.fontBoundingBoxAscent ?? parseFloat(st.fontSize) * 0.9);
+      // Spans are inline-block with a tight line-height, so their box is the line box:
+      // baseline = top + half-leading + ascent (half-leading is negative here).
+      const asc = m.fontBoundingBoxAscent ?? parseFloat(st.fontSize) * 0.9, desc = m.fontBoundingBoxDescent ?? parseFloat(st.fontSize) * 0.25;
+      const x = r.left - box.left, y = r.top - box.top + (r.height - (asc + desc)) / 2 + asc;
       if (sp.classList.contains('n2')) {
         const g = o.createLinearGradient(x, 0, x + r.width, 0);
         g.addColorStop(0, cs.getPropertyValue('--g1')); g.addColorStop(0.48, cs.getPropertyValue('--g2')); g.addColorStop(1, cs.getPropertyValue('--g3'));
