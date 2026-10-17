@@ -12,6 +12,9 @@ maintenance/
     │   ├── logo-app-icon.png    # black rounded-square S. (512px), shown on the page
     │   ├── logo-monogram.svg    # white S. monogram, vector
     │   └── logo-monogram.png
+    ├── js/
+    │   ├── verbs.js      # activity-indicator vocabulary (edit words here)
+    │   └── activity.js   # activity capsule: shuffled verbs + elapsed timer
     └── icons/            # favicons and app icons
         ├── favicon-32.png
         ├── favicon-64.png
