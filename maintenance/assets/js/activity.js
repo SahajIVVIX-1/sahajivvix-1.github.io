@@ -132,7 +132,7 @@
       slot.style.width = em(to) + "em";
       const anim = card.animate(
         [{ transform: "rotate" + axis + "(0deg)" }, { transform: "rotate" + axis + "(" + deg + "deg)" }],
-        { duration: FLIP_MS, delay, easing: "cubic-bezier(.55,.05,.3,1.22)", fill: "forwards" }
+        { duration: FLIP_MS, delay, easing: "cubic-bezier(.45,0,.25,1)", fill: "forwards" }
       );
       running.add(anim);
       anim.onfinish = () => {
@@ -176,7 +176,7 @@
     }
 
     function scheduleVerb() {
-      later(() => { showVerb(next(), !reduce); scheduleVerb(); }, 2000 + Math.random() * 2000);
+      later(() => { showVerb(next(), !reduce); scheduleVerb(); }, 5000 + Math.random() * 10000);
     }
 
     const start = performance.now();
