@@ -1,0 +1,668 @@
+{
+  "name": "Sahaj Saliya",
+  "role": "AI / ML Engineer",
+  "headline": "Building agentic AI, retrieval systems and LLM applications that reason, cite and correct themselves.",
+  "location": "Gandhinagar, Gujarat, India",
+  "status": "Open to AI/ML internships & full-time roles from 2027",
+  "links": {
+    "github": "https://github.com/SahajIVVIX-1",
+    "linkedin": "https://www.linkedin.com/in/sahajs59/",
+    "leetcode": "https://leetcode.com/u/sahajs59/",
+    "x": "https://x.com/SahajS59",
+    "resume": "/resume/Sahaj_Saliya_Resume.pdf"
+  },
+  "experience": [
+    {
+      "id": "hnnoix",
+      "role": "Research & Innovation Intern",
+      "org": "HNNOIX India Private Limited",
+      "place": "Gurugram, Haryana",
+      "start": "2026-05",
+      "end": "2026-07",
+      "kind": "research",
+      "points": [
+        "Worked on 6G research and development across network architectures, AI agents and communication systems.",
+        "Built reusable AI components — LLM Gateway, RAG Runtime, AI Memory Layer and Knowledge Base — enabling scalable agent execution, context management and workflow orchestration.",
+        "Shipped Generative AI, LLM, RAG and agent-based solutions for context-aware retrieval and decision-making in 6G systems."
+      ],
+      "stack": [
+        "LLMs",
+        "RAG",
+        "AI Agents",
+        "Memory",
+        "Python"
+      ],
+      "short": "HNNOIX"
+    },
+    {
+      "id": "freelance",
+      "role": "Freelance Financial AI Engineer",
+      "org": "Quantitative Investment Analysis",
+      "place": "Remote",
+      "start": "2024-12",
+      "end": "2025-06",
+      "kind": "industry",
+      "points": [
+        "Developed 2 autonomous trading-signal systems using Agentic AI and RAG that read market news, extract sentiment and emit structured, actionable signals in real time.",
+        "Cut false-positive trade signals by 37% with filtering rules and confidence scoring.",
+        "Built a CrewAI research pipeline on GPT-4, Bloomberg API, Financial Modeling Prep and Alpha Vantage for automated earnings analysis."
+      ],
+      "stack": [
+        "CrewAI",
+        "GPT-4",
+        "RAG",
+        "Sentiment",
+        "APIs"
+      ],
+      "short": "Quant AI"
+    },
+    {
+      "id": "encode",
+      "role": "AI/ML Core-Committee Member",
+      "org": "Encode PDEU",
+      "place": "Gandhinagar",
+      "start": "2023-08",
+      "end": "2025-07",
+      "kind": "community",
+      "points": [
+        "Two years on the AI/ML committee — sub-committee member (2023–24), then core committee (2024–25) — running workshops and student AI projects."
+      ],
+      "stack": [
+        "Mentoring",
+        "Workshops",
+        "ML"
+      ],
+      "short": "Encode"
+    },
+    {
+      "id": "kundaldham",
+      "role": "Data Management Analyst",
+      "org": "Swaminarayan Temple Kundaldham & Karelibaug",
+      "place": "Kundal, Gujarat",
+      "start": "2024-05",
+      "end": "2024-07",
+      "kind": "data",
+      "points": [
+        "Managed organisational server data: synchronisation, scheduled backups, storage, data security and recovery — keeping data available, consistent and safe."
+      ],
+      "stack": [
+        "Backups",
+        "Data integrity",
+        "Servers"
+      ],
+      "short": "Data Ops"
+    }
+  ],
+  "education": [
+    {
+      "school": "Pandit Deendayal Energy University (PDEU)",
+      "degree": "B.Tech, Information & Communication Technology",
+      "start": "2023",
+      "end": "2027",
+      "grade": "CGPA 8.5 / 10"
+    },
+    {
+      "school": "Ashadeep International School",
+      "degree": "Higher Secondary",
+      "start": "2021",
+      "end": "2023"
+    }
+  ],
+  "projects": [
+    {
+      "repo": "Multi-Agent-RAG",
+      "title": "Enterprise Agentic RAG Orchestrator",
+      "kicker": "Multi-agent · Corrective RAG",
+      "summary": "A production-grade multi-agent RAG system. A supervisor routes each query to Corrective RAG, NL-to-SQL or human-in-the-loop email tools, and a validator grades the answer before it ships.",
+      "pipeline": [
+        "Query",
+        "Supervisor",
+        "Hybrid retrieve",
+        "Rerank",
+        "Grade",
+        "Validator",
+        "Answer"
+      ],
+      "loop": [
+        4,
+        2
+      ],
+      "metrics": [
+        [
+          "0.81",
+          "Faithfulness"
+        ],
+        [
+          "1.00",
+          "Context precision"
+        ],
+        [
+          "<1 ms",
+          "Semantic cache"
+        ]
+      ],
+      "stack": [
+        "LangGraph",
+        "FastAPI",
+        "Qdrant",
+        "BM25",
+        "CrossEncoder",
+        "Redis",
+        "RAGAS"
+      ],
+      "short": "Agentic RAG"
+    },
+    {
+      "repo": "open-env-nuclei",
+      "title": "OpenEnv — RL Data-Cleaning Agent",
+      "kicker": "Reinforcement learning · LLM agent",
+      "summary": "A custom Q-learning environment in which a Llama 3 agent picks cleaning actions for noisy tabular data. Shaped rewards favour fewer missing values and duplicates, and anti-loop penalties stop destructive edits.",
+      "pipeline": [
+        "Observe",
+        "Policy (Llama 3)",
+        "Action",
+        "Env step",
+        "Reward",
+        "Q-update"
+      ],
+      "loop": [
+        5,
+        0
+      ],
+      "metrics": [
+        [
+          "Q-learning",
+          "Policy"
+        ],
+        [
+          "Docker",
+          "HF Spaces"
+        ],
+        [
+          "Pydantic",
+          "Typed I/O"
+        ]
+      ],
+      "stack": [
+        "Q-Learning",
+        "Llama 3",
+        "Pydantic",
+        "FastAPI",
+        "Docker",
+        "Hugging Face"
+      ],
+      "short": "OpenEnv RL"
+    },
+    {
+      "repo": "student-performance-platform",
+      "title": "Explainable Student Performance Platform",
+      "kicker": "MLOps · Explainability",
+      "summary": "End-to-end MLOps: Pandera validation, automated feature engineering, and benchmarks across 9 models. SHAP and LIME attributions are compared with Spearman rank correlation to measure how much the explanations agree.",
+      "pipeline": [
+        "Validate",
+        "Features",
+        "9 models",
+        "SHAP ∥ LIME",
+        "Spearman ρ",
+        "Serve"
+      ],
+      "loop": null,
+      "metrics": [
+        [
+          "9",
+          "Models compared"
+        ],
+        [
+          "SHAP+LIME",
+          "Attribution"
+        ],
+        [
+          "MLflow",
+          "Tracking"
+        ]
+      ],
+      "stack": [
+        "XGBoost",
+        "CatBoost",
+        "LightGBM",
+        "PyTorch",
+        "FLAML",
+        "MLflow",
+        "Streamlit"
+      ],
+      "short": "Explainable ML"
+    }
+  ],
+  "skills": {
+    "GenAI & Agents": [
+      "LLMs",
+      "RAG",
+      "Agentic AI",
+      "Multi-Agent",
+      "Tool Calling",
+      "LangChain",
+      "LangGraph",
+      "CrewAI",
+      "Claude API",
+      "AWS Bedrock",
+      "Transformers"
+    ],
+    "Machine Learning": [
+      "Deep Learning",
+      "PyTorch",
+      "Reinforcement Learning",
+      "XGBoost",
+      "SHAP",
+      "NLP",
+      "Computer Vision",
+      "GANs"
+    ],
+    "Data & Retrieval": [
+      "Qdrant",
+      "ChromaDB",
+      "PostgreSQL",
+      "MongoDB",
+      "Hadoop",
+      "SQL",
+      "Pandas"
+    ],
+    "MLOps & Infra": [
+      "FastAPI",
+      "Docker",
+      "Kubernetes",
+      "MLflow",
+      "Redis",
+      "Streamlit",
+      "GitHub Actions"
+    ],
+    "Languages": [
+      "Python",
+      "C++",
+      "SQL",
+      "TypeScript",
+      "MATLAB"
+    ]
+  },
+  "certifications": [
+    {
+      "name": "Claude Code 101",
+      "issuer": "Anthropic"
+    },
+    {
+      "name": "Building with the Claude API",
+      "issuer": "Anthropic"
+    },
+    {
+      "name": "Agentic AI with LangChain and LangGraph",
+      "issuer": "IBM"
+    },
+    {
+      "name": "Fundamentals of Building AI Agents",
+      "issuer": "IBM"
+    },
+    {
+      "name": "Generative AI and AI Agents with Amazon Bedrock",
+      "issuer": "AWS"
+    },
+    {
+      "name": "Deep Learning",
+      "issuer": "IIT Ropar · NPTEL"
+    },
+    {
+      "name": "Data Structures & Algorithms with Python",
+      "issuer": "Udemy"
+    }
+  ],
+  "metrics": [
+    {
+      "value": "0.81",
+      "label": "RAGAS faithfulness",
+      "note": "Enterprise Agentic RAG Orchestrator"
+    },
+    {
+      "value": "1.00",
+      "label": "Context precision",
+      "note": "Benchmarked with RAGAS"
+    },
+    {
+      "value": "−37%",
+      "label": "False-positive trade signals",
+      "note": "Confidence scoring + filtering"
+    },
+    {
+      "value": "9",
+      "label": "ML/DL models benchmarked",
+      "note": "XGBoost → PyTorch → FLAML"
+    },
+    {
+      "value": "8.5",
+      "label": "CGPA / 10",
+      "note": "B.Tech ICT, PDEU"
+    }
+  ],
+  "github": {
+    "name": "Sahaj Saliya",
+    "bio": "AI/ML Engineer | Generative AI, LLMs, Agentic AI & AI Infrastructure | Building scalable, intelligent solutions through research and engineering.",
+    "followers": 6,
+    "following": 3,
+    "publicRepos": 15,
+    "avatar": "https://avatars.githubusercontent.com/u/143813294?v=4",
+    "created": "2023-09-01T13:00:47Z",
+    "repos": [
+      {
+        "name": "BDA-Analytics",
+        "url": "https://github.com/SahajIVVIX-1/BDA-Analytics",
+        "homepage": "http://info.sahaj.si/BDA-Analytics/",
+        "description": "It loads 2,944,814 real tweets into MongoDB, cleans them, adds sentiment, topics and keywords with lightweight NLP, pre-aggregates them with MongoDB aggregation pipelines, serves the results through a FastAPI REST API, and shows them in a React dashboard.",
+        "topics": [
+          "fastapi",
+          "mongodb",
+          "oxlint",
+          "pydantic",
+          "pymongo",
+          "react",
+          "ruff"
+        ],
+        "language": "JavaScript",
+        "stars": 0,
+        "forks": 0,
+        "fork": false,
+        "archived": false,
+        "created": "2026-10-08T09:56:06Z",
+        "pushed": "2026-10-16T15:16:05Z"
+      },
+      {
+        "name": "AgentForge",
+        "url": "https://github.com/SahajIVVIX-1/AgentForge",
+        "homepage": "https://info.sahaj.si/AgentForge/",
+        "description": "A multi-agent AI research assistant that shows its sources and its failures. You ask a question; three CrewAI agents work in sequence and return a sourced report.",
+        "topics": [
+          "agentic-ai",
+          "crewai",
+          "fastapi",
+          "react",
+          "typescript"
+        ],
+        "language": "Python",
+        "stars": 0,
+        "forks": 0,
+        "fork": false,
+        "archived": false,
+        "created": "2026-10-07T10:13:22Z",
+        "pushed": "2026-10-07T10:54:16Z"
+      },
+      {
+        "name": "Multi-Agent-RAG",
+        "url": "https://github.com/SahajIVVIX-1/Multi-Agent-RAG",
+        "homepage": null,
+        "description": "Enterprise Agentic RAG Orchestrator with LangGraph CRAG, CrossEncoder reranking, Qdrant ANN caching, two-tier API auth, and benchmarked RAGAS scores (0.81 faithfulness, 1.00 context precision).",
+        "topics": [
+          "agentic-rag",
+          "fastapi",
+          "hybrid-search",
+          "langchain",
+          "langgraph",
+          "qdrant"
+        ],
+        "language": "Python",
+        "stars": 0,
+        "forks": 0,
+        "fork": false,
+        "archived": false,
+        "created": "2026-09-10T01:44:38Z",
+        "pushed": "2026-09-10T01:54:26Z"
+      },
+      {
+        "name": "LabX",
+        "url": "https://github.com/SahajIVVIX-1/LabX",
+        "homepage": null,
+        "description": "",
+        "topics": [],
+        "language": "Dockerfile",
+        "stars": 0,
+        "forks": 0,
+        "fork": false,
+        "archived": false,
+        "created": "2026-08-10T11:25:08Z",
+        "pushed": "2026-08-12T00:56:51Z"
+      },
+      {
+        "name": "Video-Analyzer-Scroller",
+        "url": "https://github.com/SahajIVVIX-1/Video-Analyzer-Scroller",
+        "homepage": null,
+        "description": "This repository contains desktop utility tools built with Python and PyQt6 for media processing and analysis.",
+        "topics": [],
+        "language": "Python",
+        "stars": 0,
+        "forks": 0,
+        "fork": false,
+        "archived": false,
+        "created": "2026-04-06T18:29:04Z",
+        "pushed": "2026-08-09T09:29:25Z"
+      },
+      {
+        "name": "student-performance-platform",
+        "url": "https://github.com/SahajIVVIX-1/student-performance-platform",
+        "homepage": null,
+        "description": "The end-to-end Machine Learning platform for predicting student academic performance and explaining model predictions using SHAP and LIME.",
+        "topics": [],
+        "language": "Python",
+        "stars": 0,
+        "forks": 0,
+        "fork": false,
+        "archived": false,
+        "created": "2026-07-28T10:09:56Z",
+        "pushed": "2026-07-28T10:43:28Z"
+      },
+      {
+        "name": "SentinelProxy-Suite",
+        "url": "https://github.com/SahajIVVIX-1/SentinelProxy-Suite",
+        "homepage": null,
+        "description": "Built with an architecture prepared for Artificial Intelligence (AI) and Machine Learning (ML) pipelines, it features dynamic ad-blocking, malicious domain filtering (powered by predictive SQLite3 database blocklists), automatic system proxy mapping.",
+        "topics": [],
+        "language": "JavaScript",
+        "stars": 1,
+        "forks": 1,
+        "fork": false,
+        "archived": false,
+        "created": "2026-02-20T14:48:24Z",
+        "pushed": "2026-07-13T11:15:00Z"
+      },
+      {
+        "name": "Orbit-Wars",
+        "url": "https://github.com/SahajIVVIX-1/Orbit-Wars",
+        "homepage": null,
+        "description": "",
+        "topics": [],
+        "language": "HTML",
+        "stars": 0,
+        "forks": 0,
+        "fork": false,
+        "archived": true,
+        "created": "2026-04-24T04:48:38Z",
+        "pushed": "2026-04-24T04:53:59Z"
+      },
+      {
+        "name": "open-env-nuclei",
+        "url": "https://github.com/SahajIVVIX-1/open-env-nuclei",
+        "homepage": null,
+        "description": "Intelligent data cleaning system using Reinforcement Learning and LLMs (OpenEnv) to optimize datasets with context-aware decisions.",
+        "topics": [],
+        "language": null,
+        "stars": 0,
+        "forks": 0,
+        "fork": true,
+        "archived": false,
+        "created": "2026-04-23T17:11:40Z",
+        "pushed": "2026-04-23T17:11:04Z"
+      },
+      {
+        "name": "vMix-Manager",
+        "url": "https://github.com/SahajIVVIX-1/vMix-Manager",
+        "homepage": null,
+        "description": "vMix Manager is a powerful Python utility built with PyQt6 designed to automate the tedious parts of vMix production management. Instead of manually dragging hundreds of files, this tool allows you to manipulate .vmix XML files directly to handle batch imports, deep category restructuring, and project cleaning in seconds.",
+        "topics": [],
+        "language": "Python",
+        "stars": 0,
+        "forks": 0,
+        "fork": false,
+        "archived": false,
+        "created": "2026-03-29T21:14:02Z",
+        "pushed": "2026-04-07T20:51:11Z"
+      },
+      {
+        "name": "Modern-DCGAN-Reproducibility",
+        "url": "https://github.com/SahajIVVIX-1/Modern-DCGAN-Reproducibility",
+        "homepage": null,
+        "description": "A modernized DCGAN reproducibility study featuring LSGAN stability and Spectral Normalization for high-fidelity image generation. Includes a professional analytics engine for visualizing internal feature maps, learned filters, and real-time training performance dashboards",
+        "topics": [
+          "computer-vision",
+          "dcgan",
+          "deep-learning",
+          "gan-visualization",
+          "generative-adversarial-network",
+          "lsgan",
+          "machine-learning",
+          "neural-network",
+          "pytorch",
+          "reproducible-research"
+        ],
+        "language": "Jupyter Notebook",
+        "stars": 1,
+        "forks": 0,
+        "fork": false,
+        "archived": true,
+        "created": "2026-03-28T12:34:19Z",
+        "pushed": "2026-03-28T13:19:46Z"
+      },
+      {
+        "name": "SIH-AI-Gyani",
+        "url": "https://github.com/SahajIVVIX-1/SIH-AI-Gyani",
+        "homepage": null,
+        "description": "",
+        "topics": [],
+        "language": "Python",
+        "stars": 0,
+        "forks": 0,
+        "fork": false,
+        "archived": true,
+        "created": "2025-09-23T09:35:28Z",
+        "pushed": "2025-12-01T23:38:22Z"
+      },
+      {
+        "name": "PyEnv-Launcher-Project",
+        "url": "https://github.com/SahajIVVIX-1/PyEnv-Launcher-Project",
+        "homepage": null,
+        "description": "",
+        "topics": [],
+        "language": "Python",
+        "stars": 0,
+        "forks": 0,
+        "fork": false,
+        "archived": true,
+        "created": "2025-07-23T17:32:09Z",
+        "pushed": "2025-07-28T19:08:17Z"
+      }
+    ]
+  },
+  "leetcode": {
+    "solved": {
+      "All": 58,
+      "Easy": 28,
+      "Medium": 26,
+      "Hard": 4
+    },
+    "total": {
+      "All": 4082,
+      "Easy": 971,
+      "Medium": 2128,
+      "Hard": 983
+    },
+    "ranking": 2513445,
+    "languages": [
+      [
+        "C++",
+        53
+      ],
+      [
+        "Python",
+        3
+      ],
+      [
+        "MySQL",
+        1
+      ],
+      [
+        "Python3",
+        1
+      ]
+    ],
+    "tags": [
+      [
+        "Array",
+        35
+      ],
+      [
+        "Math",
+        14
+      ],
+      [
+        "Hash Table",
+        13
+      ],
+      [
+        "String",
+        13
+      ],
+      [
+        "Sorting",
+        9
+      ],
+      [
+        "Two Pointers",
+        8
+      ],
+      [
+        "Bit Manipulation",
+        6
+      ],
+      [
+        "Matrix",
+        6
+      ]
+    ],
+    "contest": {
+      "rating": 1415,
+      "attended": 1,
+      "top": 76.33
+    },
+    "recent": [
+      {
+        "title": "Unique Paths II",
+        "slug": "unique-paths-ii",
+        "at": 1779644332000
+      },
+      {
+        "title": "Department Top Three Salaries",
+        "slug": "department-top-three-salaries",
+        "at": 1779426710000
+      },
+      {
+        "title": "Furthest Point From Origin",
+        "slug": "furthest-point-from-origin",
+        "at": 1776995884000
+      },
+      {
+        "title": "Minimum Cost to Reach Every Position",
+        "slug": "minimum-cost-to-reach-every-position",
+        "at": 1776230062000
+      },
+      {
+        "title": "Trim Trailing Vowels",
+        "slug": "trim-trailing-vowels",
+        "at": 1773810577000
+      }
+    ]
+  },
+  "updated": "2026-10-17T09:11:19.152Z"
+}

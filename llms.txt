@@ -1,0 +1,45 @@
+# Sahaj Saliya
+
+> AI / ML Engineer. Building agentic AI, retrieval systems and LLM applications that reason, cite and correct themselves.
+
+I'm a B.Tech ICT student at PDEU (CGPA 8.5) who designs production-shaped AI systems: multi-agent RAG with corrective loops, reinforcement-learning agents and explainable ML platforms. Most recently I built reusable LLM infrastructure (LLM gateway, RAG runtime, memory layer) for 6G research at HNNOIX. I'm a problem-solver who thrives on creativity and continuous learning.
+
+Status: Open to AI/ML internships & full-time roles from 2027
+Location: Gandhinagar, Gujarat, India
+Contact: use the "Write to me" button at https://info.sahaj.si/#contact or LinkedIn https://www.linkedin.com/in/sahajs59/
+
+## Experience
+- Research & Innovation Intern, HNNOIX India Private Limited (May 2026–Jul 2026): Worked on 6G research and development across network architectures, AI agents and communication systems. Built reusable AI components — LLM Gateway, RAG Runtime, AI Memory Layer and Knowledge Base — enabling scalable agent execution, context management and workflow orchestration. Shipped Generative AI, LLM, RAG and agent-based solutions for context-aware retrieval and decision-making in 6G systems.
+- Freelance Financial AI Engineer, Quantitative Investment Analysis (Dec 2024–Jun 2025): Developed 2 autonomous trading-signal systems using Agentic AI and RAG that read market news, extract sentiment and emit structured, actionable signals in real time. Cut false-positive trade signals by 37% with filtering rules and confidence scoring. Built a CrewAI research pipeline on GPT-4, Bloomberg API, Financial Modeling Prep and Alpha Vantage for automated earnings analysis.
+- AI/ML Core-Committee Member, Encode PDEU (Aug 2023–Jul 2025): Two years on the AI/ML committee — sub-committee member (2023–24), then core committee (2024–25) — running workshops and student AI projects.
+- Data Management Analyst, Swaminarayan Temple Kundaldham & Karelibaug (May 2024–Jul 2024): Managed organisational server data: synchronisation, scheduled backups, storage, data security and recovery — keeping data available, consistent and safe.
+
+## Featured projects
+- [Enterprise Agentic RAG Orchestrator](https://github.com/SahajIVVIX-1/Multi-Agent-RAG): A production-grade multi-agent RAG system. A supervisor routes each query to Corrective RAG, NL-to-SQL or human-in-the-loop email tools, and a validator grades the answer before it ships. Results: 0.81 Faithfulness, 1.00 Context precision, <1 ms Semantic cache.
+- [OpenEnv — RL Data-Cleaning Agent](https://github.com/SahajIVVIX-1/open-env-nuclei): A custom Q-learning environment in which a Llama 3 agent picks cleaning actions for noisy tabular data. Shaped rewards favour fewer missing values and duplicates, and anti-loop penalties stop destructive edits. Results: Q-learning Policy, Docker HF Spaces, Pydantic Typed I/O.
+- [Explainable Student Performance Platform](https://github.com/SahajIVVIX-1/student-performance-platform): End-to-end MLOps: Pandera validation, automated feature engineering, and benchmarks across 9 models. SHAP and LIME attributions are compared with Spearman rank correlation to measure how much the explanations agree. Results: 9 Models compared, SHAP+LIME Attribution, MLflow Tracking.
+
+## Skills
+- GenAI & Agents: LLMs, RAG, Agentic AI, Multi-Agent, Tool Calling, LangChain, LangGraph, CrewAI, Claude API, AWS Bedrock, Transformers
+- Machine Learning: Deep Learning, PyTorch, Reinforcement Learning, XGBoost, SHAP, NLP, Computer Vision, GANs
+- Data & Retrieval: Qdrant, ChromaDB, PostgreSQL, MongoDB, Hadoop, SQL, Pandas
+- MLOps & Infra: FastAPI, Docker, Kubernetes, MLflow, Redis, Streamlit, GitHub Actions
+- Languages: Python, C++, SQL, TypeScript, MATLAB
+
+## Certifications
+- Claude Code 101 — Anthropic
+- Building with the Claude API — Anthropic
+- Agentic AI with LangChain and LangGraph — IBM
+- Fundamentals of Building AI Agents — IBM
+- Generative AI and AI Agents with Amazon Bedrock — AWS
+- Deep Learning — IIT Ropar · NPTEL
+- Data Structures & Algorithms with Python — Udemy
+- Guinness World Records: Certified for the 2,121-Word Book.
+
+## Links
+- Résumé: https://info.sahaj.si/resume/Sahaj_Saliya_Resume.pdf
+- Structured profile: https://info.sahaj.si/profile.json
+- GitHub: https://github.com/SahajIVVIX-1
+- LinkedIn: https://www.linkedin.com/in/sahajs59/
+- LeetCode: https://leetcode.com/u/sahajs59/
+- X: https://x.com/SahajS59
