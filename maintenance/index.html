@@ -53,27 +53,21 @@
   h1{margin:0;font-family:"Source Serif 4",Georgia,"Times New Roman",serif;font-weight:700;
     font-size:clamp(1.75rem,7vw,3.4rem);line-height:1.08;letter-spacing:-.03em;font-variation-settings:"opsz" 60;text-wrap:balance;max-width:16ch;overflow-wrap:break-word}
   @media (min-width:700px){h1{max-width:none}}
-  /* activity capsule: verb rises in from below, widths ease independently of the text motion */
+  /* activity line: verbs change letter by letter, widths ease independently of the text motion */
   .activity{--fit:1;position:relative;display:inline-flex;align-items:center;gap:.55em;max-width:100%;
-    padding:.48em 1em .48em .85em;border-radius:999px;white-space:nowrap;line-height:1.5;
-    font-size:calc(clamp(.84rem,2.5vw,.95rem) * var(--fit));color:#a9a6c6;
-    background:linear-gradient(180deg,rgba(22,20,48,.62),rgba(10,10,26,.62));
-    border:1px solid rgba(169,150,255,.15);
-    box-shadow:inset 0 1px 0 rgba(255,255,255,.05),0 8px 24px rgba(0,0,0,.35);
-    -webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px)}
+    padding:.3em 0;white-space:nowrap;line-height:1.5;
+    font-size:calc(clamp(.84rem,2.5vw,.95rem) * var(--fit));color:#a9a6c6}
   .act-dot{flex:none;width:.42em;height:.42em;border-radius:50%;background:#a996ff;
     box-shadow:0 0 0 3px rgba(169,150,255,.12);animation:actPulse 2.4s ease-in-out infinite}
   .act-verbs{position:relative;display:inline-block;height:1.5em;overflow:hidden;
     color:#ece9ff;font-weight:500;letter-spacing:.005em;transition:width .5s cubic-bezier(.22,1,.36,1)}
   .act-verb{display:block;white-space:nowrap}
   .act-verb .ell{color:#8f8bb4}
-  .act-verb.in{animation:actIn .58s cubic-bezier(.3,1.22,.6,1) .17s both}
-  .act-verb.out{position:absolute;left:0;top:0;animation:actOut .22s cubic-bezier(.5,0,.75,0) forwards}
+  .act-verb.out{position:absolute;left:0;top:0}
+  .act-verb .ch{display:inline-block;white-space:pre;backface-visibility:hidden}
   .act-time{display:inline-block;overflow:hidden;text-align:left;font-variant-numeric:tabular-nums;
     color:#8f8cab;transition:width .35s cubic-bezier(.22,1,.36,1)}
   .activity.no-anim .act-verbs,.activity.no-anim .act-time{transition:none}
-  @keyframes actIn{from{transform:translateY(90%);opacity:0}to{transform:none;opacity:1}}
-  @keyframes actOut{70%{opacity:0}to{transform:translateY(-75%);opacity:0}}
   @keyframes actPulse{0%,100%{opacity:.55}50%{opacity:1}}
   footer{position:relative;padding:16px 0 calc(20px + env(safe-area-inset-bottom));text-align:center;color:#4c5068;font-size:.8rem}
   footer a{color:#6b6f88;text-decoration:none;background:linear-gradient(currentColor,currentColor) 0 100%/0 1px no-repeat;
@@ -82,7 +76,7 @@
   @media (prefers-reduced-motion:reduce){footer a{transition:none}}
 
   @media (prefers-reduced-motion:reduce){
-    .act-dot,.act-verb.in,.act-verb.out{animation:none}
+    .act-dot{animation:none}
     .act-verbs,.act-time{transition:none}
   }
 </style>
