@@ -278,9 +278,9 @@ main { position: relative; z-index: 1; }
 .about-text .lead { font-size: clamp(1.25rem, 2.2vw, 1.6rem); line-height: 1.38; letter-spacing: -.015em; }
 .about-text p:not(.lead) { color: var(--ink-2); }
 .facts { display: grid; gap: 0; border-top: 1px solid var(--rule); font-size: 13px; }
-.facts div { display: grid; grid-template-columns: 8ch 1fr; gap: 14px; padding: 11px 0; border-bottom: 1px solid var(--rule); }
+.facts div { display: grid; grid-template-columns: minmax(13ch, max-content) minmax(0, 1fr); gap: 4px 24px; padding: 11px 0; border-bottom: 1px solid var(--rule); scroll-margin-top: 100px; }
 .facts dt { color: var(--ink-3); }
-.facts dd { margin: 0; color: var(--ink); }
+.facts dd { margin: 0; color: var(--ink); min-width: 0; overflow-wrap: anywhere; }
 
 /* ---------- embedding map: watch it learn, then ask it ---------- */
 :root { --m0: #2E8B62; --m1: #3C6FD1; --m2: #BD7A0C; --m3: #A24F90; --m4: #1B8A92; }
@@ -554,7 +554,7 @@ body.is-leaving main, body.is-leaving .site-foot { animation: softmaxOut .35s va
   .portrait { width: 280px; }
   .facts { grid-column: 1 / -1; }
   .card-head { grid-template-columns: 200px 1fr; }
-  .cb-row { grid-template-columns: 14ch 1fr; gap: 24px; }
+  .cb-row { grid-template-columns: minmax(14ch, max-content) minmax(0, 1fr); gap: 24px; }
   .skill-group { grid-template-columns: 22ch 1fr; gap: 24px; }
 }
 @media (min-width: 900px) {
@@ -815,7 +815,7 @@ html[data-thinking] .brand-logo .ring-prog { stroke-dasharray: 26 74; animation:
 .gwr-body { min-width: 0; }
 .gwr-title { margin: 0 0 14px; font: 500 clamp(1.15rem, 1rem + .8vw, 1.5rem)/1.25 var(--sans); letter-spacing: -.015em; }
 .gwr-rows { display: grid; gap: 8px; margin: 0; }
-.gwr-rows > div { display: grid; grid-template-columns: 11ch 1fr; gap: 4px 16px; align-items: baseline; }
+.gwr-rows > div { display: grid; grid-template-columns: minmax(12ch, max-content) minmax(0, 1fr); gap: 4px 24px; align-items: baseline; }
 .gwr-rows dt { color: var(--ink-3); font-size: 12px; }
 .gwr-rows dd { margin: 0; color: var(--ink); font: 400 15px/1.45 var(--sans); }
 .gwr-ok { color: #C6922C; font-weight: 600; }
@@ -868,3 +868,41 @@ html[data-thinking] .brand-logo .ring-prog { stroke-dasharray: 26 74; animation:
 .gwr-json .k { color: #C6922C; } .gwr-json small { display: block; white-space: normal; margin-bottom: 8px; color: #aaa; font-family: var(--sans); }
 @media (min-width: 900px) { .gwr-lb-main { grid-template-columns: 1fr 340px; } .gwr-json { max-height: none; border-top: 0; border-left: 1px solid rgba(255,255,255,.12); } }
 @media print { .gwr-lb { display: none; } }
+
+/* phones: keys sit above their values */
+@media (max-width: 420px) {
+  .facts div, .gwr-rows > div { grid-template-columns: minmax(0, 1fr); gap: 2px; }
+}
+.facts div.is-flash { animation: rowFlash 1.4s ease-out; }
+@keyframes rowFlash { 0% { box-shadow: inset 0 0 0 1px rgba(198,146,44,0); background: rgba(198,146,44,0); } 20% { box-shadow: inset 0 0 0 1px rgba(198,146,44,.7); background: rgba(198,146,44,.16); } 100% { box-shadow: inset 0 0 0 1px rgba(198,146,44,0); background: rgba(198,146,44,0); } }
+
+/* ---------- hero badge: Guinness World Records participant, predicted last ---------- */
+.hero-grid { position: relative; }
+.hero-badge { position: relative; display: inline-flex; align-items: center; gap: 12px; width: max-content; max-width: 100%; margin-top: 14px; padding: 6px 16px 6px 6px; border-radius: 999px; border: 1px solid var(--rule-2); color: var(--ink); text-decoration: none; transition: transform .25s var(--ease-out), border-color .2s; }
+.hero-badge:hover { transform: translateY(-2px); border-color: rgba(198,146,44,.6); }
+.hero-badge:focus-visible { outline: 2px solid var(--accent); outline-offset: 4px; }
+.hb-logo { position: relative; flex: none; width: 48px; height: 48px; }
+.hb-disc { position: relative; display: grid; place-items: center; width: 100%; height: 100%; border-radius: 50%; background: #fff; box-shadow: 0 0 0 1px rgba(198,146,44,.4); }
+.hb-img { display: block; width: 84%; height: 84%; transition: opacity .3s; }
+.hb-cv { position: absolute; inset: 0; width: 100%; height: 100%; transition: opacity .3s; pointer-events: none; }
+.hb-cv.is-out { opacity: 0; }
+.hb-disc .gwr-star { width: 14%; height: 14%; margin: -7% 0 0 -7%; }
+.hero-badge:hover .gwr-star, .hero-badge.is-shimmer .gwr-star { animation: starShimmer .9s ease-out 1; }
+.hb-text { display: grid; gap: 2px; text-align: left; }
+.hb-name { font: 450 13px/1.2 var(--sans); white-space: nowrap; }
+.hb-sub { font-size: 12px; color: var(--ink-3); white-space: nowrap; }
+.hb-ph { display: none; position: absolute; inset: 0; align-items: center; justify-content: center; border-radius: inherit; border: 1px dashed var(--rule-2); color: var(--ink-3); font-size: 12px; background: var(--paper); }
+.hero-badge.is-pending .hb-ph { display: flex; }
+.hero-badge.is-pending .hb-text, .hero-badge.is-pending .hb-logo { visibility: hidden; }
+.hero-badge.is-pending.is-decoding .hb-ph { display: none; }
+.hero-badge.is-pending.is-decoding .hb-logo { visibility: visible; }
+.hero-badge.is-pending.is-decoding .hb-img { opacity: 0; }
+.hero-badge.is-pending.is-decoding .hb-img.is-in { opacity: 1; }
+.hero-badge.is-pending.is-decoding .hb-disc { background: transparent; box-shadow: none; }
+.hero-badge.is-wide { position: absolute; right: 0; top: 44px; margin: 0; padding: 0; border: 0; display: grid; justify-items: center; gap: 10px; width: 160px; border-radius: 0; }
+.hero-badge.is-wide:hover { border-color: transparent; }
+.hero-badge.is-wide .hb-logo { width: 104px; height: 104px; }
+.hero-badge.is-wide .hb-text { text-align: center; }
+.hero-badge.is-wide .hb-ph { border-radius: 14px; }
+@media (max-width: 480px) { .hero-badge { margin-top: 10px; } }
+@media print { .hero-badge { display: none; } }
