@@ -153,3 +153,12 @@ A random six-character label made in your browser so the same browser keeps the 
 
 ## What is the loading screen at the start?
 A short boot sequence that looks like a model loading its weights. Its progress bar follows real loading (fonts, the main script and the data files), it shows once per visit, and you can click or press any key to skip it.
+
+## Does the site change depending on who I am?
+A little, and only in your browser. At the start it reads harmless context (time of day, device type, language, light or dark mode, where you came from, and whether you have visited before) and a simple hand-written rule set, not a trained model, guesses whether you are probably a recruiter, a developer, a researcher or just curious. It then adjusts the greeting, the order of the sections and the second button in the top section. The guess is only a heuristic and often says "curious" because many apps hide where a visit came from. You can correct it with "not you? switch" under the headline. The guess is kept only for the current browser session and nothing is sent to any server.
+
+## What does the loading animation show?
+A small neural network doing one forward pass. Each pulse is a real file finishing loading (fonts, scripts, data, the portrait), the log lines carry real sizes and counts, and the greeting at the end is decoded token by token. At the end the network collapses into the first letters of the headline. It plays once per session, and you can click or press any key to skip it.
+
+## Why does the greeting mention commits since my last visit?
+If you have visited before, the site compares the time of your last visit (saved in your own browser) with Sahaj's public GitHub activity, which the site refreshes every hour, and tells you how many commits landed since then.
