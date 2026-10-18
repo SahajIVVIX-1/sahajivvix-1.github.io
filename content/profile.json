@@ -1,0 +1,84 @@
+{
+  "name": "Sahaj Saliya",
+  "title": "I build AI that reads, sees and acts.",
+  "tagline": "AI engineer and B.Tech ICT student at PDEU, working on LLMs, NLP, computer vision, generative AI and agents.",
+  "about": [
+    "I'm Sahaj, an AI engineer studying Information & Communication Technology at PDEU. I build systems that *read* text, *see* images and *act* through agents, and I measure them honestly.",
+    "Recent work: an ensemble that finds Crohn's lesions in capsule-endoscopy video, a multi-agent Corrective RAG orchestrator, and a reinforcement-learning environment where PPO and Llama agents learn to clean data. In 2026 I built LLM infrastructure (gateway, RAG runtime, memory layer) for 6G research at HNNOIX."
+  ],
+  "location": "Gandhinagar, Gujarat, India",
+  "email": "sahajs7959@gmail.com",
+  "site": "https://info.sahaj.si",
+  "focus": ["LLM", "NLP", "CV", "GenAI", "Agents"],
+  "links": [
+    { "id": "github", "label": "GitHub", "handle": "SahajIVVIX-1", "url": "https://github.com/SahajIVVIX-1" },
+    { "id": "linkedin", "label": "LinkedIn", "handle": "sahajs59", "url": "https://www.linkedin.com/in/sahajs59/" },
+    { "id": "x", "label": "X", "handle": "@SahajS59", "url": "https://x.com/SahajS59" },
+    { "id": "leetcode", "label": "LeetCode", "handle": "sahajs59", "url": "https://leetcode.com/u/sahajs59/" }
+  ],
+  "education": {
+    "school": "Pandit Deendayal Energy University (PDEU)",
+    "short": "PDEU",
+    "place": "Gandhinagar, Gujarat",
+    "degree": "B.Tech in Information & Communication Technology (ICT)",
+    "cgpa": "8.5 / 10",
+    "start": "2023-06",
+    "end": "2027-05"
+  },
+  "experience": [
+    {
+      "id": "hnnoix",
+      "role": "Research & Innovation Intern",
+      "org": "HNNOIX India Private Limited",
+      "place": "Gurugram, Haryana · Hybrid",
+      "start": "2026-05",
+      "end": "2026-07",
+      "kind": "Internship",
+      "points": [
+        "Worked on 6G research and development: network architectures, AI agents and communication systems.",
+        "Built reusable AI components (an LLM Gateway, a RAG Runtime, an AI Memory Layer and a Knowledge Base) for scalable agent execution, context management and workflow orchestration.",
+        "Applied generative AI, LLM, RAG and agent-based methods to decision-making, context-aware retrieval and workflow automation for 6G network architectures."
+      ],
+      "tags": ["LLM Gateway", "RAG", "Agents", "6G"]
+    },
+    {
+      "id": "freelance",
+      "role": "Freelance Financial AI Engineer",
+      "org": "Quantitative Investment Analysis",
+      "place": "Remote",
+      "start": "2024-12",
+      "end": "2025-06",
+      "kind": "Freelance",
+      "points": [
+        "Built 2 autonomous trading-signal systems with agentic AI and RAG that read market news, extract sentiment and emit structured signals in real time.",
+        "Cut false-positive trade signals by 37% with filtering rules and confidence scoring.",
+        "Built a CrewAI research pipeline on GPT-4, the Bloomberg API, Financial Modeling Prep and Alpha Vantage for automated earnings analysis."
+      ],
+      "metric": "−37% false-positive signals",
+      "tags": ["Agentic AI", "RAG", "CrewAI", "Sentiment"]
+    }
+  ],
+  "community": [
+    { "role": "Lead Convener, IEEE AIMV 2025", "org": "PDEU · 2nd International Conference on AI and Machine Vision", "start": "2025-08", "end": "2025-08" },
+    { "role": "AI/ML Core-Committee Member", "org": "Encode PDEU", "start": "2024-08", "end": "2025-07" },
+    { "role": "AI/ML Sub-Committee Member", "org": "Encode PDEU", "start": "2023-08", "end": "2024-07" },
+    { "role": "Volunteer Assistant", "org": "National Service Scheme (NSS), VIPS-TC", "start": "2023-06", "end": "2024-05" },
+    { "role": "Data Management (volunteer)", "org": "Swaminarayan Temple, Kundaldham & Karelibaug, Vadodara", "start": "2019-05", "end": null, "note": "Server data sync, scheduled backups, storage, data security and recovery." }
+  ],
+  "certifications": [
+    { "name": "Agentic AI with LangChain and LangGraph", "issuer": "IBM" },
+    { "name": "Fundamentals of Building AI Agents", "issuer": "IBM" },
+    { "name": "AWS Generative AI and AI Agents with Amazon Bedrock", "issuer": "Amazon Web Services" },
+    { "name": "Deep Learning", "issuer": "IIT Ropar (NPTEL)", "note": "Score 66%" },
+    { "name": "Data Structures & Algorithms with Python", "issuer": "Udemy" }
+  ],
+  "skills": [
+    { "group": "Languages", "items": ["Python", "C++", "SQL", "MATLAB"] },
+    { "group": "AI / ML & GenAI", "items": ["Machine Learning", "Deep Learning", "Computer Vision", "NLP", "Reinforcement Learning", "LLMs", "RAG", "Tool Calling", "Multi-Agent Orchestration"] },
+    { "group": "Frameworks", "items": ["PyTorch", "Transformers", "LangChain", "LangGraph", "CrewAI", "AWS Bedrock", "Pydantic", "FastAPI", "ComfyUI"] },
+    { "group": "Data & Vector stores", "items": ["Qdrant", "ChromaDB", "PostgreSQL", "MySQL", "MongoDB", "Hadoop", "HDFS", "MapReduce"] },
+    { "group": "MLOps", "items": ["MLflow", "Docker", "Kubernetes", "Redis", "Streamlit", "ONNX", "Hugging Face Spaces", "GitHub Actions"] },
+    { "group": "Vision & OCR", "items": ["OpenCV", "OCR", "Kraken", "Image Processing", "Document Image Analysis"] },
+    { "group": "Systems", "items": ["Data Structures & Algorithms", "OOP", "Git", "Networking", "Linux / Windows administration"] }
+  ]
+}

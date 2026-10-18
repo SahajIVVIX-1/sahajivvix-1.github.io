@@ -1,0 +1,102 @@
+[
+  {
+    "id": "crohnsight",
+    "repo": "Crohn-Disease-Early-Prediction",
+    "name": "CrohnSight",
+    "kind": "Medical computer vision",
+    "year": "2026",
+    "task": "Image classification · severity grading",
+    "problem": "Reading a capsule-endoscopy study means checking tens of thousands of small-bowel frames by eye. Crohn's lesions are small and easy to miss.",
+    "approach": "An ensemble of 10 EfficientNet-B2 models (5 folds × 2 seeds) at the native 320 px finds lesions in 7 classes, grades severity in 4 tiers and draws a heat-map over each lesion. It is exported to ONNX and runs offline on an ordinary CPU. Add-ons cover ulcerative-colitis Mayo grading and flare-risk forecasting.",
+    "stack": ["PyTorch", "EfficientNet-B2", "ONNX Runtime", "FastAPI", "Next.js", "Docker"],
+    "metric": { "value": "0.992", "label": "AUROC, lesion vs normal (CrohnIPI)" },
+    "metrics": [
+      ["Lesion vs normal accuracy", "96.7% (best published 94.6%)"],
+      ["Severity, quadratic weighted κ", "0.94"],
+      ["External test, Kvasir-Capsule", "AUROC 0.944, no retraining"]
+    ],
+    "limits": "Research prototype, not a medical device. Telling a whole lesion video from a lesion-free one is near chance (study AUROC 0.57). The README reports this openly.",
+    "team": "With Hil Kalathiya and Chetan Gadhiya · PDEU minor project, guided by Prof. Dr. Babalu Kumar Singh",
+    "featured": true
+  },
+  {
+    "id": "agentic-rag",
+    "repo": "Multi-Agent-RAG",
+    "name": "Enterprise Agentic RAG Orchestrator",
+    "kind": "Multi-agent LLM system",
+    "year": "2026",
+    "task": "Retrieval-augmented generation · agent routing",
+    "problem": "Enterprise questions mix document lookups, database queries and actions such as sending email. A single RAG chain answers them badly or unsafely.",
+    "approach": "A LangGraph Supervisor → Worker → Validator graph routes each query to Corrective RAG, NL-to-SQL, a human-in-the-loop email tool or chat. Retrieval is hybrid (Qdrant dense + BM25), reranked with a CrossEncoder and expanded from 200- to 800-token parent chunks, with an LLM grader that rewrites weak queries. A semantic cache, prompt-injection guards and Fernet encryption protect it.",
+    "stack": ["LangGraph", "LangChain", "FastAPI", "Qdrant", "BM25", "Redis", "Next.js", "RAGAS"],
+    "metric": { "value": "0.81", "label": "RAGAS faithfulness" },
+    "metrics": [
+      ["Context precision", "1.00"],
+      ["Context recall", "0.90"],
+      ["Answer relevancy", "0.75"]
+    ],
+    "limits": "",
+    "team": "Solo project",
+    "featured": true
+  },
+  {
+    "id": "openenv",
+    "repo": "open-env-nuclei",
+    "name": "OpenEnv Data-Cleaning Agent",
+    "kind": "Reinforcement learning environment",
+    "year": "2026",
+    "task": "Sequential decision-making · data quality",
+    "problem": "Cleaning a messy table takes many small, ordered decisions. Can an agent learn them, and can its score be checked honestly?",
+    "approach": "An OpenEnv environment over pandas tables with reproducible (task, seed) episodes and a hidden clean ground truth. Potential-based reward shaping makes going in circles worthless, and a separate grader scores the final table. The benchmark compares a PPO agent (400k steps, exported to NumPy), a zero-shot Llama 3.1 8B agent and rule-based baselines, served over FastAPI and WebSocket with a Gradio demo.",
+    "stack": ["OpenEnv", "Stable-Baselines3 PPO", "Llama 3.1 8B", "Pydantic", "FastAPI", "Docker", "HF Spaces"],
+    "metric": { "value": "0.967", "label": "PPO grader score on hard-clean" },
+    "metrics": [
+      ["Improvement over doing nothing", "+0.917 on hard-clean"],
+      ["Invalid-action rate (PPO)", "0.0%"],
+      ["Llama 3.1 8B zero-shot", "0.838 on hard-clean"]
+    ],
+    "limits": "The data is synthetic, and Q is only a proxy for quality, which is why a separate grader exists.",
+    "team": "With Chetan Gadhiya and Hil Kalathiya",
+    "featured": true
+  },
+  {
+    "id": "student-xai",
+    "repo": "student-performance-platform",
+    "name": "Explainable Student Performance",
+    "kind": "MLOps + explainability",
+    "year": "2026",
+    "task": "Tabular classification · XAI",
+    "problem": "A model that predicts which students will struggle is only useful if teachers can see why it made each prediction.",
+    "approach": "Pandera-validated data and a ColumnTransformer pipeline feed a benchmark of 9 models: linear, tree ensembles, XGBoost, CatBoost, LightGBM, a PyTorch MLP, a PyTorch LSTM and FLAML AutoML. SHAP and LIME explain each prediction, and Spearman rank correlation measures how far the two explanations agree. MLflow tracks runs, FastAPI serves the model and Streamlit shows it.",
+    "stack": ["scikit-learn", "XGBoost", "CatBoost", "LightGBM", "PyTorch", "SHAP", "LIME", "MLflow", "Docker"],
+    "metric": { "value": "9", "label": "models benchmarked, explained with SHAP + LIME" },
+    "metrics": [
+      ["Explanation agreement", "Spearman ρ between SHAP and LIME rankings"],
+      ["Serving", "FastAPI, Streamlit, MLflow via Docker Compose"],
+      ["CI", "GitHub Actions"]
+    ],
+    "limits": "",
+    "team": "Solo project",
+    "featured": false
+  },
+  {
+    "id": "dcgan",
+    "repo": "Modern-DCGAN-Reproducibility",
+    "name": "DCGAN Reproducibility+",
+    "kind": "Generative vision research",
+    "year": "2026",
+    "task": "Image generation · interpretability",
+    "problem": "The 2015 DCGAN is famously unstable, and most re-implementations show only a grid of blurry samples, never what the networks learned inside.",
+    "approach": "Keeps Radford et al.'s all-convolutional architecture but swaps in an LSGAN loss, Spectral Normalization, a Xavier/Kaiming initialisation, discriminator dropout and label smoothing. A custom GANAnalyzer hooks into the layers to show learned filters, mid-layer feature maps and the separation of D(x) from D(G(z)).",
+    "stack": ["PyTorch", "LSGAN", "Spectral Norm", "Matplotlib", "Jupyter"],
+    "metric": { "value": "5", "label": "stability fixes over the 2015 paper, each documented" },
+    "metrics": [
+      ["Dataset", "CIFAR-10, 25 epochs"],
+      ["Diagnostics", "Filters, feature maps, D(x) vs D(G(z)) histograms"],
+      ["Baseline", "Radford et al., arXiv 1511.06434"]
+    ],
+    "limits": "",
+    "team": "Solo project",
+    "featured": false
+  }
+]
