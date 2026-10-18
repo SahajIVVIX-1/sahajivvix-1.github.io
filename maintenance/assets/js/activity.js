@@ -260,14 +260,18 @@
 
     const onResize = () => layout();
     addEventListener("resize", onResize);
+    const remeasure = () => {
+      glyphEm.clear();
+      measureWidest();
+      Array.from(slotsEl.children).forEach(s => { s.style.width = em(s.querySelector(".front").textContent) + "em"; });
+      timeW = measurePx(timeText, time);
+      layout();
+    };
     if (document.fonts && document.fonts.ready) {
-      document.fonts.ready.then(() => {
-        glyphEm.clear();
-        measureWidest();
-        Array.from(slotsEl.children).forEach(s => { s.style.width = em(s.querySelector(".front").textContent) + "em"; });
-        timeW = measurePx(timeText, time);
-        layout();
-      });
+      document.fonts.ready.then(remeasure);
+      // a locally installed Anthropic Serif can arrive after `ready`; measure again once it has
+      Promise.all(['400 1em "Anthropic Serif Text"', '500 1em "Anthropic Serif Text"'].map(f => document.fonts.load(f).catch(() => [])))
+        .then(found => { if (found.some(list => list.length)) remeasure(); });
     }
 
     function destroy() {
