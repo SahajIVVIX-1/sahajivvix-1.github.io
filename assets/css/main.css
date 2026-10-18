@@ -210,7 +210,7 @@ main { position: relative; z-index: 1; }
 .layer[data-layer="12"] { --d: 1; }
 
 /* ---------- hero ---------- */
-.hero { min-height: 100svh; display: flex; flex-direction: column; justify-content: center; padding-top: clamp(84px, 12vh, 110px); padding-bottom: clamp(36px, 6vh, 72px); }
+.hero { min-height: 100svh; display: flex; flex-direction: column; justify-content: center; padding-top: clamp(84px, 12vh, 150px); /* room above the name for the popup on tall screens; short screens place it below instead */ padding-bottom: clamp(36px, 6vh, 72px); }
 .hero-grid { display: grid; gap: 10px; }
 .eyebrow { display: inline-flex; align-items: center; gap: 10px; color: var(--ink-2); font-size: 12px; }
 .dot { width: 7px; height: 7px; border-radius: 50%; background: var(--accent); box-shadow: var(--glow); animation: pulse 2.4s var(--ease) infinite; }
@@ -253,11 +253,17 @@ main { position: relative; z-index: 1; }
   animation: distIn .18s var(--ease-out) both;
 }
 
-.hero-title .dist { bottom: auto; top: calc(100% + 12px); }
 .dist.is-out { animation: distOut .3s var(--ease) forwards; }
-/* Transform and clip only: an opacity fade would briefly make the chart text fail contrast checks. */
-@keyframes distIn { from { transform: translateY(4px); clip-path: inset(0 100% 0 0); } to { clip-path: inset(0); } }
-@keyframes distOut { to { transform: translateY(-4px); clip-path: inset(0 0 100% 0); } }
+/* Transform and clip only: an opacity fade would briefly make the chart text fail contrast checks.
+   The clip box is 12px larger on every side so the notch (which sits outside the border) is never cut off. */
+@keyframes distIn { from { transform: translateY(4px); clip-path: inset(-12px 100% -12px -12px); } to { clip-path: inset(-12px); } }
+@keyframes distOut { to { transform: translateY(-4px); clip-path: inset(-12px -12px 100% -12px); } }
+/* placePopup() (popup.js) sets data-side and --nx / --ny so this notch always points at the token it describes. */
+.dist::after { content: ""; position: absolute; width: 9px; height: 9px; background: color-mix(in srgb, var(--paper) 88%, transparent); border: 1px solid var(--rule-2); transform: rotate(45deg); }
+.dist[data-side="above"]::after { bottom: -6px; left: calc(var(--nx, 16px) - 4px); border-top: 0; border-left: 0; }
+.dist[data-side="below"]::after { top: -6px; left: calc(var(--nx, 16px) - 4px); border-bottom: 0; border-right: 0; }
+.dist[data-side="right"]::after { left: -6px; top: calc(var(--ny, 16px) - 4px); border-top: 0; border-right: 0; }
+.dist[data-side="left"]::after { right: -6px; top: calc(var(--ny, 16px) - 4px); border-bottom: 0; border-left: 0; }
 .dist-row { display: grid; grid-template-columns: 7ch 1fr 3.6ch; align-items: center; gap: 7px; padding: 1.5px 0; }
 .dist-tok { white-space: pre; overflow: hidden; text-overflow: clip; }
 .dist-bar { height: 5px; border-radius: 3px; background: var(--rule); position: relative; overflow: hidden; }

@@ -1,5 +1,7 @@
 // Next-token generation for the hero. Each token shows its candidate distribution flickering
 // (logits plus decaying noise, softmax at temperature T) before the chosen token locks in.
+import { placePopup } from './popup.js';
+
 const T = 0.7;
 const KEY_TOKENS = new Set(['reads', 'sees', 'acts']);
 
@@ -100,9 +102,8 @@ async function sampleToken(container, row, step, total, trace) {
   dist.setAttribute('aria-hidden', 'true');
   dist.innerHTML = cands.map((c) => `<div class="dist-row"><span class="dist-tok">${vis(c.t)}</span><span class="dist-bar"><i></i></span><span class="dist-p"></span></div>`).join('');
   anchor.append(dist);
-  // Keep the chart on screen near the right edge.
-  const r = anchor.getBoundingClientRect();
-  if (r.left + 180 > innerWidth) dist.style.left = `${innerWidth - 190 - r.left}px`;
+  // Above the token if there is room under the fixed header, else below, else beside; always inside the viewport.
+  placePopup(anchor, dist);
   const bars = [...dist.querySelectorAll('.dist-bar i')];
   const ps = [...dist.querySelectorAll('.dist-p')];
   const rowsEl = [...dist.querySelectorAll('.dist-row')];
@@ -121,6 +122,7 @@ async function sampleToken(container, row, step, total, trace) {
   const tok = makeTok(cands[0].t, true);
   anchor.replaceWith(tok);
   tok.append(dist);
+  placePopup(tok, dist); // the token is now as wide as its text; keep the popup attached to it
   dist.classList.add('is-out');
   setTimeout(() => dist.remove(), 320);
   await wait(30);
