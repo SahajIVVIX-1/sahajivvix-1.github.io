@@ -1,0 +1,64 @@
+# Hourly data refresh for info.sahaj.si.
+# Fetches GitHub data, rebuilds the chatbot knowledge base, embeddings and Q&A bank, and commits
+# to info.sahaj.si only when something changed. It never touches gh-pages or deploys anything.
+name: hourly-data
+
+on:
+  schedule:
+    - cron: "17 * * * *"
+  workflow_dispatch:
+  push:
+    branches: [info.sahaj.si]
+    paths: ["content/**", "scripts/**", "package.json"]
+
+permissions:
+  contents: write
+
+concurrency:
+  group: hourly-data
+  cancel-in-progress: false
+
+jobs:
+  refresh:
+    # Only ever runs on the content branch, even if a manual dispatch picks another ref.
+    if: github.ref == 'refs/heads/info.sahaj.si'
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: info.sahaj.si
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - run: npm ci
+
+      - name: Cache embedding model
+        uses: actions/cache@v4
+        with:
+          path: .cache/models
+          key: minilm-l6-v2-q8
+
+      # fetch-github.mjs keeps the previous files if the API call fails, so this step never breaks the run.
+      - name: Fetch GitHub data
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: node scripts/fetch-github.mjs
+
+      - name: Build knowledge base, embeddings, Q&A bank and pages
+        run: node scripts/build.mjs --embed
+
+      - name: Commit if changed
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add data index.html 404.html blogs sitemap.xml robots.txt site.webmanifest
+          if git diff --cached --quiet; then
+            echo "No changes."
+          else
+            git commit -m "chore(data): hourly refresh"
+            git push origin HEAD:info.sahaj.si
+          fi
