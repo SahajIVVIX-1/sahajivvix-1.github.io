@@ -3,6 +3,7 @@
 import { readdirSync, readFileSync, existsSync } from 'node:fs';
 import { createHash } from 'node:crypto';
 import { marked } from 'marked';
+import { build as buildLogo, strokePath } from './logo-geometry.mjs';
 import { readJSON, readText, write, esc, fmtMonth, fmtRange, parseFrontMatter, slug, path } from './lib.mjs';
 
 if (process.argv.includes('--embed')) {
@@ -24,6 +25,13 @@ for (const [name, code] of [['head.js', BOOT_HEAD], ['boot.js', BOOT_JS]]) {
 }
 const bootHtml = () => `<div id="boot-live" class="bs" role="status" aria-live="polite"></div><div id="boot" aria-hidden="true"><div class="boot-box"><p class="boot-cap" id="boot-cap"><span>forward pass · layer 1/5 · 0%</span><span>τ 0.7 · weights seeded per visitor</span></p><p class="boot-feat" id="boot-feat"></p><div class="boot-stage"><canvas id="boot-cv"></canvas></div><p class="boot-greet" id="boot-greet"></p><div class="boot-bottom"><ul id="boot-log"></ul><div class="boot-mat"><canvas id="boot-mat"></canvas><p>attention · head 3</p></div></div><p class="boot-hint"><span>heuristic guess · computed in your browser; only your public IP is looked up</span><span>click or press any key to skip</span></p></div></div><script>${BOOT_JS.replace('__V__', ASSET_VERSION)}</script>`;
 const profile = readJSON('content/profile.json');
+// the live header logo: the S as one stroke (so it can be styled), two end nodes, and the cursor dot
+const LOGO_MARK = (() => {
+  const m = buildLogo('full');
+  const k = 17 / 244; // disc radius in the 40 px header box
+  const n = (v) => Math.round(v * 10) / 10;
+  return `<g transform="translate(20 20) scale(${k.toFixed(5)}) translate(-256 -256)"><circle class="disc" cx="256" cy="256" r="244"/><path class="s-stroke" d="${strokePath(m)}" stroke-width="${n(m.width)}"/>${m.nodes.map(([x, y, r]) => `<circle class="s-node" cx="${n(x)}" cy="${n(y)}" r="${n(r)}"/>`).join('')}<circle class="cursor" cx="${n(m.dot[0])}" cy="${n(m.dot[1])}" r="${n(m.dot[2])}"/></g>`;
+})();
 const projects = readJSON('content/projects.json');
 const mapData = readJSON('data/map.json', null);
 const github = readJSON('data/github.json', { repos: [], languages: {}, events: [], user: {} });
@@ -67,11 +75,12 @@ function head({ title, description, url, image = '/assets/img/og.png', type = 'w
 <meta property="og:image:height" content="630">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:creator" content="@SahajS59">
-<link rel="icon" href="/favicon.ico" sizes="any">
-<link rel="icon" type="image/png" sizes="32x32" href="/assets/brand/icon-32.png">
-<link rel="icon" type="image/png" sizes="192x192" href="/assets/brand/icon-192.png">
-<link rel="apple-touch-icon" href="/assets/brand/apple-touch-icon.png">
-<link rel="manifest" href="/site.webmanifest">
+<link rel="icon" type="image/svg+xml" href="/assets/brand/logo-small.svg?v=3">
+<link rel="icon" href="/favicon.ico?v=3" sizes="any">
+<link rel="icon" type="image/png" sizes="32x32" href="/assets/brand/icon-32.png?v=3">
+<link rel="icon" type="image/png" sizes="192x192" href="/assets/brand/icon-192.png?v=3">
+<link rel="apple-touch-icon" href="/assets/brand/apple-touch-icon.png?v=3">
+<link rel="manifest" href="/site.webmanifest?v=3">
 <link rel="preload" href="/assets/fonts/instrument-serif-latin-400-italic.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="/assets/fonts/anthropic-serif/anthropic-serif-text-500-italic.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="/assets/fonts/inter-tight-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin>
@@ -99,9 +108,7 @@ function header({ home = false } = {}) {
       <circle class="ring-track" cx="20" cy="20" r="19.25"/>
       <g transform="rotate(-90 20 20)"><circle class="ring-prog" cx="20" cy="20" r="19.25" pathLength="100"/></g>
       <g class="ticks"><line x1="20.00" y1="-1.00" x2="20.00" y2="-3.20"/><line x1="30.50" y1="1.81" x2="31.00" y2="0.95"/><line x1="38.19" y1="9.50" x2="39.57" y2="8.70"/><line x1="41.00" y1="20.00" x2="41.80" y2="20.00"/><line x1="38.19" y1="30.50" x2="39.92" y2="31.50"/><line x1="30.50" y1="38.19" x2="31.10" y2="39.23"/><line x1="20.00" y1="41.00" x2="20.00" y2="41.90"/><line x1="9.50" y1="38.19" x2="8.60" y2="39.75"/><line x1="1.81" y1="30.50" x2="0.86" y2="31.05"/><line x1="-1.00" y1="20.00" x2="-3.20" y2="20.00"/><line x1="1.81" y1="9.50" x2="1.12" y2="9.10"/><line x1="9.50" y1="1.81" x2="8.75" y2="0.51"/></g>
-      <circle class="disc" cx="20" cy="20" r="17"/>
-      <text class="mark" x="18.2" y="26.4" text-anchor="end">S</text>
-      <circle class="cursor" cx="21.6" cy="25.3" r="1.7"/>
+      ${LOGO_MARK}
     </svg>
     <span class="brand-text" aria-hidden="true"><span class="bt-cur">info@sahaj.si</span><span class="bt-size">info@sahaj.si</span><span class="bt-size">Sahaj Saliya</span></span>
   </a>
@@ -661,7 +668,7 @@ const outputs = {
   'blogs/index.html': renderBlogIndex(),
   'sitemap.xml': sitemap(),
   'robots.txt': `User-agent: *\nAllow: /\nDisallow: /maintenance/\nSitemap: ${SITE}/sitemap.xml\n`,
-  'site.webmanifest': JSON.stringify({ name: 'Sahaj Saliya', short_name: 'Sahaj', start_url: '/', display: 'standalone', background_color: '#0B1020', theme_color: '#0B1020', icons: [{ src: '/assets/brand/icon-192.png', sizes: '192x192', type: 'image/png' }, { src: '/assets/brand/icon-512.png', sizes: '512x512', type: 'image/png' }] }, null, 2) + '\n',
+  'site.webmanifest': JSON.stringify({ name: 'Sahaj Saliya', short_name: 'Sahaj', start_url: '/', display: 'standalone', background_color: '#F3EEE3', theme_color: '#0B1020', icons: [{ src: '/assets/brand/icon-192.png?v=3', sizes: '192x192', type: 'image/png', purpose: 'any' }, { src: '/assets/brand/icon-512.png?v=3', sizes: '512x512', type: 'image/png', purpose: 'any' }, { src: '/assets/brand/icon-maskable-512.png?v=3', sizes: '512x512', type: 'image/png', purpose: 'maskable' }] }, null, 2) + '\n',
   'data/site.json': { blogLive: BLOG_LIVE, posts: BLOG_LIVE ? posts.map(({ slug: s, title, date, summary, tags }) => ({ slug: s, title, date, summary, tags })) : [] },
 };
 if (BLOG_LIVE) for (const p of posts) outputs[`blogs/${p.slug}/index.html`] = renderPost(p);
