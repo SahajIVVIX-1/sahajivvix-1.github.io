@@ -32,6 +32,7 @@ initBrand({ reducedMotion });
 initCnn({ reducedMotion });
 initLoss();
 initHeader();
+initAnchors();
 initTransitions();
 initLazy();
 initSessionTag();
@@ -55,6 +56,28 @@ function initHeader() {
   const onScroll = () => head.classList.toggle('is-scrolled', scrollY > 24);
   addEventListener('scroll', onScroll, { passive: true });
   onScroll();
+}
+
+// In-page links (#contact, /#work and so on): scroll to the section without reloading, also when the address is
+// /ip=<address>. The header height is handled by scroll-padding-top in the stylesheet.
+function initAnchors() {
+  const isHome = (p) => p === '/' || p === '/index.html' || /^\/ip=/.test(p);
+  document.addEventListener('click', (e) => {
+    if (e.defaultPrevented || e.button || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
+    const a = e.target.closest('a[href]');
+    if (!a || a.target === '_blank') return;
+    const url = new URL(a.href, location.href);
+    if (url.origin !== location.origin) return;
+    if (!(url.pathname === location.pathname || (isHome(url.pathname) && isHome(location.pathname)))) return;
+    if (!url.hash && url.pathname === location.pathname && url.search === location.search) return;
+    let el = null;
+    try { el = url.hash.length > 1 ? document.getElementById(decodeURIComponent(url.hash.slice(1))) : null; } catch { /* bad escape */ }
+    if (!url.hash || url.hash === '#') { e.preventDefault(); scrollTo({ top: 0, behavior: reducedMotion ? 'auto' : 'smooth' }); return; }
+    if (!el) return;
+    e.preventDefault();
+    el.scrollIntoView({ behavior: reducedMotion ? 'auto' : 'smooth', block: 'start' });
+    history.replaceState(null, '', location.pathname + location.search + url.hash);
+  });
 }
 
 // Softmax-style fade between pages: blur out, then the next page sharpens in.

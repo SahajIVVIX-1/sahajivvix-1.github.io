@@ -65,6 +65,7 @@ html::-webkit-scrollbar, body::-webkit-scrollbar, *::-webkit-scrollbar { display
 
 /* ---------- base ---------- */
 *, *::before, *::after { box-sizing: border-box; }
+[hidden] { display: none !important; }
 html { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; scroll-behavior: smooth; scroll-padding-top: 84px; }
 body {
   margin: 0; background: var(--paper); color: var(--ink);
@@ -600,6 +601,7 @@ body.is-leaving main, body.is-leaving .site-foot { animation: softmaxOut .35s va
   box-shadow: 0 -20px 60px -20px rgba(0,0,0,.35); transform: translateY(16px); opacity: 0;
   transition: transform .3s var(--ease-out), opacity .25s;
 }
+.ask:not(.is-open) { pointer-events: none; }
 .ask.is-open { transform: none; opacity: 1; }
 @media (min-width: 700px) {
   .ask { inset: auto 24px 24px auto; width: 420px; height: min(78vh, 680px); border-radius: 18px; }
@@ -667,7 +669,7 @@ body.is-leaving main, body.is-leaving .site-foot { animation: softmaxOut .35s va
 
 /* Off-screen sections are not rendered until they are near the viewport: this cuts the first layout of the
    page (the boot screen needs it early) a lot. The map section is left out because its canvas needs a real size. */
-.card, .skills, .training, .eval, .contact { content-visibility: auto; contain-intrinsic-size: auto 800px; }
+/* (no content-visibility here: estimated section heights made anchor links land in the wrong place) */
 
 /* ---------- hero "thinking" line: one continuous word, token boundaries as soft highlights ---------- */
 :root {
