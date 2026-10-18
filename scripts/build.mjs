@@ -633,7 +633,7 @@ const outputs = {
   '404.html': render404(),
   'blogs/index.html': renderBlogIndex(),
   'sitemap.xml': sitemap(),
-  'robots.txt': `User-agent: *\nAllow: /\nDisallow: /maintenance/\nSitemap: ${SITE}/sitemap.xml\n`,
+  'robots.txt': `User-agent: *\nAllow: /\nSitemap: ${SITE}/sitemap.xml\n`,
   'site.webmanifest': JSON.stringify({ name: 'Sahaj Saliya', short_name: 'Sahaj', start_url: '/', display: 'standalone', background_color: '#F3EEE3', theme_color: '#0B1020', icons: [{ src: '/assets/brand/icon-192.png?v=3', sizes: '192x192', type: 'image/png', purpose: 'any' }, { src: '/assets/brand/icon-512.png?v=3', sizes: '512x512', type: 'image/png', purpose: 'any' }, { src: '/assets/brand/icon-maskable-512.png?v=3', sizes: '512x512', type: 'image/png', purpose: 'maskable' }] }, null, 2) + '\n',
   'data/site.json': { blogLive: BLOG_LIVE, posts: BLOG_LIVE ? posts.map(({ slug: s, title, date, summary, tags }) => ({ slug: s, title, date, summary, tags })) : [] },
 };
