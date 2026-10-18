@@ -12,8 +12,8 @@
   var d = document.documentElement;
   // The address bar shows the visitor's IP as the last path segment: /ip=<address> on the home page, /blogs/ip=<address>
   // on the blog, and so on (also on the 404 page). A static host answers such an unknown path with 404.html, so when a
-  // page is opened on an /ip= path, the real page for the path without that segment is fetched and swapped in. If
-  // there is no such page, the 404 page stays (it is the right page).
+  // page is opened on an /ip= path, it is replaced by the real page for the path without that segment (no extra
+  // history entry). If there is no such page, the 404 page stays (it is the right page).
   var SEG = /\/?ip=[0-9a-fA-F:.]{2,45}\/?$/;
   var basePath = function (p) {
     p = p.replace(SEG, '/');
@@ -104,9 +104,9 @@
   if (!window.__ipSwap && SEG.test(location.pathname)) {
     window.__ipSwap = true;
     d.style.visibility = 'hidden';
-    fetch(basePath(location.pathname) + 'index.html', { cache: 'no-store' })
-      .then(function (r) { if (!r.ok) throw new Error('no page'); return r.text(); })
-      .then(function (html) { if (html.indexOf('<html') < 0) throw new Error('not a page'); document.open(); document.write(html); document.close(); })
-      .catch(function () { d.style.visibility = ''; run(); });
+    try { sessionStorage.setItem('ipBounce', '1'); } catch (e) { }
+    // Load the real page for the path without the /ip= segment; its own script puts the IP back in the address.
+    location.replace(basePath(location.pathname) + location.search + location.hash);
+    setTimeout(function () { d.style.visibility = ''; run(); }, 5000);
   } else run();
 })();
