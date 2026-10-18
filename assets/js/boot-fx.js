@@ -160,7 +160,7 @@
   if (B.mode !== 'mini') {
     window.__data = {
       attention: loadJSON('attention', 'att', function (v) { return 'attention index loaded · ' + num(Object.keys(v).length) + ' words'; }),
-      map: loadJSON('latent-map', 'map', function (v) { return 'embedding map loaded · ' + num(v.kind.length) + ' vectors'; }),
+      map: loadJSON('map', 'map', function (v) { return 'embedding map loaded · ' + num(v.points.length) + ' points'; }),
     };
     loadJSON('github', 'gh', function (v) { ghData = v; return 'GitHub data · synced ' + ago(v.fetched_at); }).then(function (v) { ghData = v; });
     var im = new Image();

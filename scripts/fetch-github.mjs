@@ -90,6 +90,16 @@ try {
       write(`data/readmes/${p.repo}.md`, md);
     } catch (e) { console.warn('README kept from last run:', p.repo, e.message); }
   }
+  // READMEs of the other public repos feed the embedding map (they are not featured projects, just more of the work).
+  // The profile repo (named like the user) is skipped. Capped so one huge README cannot dominate.
+  const featured = new Set(projects.map((p) => p.repo));
+  for (const r of slim) {
+    if (featured.has(r.name) || r.name.toLowerCase() === USER.toLowerCase()) continue;
+    try {
+      const md = await gh(`/repos/${USER}/${r.name}/readme`, true);
+      write(`data/readmes/${r.name}.md`, md.slice(0, 40000));
+    } catch (e) { console.warn('no README for', r.name, '-', e.message); }
+  }
   console.log(`github: ${slim.length} repos, ${Object.keys(languages).length} languages`);
 } catch (e) {
   console.warn('GitHub fetch failed, keeping last good data:', e.message);

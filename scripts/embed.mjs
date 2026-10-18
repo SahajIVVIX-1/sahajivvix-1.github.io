@@ -3,7 +3,7 @@
 //   data/qa-bank.json     200+ grounded question/answer pairs (+ int8 question vectors)
 //   data/attention.json   word -> most related words on the page (cosine similarity)
 //   data/heatmaps.json    per-project self-attention over key README tokens
-//   data/latent-map.json  3D UMAP of words, passages and items for the embedding map
+//   data/map.json + map-vectors.json  real chunks, t-SNE keyframes, clusters (scripts/map.mjs)
 // Skips the work when no input changed since the last run (hash in data/meta.json).
 import { createHash } from 'node:crypto';
 import { existsSync, readdirSync } from 'node:fs';
@@ -18,11 +18,13 @@ export async function embedAll({ force = process.argv.includes('--force') } = {}
   const github = readJSON('data/github.json', { repos: [], languages: {}, user: {} });
   const aboutMd = readText('content/about-me.md');
   const readmes = Object.fromEntries(projects.map((p) => [p.repo, readText(`data/readmes/${p.repo}.md`)]));
+  // every README in data/readmes (featured projects and the other public repos) feeds the embedding map
+  const allReadmes = Object.fromEntries(readdirSync(path('data/readmes')).filter((f) => f.endsWith('.md')).map((f) => [f.replace(/\.md$/, ''), readText(`data/readmes/${f}`)]));
   const posts = loadPosts(); // read from content/blog directly so a first post is indexed in the same run
 
   // GitHub timestamps change hourly but do not change meaning; hash only the stable parts.
   const ghStable = { user: github.user, languages: github.languages, repos: github.repos.map(({ pushed_at, ...r }) => r) };
-  const hash = createHash('sha256').update(JSON.stringify([profile, projects, aboutMd, readmes, ghStable, posts, 3])).digest('hex').slice(0, 16);
+  const hash = createHash('sha256').update(JSON.stringify([profile, projects, aboutMd, allReadmes, readText('content/map-clusters.json'), ghStable, posts, 4])).digest('hex').slice(0, 16);
   const meta = readJSON('data/meta.json', {});
   if (!force && meta.hash === hash && existsSync(path('data/kb.json'))) {
     console.log('embed: inputs unchanged, skipping');
@@ -110,44 +112,11 @@ export async function embedAll({ force = process.argv.includes('--force') } = {}
   }
   write('data/heatmaps.json', heatmaps);
 
-  // ---------- 5. latent map ----------
-  const items = mapItems({ profile, projects });
-  const itemVecs = await embed(items.map((x) => x.text));
-  const readmeVocab = [...new Set(docs.flat())].filter((w) => !vocab.includes(w)).slice(0, 2600);
-  const readmeVecs = await embed(readmeVocab);
-  const readmeSentences = [...new Set(projects.flatMap((p) => (stripMd(readmes[p.repo] || '').match(/[^.!?]{40,220}[.!?]/g) || []).map((s) => s.trim())))].slice(0, 1400);
-  const sentenceVecs = await embed(readmeSentences);
-  // Two-word phrases ("reward shaping", "semantic cache") fill the space between words and passages.
-  const bigrams = [...new Set(docs.flatMap((d) => d.slice(1).map((w, i) => `${d[i]} ${w}`)))].slice(0, 1300);
-  const bigramVecs = await embed(bigrams);
-  const allLabels = [...vocab, ...readmeVocab, ...bigrams, ...readmeSentences];
-  const allVecs = [...vocabVecs, ...readmeVecs, ...bigramVecs, ...sentenceVecs, ...chunkVecs, ...itemVecs];
-  const kinds = [...vocab.map(() => 0), ...readmeVocab.map(() => 0), ...bigrams.map(() => 0), ...readmeSentences.map(() => 3), ...chunks.map(() => 1), ...items.map(() => 2)];
-  const { UMAP } = await import('umap-js');
-  let seed = 42;
-  const random = () => ((seed = (seed * 16807) % 2147483647) / 2147483647);
-  const umap = new UMAP({ nComponents: 3, nNeighbors: 18, minDist: 0.12, spread: 1.2, random, nEpochs: 300 });
-  const coords = umap.fit(allVecs);
-  // Normalise to [-1, 1] on the widest axis.
-  const mins = [0, 1, 2].map((a) => Math.min(...coords.map((c) => c[a])));
-  const maxs = [0, 1, 2].map((a) => Math.max(...coords.map((c) => c[a])));
-  const scale = 2 / Math.max(...maxs.map((m, a) => m - mins[a]));
-  const norm = coords.map((c) => c.map((v, a) => +((v - (mins[a] + maxs[a]) / 2) * scale).toFixed(3)));
-  // Cluster = nearest project item, so each region can be named after a project.
-  const projIdx = items.map((x, i) => (x.kind === 'project' ? i : -1)).filter((i) => i >= 0);
-  const clusterOf = (v) => projIdx.reduce((best, i) => (dot(v, itemVecs[i]) > dot(v, itemVecs[best]) ? i : best), projIdx[0]);
-  write('data/latent-map.json', {
-    labels: [...allLabels, ...chunks.map((c) => c.title), ...items.map((x) => x.label)],
-    xyz: norm.flat(),
-    kind: kinds,
-    cluster: allVecs.map((v) => projIdx.indexOf(clusterOf(v))),
-    clusters: projIdx.map((i) => items[i].label),
-    items: items.map((x, i) => ({ label: x.label, kind: x.kind, href: x.href, i: allLabels.length + chunks.length + i })),
-    chunkHref: chunks.map((c) => c.url),
-  });
-  console.log(`embed: latent map with ${allVecs.length} points`);
+  // ---------- 5. embedding map: real chunks, t-SNE keyframes, clusters (see scripts/map.mjs) ----------
+  const { buildMap } = await import('./map.mjs');
+  const built = await buildMap({ profile, projects, github, aboutMd, readmes: allReadmes, embed, model: MODEL });
 
-  write('data/meta.json', JSON.stringify({ hash, model: MODEL, chunks: chunks.length, qa: qa.length, points: allVecs.length }, null, 1) + '\n');
+  write('data/meta.json', JSON.stringify({ hash, model: MODEL, chunks: chunks.length, qa: qa.length, points: built.N }, null, 1) + '\n');
 }
 
 // ---------- helpers ----------

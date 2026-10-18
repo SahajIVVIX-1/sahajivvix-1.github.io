@@ -1,7 +1,7 @@
 {
- "hash": "793638b13b715f62",
+ "hash": "79726adc33928733",
  "model": "Xenova/all-MiniLM-L6-v2",
  "chunks": 146,
  "qa": 322,
- "points": 3032
+ "points": 425
 }

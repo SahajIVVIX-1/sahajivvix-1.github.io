@@ -90,12 +90,12 @@ function initLazy() {
   }
 
   // Latent map: when it is about to scroll into view.
-  const stage = document.querySelector('[data-latent-map]');
+  const stage = document.querySelector('[data-map]');
   if (stage) {
     const io = new IntersectionObserver((entries) => {
       if (entries.some((en) => en.isIntersecting)) {
         io.disconnect();
-        import('./latent-map.js').then((m) => m.initMap(stage, { lowPower, reducedMotion }));
+        import('./map.js').then((m) => m.initMap(stage, { lowPower, reducedMotion }));
       }
     }, { rootMargin: '400px 0px' });
     io.observe(stage);

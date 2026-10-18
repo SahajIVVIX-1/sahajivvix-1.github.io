@@ -25,6 +25,7 @@ for (const [name, code] of [['head.js', BOOT_HEAD], ['boot.js', BOOT_JS]]) {
 const bootHtml = () => `<div id="boot-live" class="bs" role="status" aria-live="polite"></div><div id="boot" aria-hidden="true"><div class="boot-box"><p class="boot-cap" id="boot-cap"><span>forward pass · layer 1/5 · 0%</span><span>τ 0.7 · weights seeded per visitor</span></p><p class="boot-feat" id="boot-feat"></p><div class="boot-stage"><canvas id="boot-cv"></canvas></div><p class="boot-greet" id="boot-greet"></p><div class="boot-bottom"><ul id="boot-log"></ul><div class="boot-mat"><canvas id="boot-mat"></canvas><p>attention · head 3</p></div></div><p class="boot-hint"><span>heuristic guess · computed in your browser; only your public IP is looked up</span><span>click or press any key to skip</span></p></div></div><script>${BOOT_JS.replace('__V__', ASSET_VERSION)}</script>`;
 const profile = readJSON('content/profile.json');
 const projects = readJSON('content/projects.json');
+const mapData = readJSON('data/map.json', null);
 const github = readJSON('data/github.json', { repos: [], languages: {}, events: [], user: {} });
 const heatmaps = readJSON('data/heatmaps.json', {});
 const posts = loadPosts();
@@ -227,25 +228,49 @@ function aboutSection() {
 }
 
 function mapSection() {
+  const clusters = mapData?.clusters || [];
+  const chips = ['computer vision', 'agents & RAG', 'healthcare ML', 'reinforcement learning'];
   return `<section class="layer map" id="map" data-layer="3" data-layer-name="Latent space" aria-labelledby="map-h">
   <header class="layer-head">
     <p class="layer-tag mono" data-lt="Latent space">Layer 03 · Latent space</p>
-    <h2 id="map-h" class="layer-title">Everything I know, <em>projected</em>.</h2>
-    <p class="layer-sub">Each point is a word or passage from my projects, skills and experience, embedded with MiniLM and reduced with UMAP. Similar meanings land close together. Hover to read a point, click a labelled one to go there.</p>
+    <h2 id="map-h" class="layer-title">Watch it <em>learn</em>, then ask it.</h2>
+    <p class="layer-sub">Every point is a real passage of my work: resume lines, README text, skills. Scroll and watch an embedding being trained from noise (a real t-SNE run, with its real loss). Then ask it a question: your words are embedded in your browser and land where they belong.</p>
   </header>
-  <div class="map-stage" data-latent-map>
-    <canvas class="map-canvas" aria-hidden="true"></canvas>
-    <div class="map-labels" aria-hidden="true"></div>
-    <div class="map-tip mono" role="status" aria-live="polite"></div>
-    <div class="map-legend mono" aria-hidden="true"></div>
-    <noscript><p class="map-fallback-note">The interactive map needs JavaScript. Use the index below.</p></noscript>
+  <div class="map-pin" data-map-pin>
+    <div class="map-sticky" data-map>
+      <form class="map-ask" role="search" aria-label="Ask the map">
+        <label class="sr" for="map-q">Ask the map</label>
+        <input id="map-q" class="map-q" type="search" placeholder="Ask the map… e.g. computer vision, agents, healthcare" autocomplete="off" maxlength="120">
+        <button class="map-go shimmer" type="submit">Search</button>
+        <span class="map-status mono" data-map-status role="status"></span>
+        <div class="map-chips">${chips.map((c) => `<button type="button" class="map-chip mono" data-q="${esc(c)}">${esc(c)}</button>`).join('')}</div>
+      </form>
+      <div class="map-grid">
+        <div class="map-main">
+          <div class="map-stage" data-latent-map>
+            <canvas class="map-canvas" aria-hidden="true"></canvas>
+            <div class="map-labels" aria-hidden="true"></div>
+            <div class="map-hud mono" aria-hidden="true"></div>
+            <div class="map-zoom" role="group" aria-label="Map zoom"><button type="button" data-z="in" aria-label="Zoom in">+</button><button type="button" data-z="out" aria-label="Zoom out">−</button><button type="button" data-z="reset" aria-label="Reset view">⟲</button></div>
+            <div class="map-nodes"></div>
+            <div class="map-tip" aria-hidden="true" hidden></div>
+            <div class="map-card" hidden></div>
+            <noscript><p class="map-error mono">The interactive map needs JavaScript. The clusters and projects are listed below.</p></noscript>
+          </div>
+          <ul class="map-legend mono" aria-label="Clusters"></ul>
+        </div>
+        <aside class="map-results" aria-label="Search results">
+          <h3 class="mr-head mono" data-map-mode>Top matches</h3>
+          <ol class="mr-list" data-map-results aria-live="polite"></ol>
+          <p class="mr-note mono">Ctrl/⌘ + scroll or pinch to zoom · drag to pan · double-click to reset · Esc clears</p>
+        </aside>
+      </div>
+    </div>
   </div>
-  <nav class="map-index mono" aria-label="Map index">
-    ${projects.map((p, i) => `<a class="tok-link" href="#p-${p.id}">${String(i + 1).padStart(2, '0')} ${esc(p.name)}</a>`).join('')}
-    <a class="tok-link" href="#skills">Skills</a>
-    <a class="tok-link" href="#experience">Experience</a>
-    <a class="tok-link" href="#certs">Certifications</a>
-  </nav>
+  <ul class="sr" aria-label="Map clusters and projects">
+    ${clusters.map((c) => `<li>Cluster “${esc(c.name)}”: ${c.n} passages about ${esc(c.keywords.slice(0, 5).join(', '))}.</li>`).join('')}
+    ${projects.map((p) => `<li>Project <a href="#p-${p.id}">${esc(p.name)}</a>: ${esc(p.kind)}.</li>`).join('')}
+  </ul>
 </section>`;
 }
 
