@@ -24,20 +24,34 @@ export function initBadge({ reducedMotion = false } = {}) {
   const name = wrapTokens(badge.querySelector('.hb-name'));
   const sub = wrapTokens(badge.querySelector('.hb-sub'));
   const done = () => { badge.classList.remove('is-pending', 'is-decoding'); for (const s of [...name, ...sub]) s.classList.add('gt-on'); badge.querySelector('.hb-ph')?.remove(); };
-  const run = async () => {
-    const ph = badge.querySelector('.hb-ph');
-    popup(ph);
-    await wait(950);
+  // The badge is predicted IN PARALLEL with the name and the tagline: from the first hero token its slot shows a live
+  // next-token distribution (a second stream next to the hero's), and once the name is finished it resolves to
+  // "guinness_world_records" while the tagline is still being generated: the logo assembles and the text is
+  // sampled token by token alongside the tagline.
+  let resolved = false;
+  let stopFlicker = () => {};
+  const resolve = async () => {
+    if (resolved) return;
+    resolved = true;
+    const pop = stopFlicker();
+    await wait(380);
+    pop?.classList.add('is-out');
+    setTimeout(() => pop?.remove(), 320);
     badge.classList.add('is-decoding');
     await assemble(badge);
     badge.classList.remove('is-pending');
     badge.classList.add('is-shimmer');
-    for (const s of [...name, ...sub]) { s.classList.add('gt-on'); await wait(24); }
+    for (const s of [...name, ...sub]) { s.classList.add('gt-on'); await wait(40); }
     await wait(250);
     done();
   };
-  if (window.__heroReady) run();
-  else document.addEventListener('hero:ready', run, { once: true });
+  const begin = () => { stopFlicker = flicker(badge.querySelector('.hb-ph')); };
+  if (window.__heroReady) { begin(); resolve(); }
+  else {
+    if (window.__heroStarted) begin(); else document.addEventListener('hero:start', begin, { once: true });
+    document.addEventListener('hero:part', (e) => { if (e.detail?.index === 0) resolve(); });
+    document.addEventListener('hero:ready', resolve, { once: true });
+  }
   setTimeout(done, 45000); // safety net
 }
 
@@ -56,17 +70,43 @@ function layoutMode(badge, grid) {
   badge.classList.toggle('is-wide', innerWidth > 1100 && room >= 200);
 }
 
-function popup(anchor) {
-  if (!anchor) return;
+// A live next-token distribution over the placeholder chip (logits plus decaying noise, softmax at T = 0.7, like the
+// hero's own tokens). Returns a function that settles it on the pick and hands back the popup element.
+function flicker(anchor) {
+  if (!anchor) return () => null;
+  const T = 0.7;
+  const cands = [['guinness_world_records', 0.91], ['award', 0.05], ['<eos>', 0.04]];
+  const logits = cands.map(([, p]) => Math.log(p) * T);
   const d = document.createElement('div');
   d.className = 'dist';
   d.setAttribute('aria-hidden', 'true');
-  const rows = [['guinness_world_records', 0.91], ['award', 0.05], ['<eos>', 0.04]];
-  d.innerHTML = rows.map(([t, p], i) => `<div class="dist-row${i ? '' : ' is-pick'}"><span class="dist-tok">${t.replace(/</g, '&lt;')}</span><span class="dist-bar"><i style="--p:${Math.round(p * 100)}%"></i></span><span class="dist-p">${p.toFixed(2)}</span></div>`).join('');
   d.style.width = 'max-content';
+  d.innerHTML = cands.map(([t]) => `<div class="dist-row"><span class="dist-tok">${t.replace(/</g, '&lt;')}</span><span class="dist-bar"><i></i></span><span class="dist-p"></span></div>`).join('');
   anchor.append(d);
   placePopup(anchor, d, { order: ['below', 'left', 'above', 'right'] });
-  setTimeout(() => { d.classList.add('is-out'); setTimeout(() => d.remove(), 320); }, 800);
+  const bars = [...d.querySelectorAll('.dist-bar i')];
+  const ps = [...d.querySelectorAll('.dist-p')];
+  const rows = [...d.querySelectorAll('.dist-row')];
+  const softmax = (z) => { const m = Math.max(...z); const e = z.map((v) => Math.exp(v - m)); const s = e.reduce((x, y) => x + y, 0); return e.map((v) => v / s); };
+  const paint = (noise) => {
+    const p = softmax(logits.map((l) => (l + (Math.random() - 0.5) * 2 * noise) / T));
+    p.forEach((v, i) => { bars[i].style.setProperty('--p', `${(v * 100).toFixed(1)}%`); ps[i].textContent = v.toFixed(2); });
+  };
+  const t0 = performance.now();
+  let timer = 0;
+  const tick = () => {
+    // the noise shrinks while the hero is still sampling, but never to zero until the badge is picked
+    const age = (performance.now() - t0) / 1000;
+    paint(Math.max(0.5, 1.6 - age * 0.35));
+    timer = setTimeout(tick, 110);
+  };
+  tick();
+  return () => {
+    clearTimeout(timer);
+    paint(0);
+    rows[0].classList.add('is-pick');
+    return d;
+  };
 }
 
 // The logo assembles from scattered points onto the real <img>, which then fades in.

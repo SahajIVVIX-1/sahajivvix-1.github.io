@@ -22,6 +22,8 @@ export function initHero() {
   (async () => {
     await bootGate();
     setBusy('hero', true);
+    window.__heroStarted = true;
+    document.dispatchEvent(new Event('hero:start'));
     let step = 0;
     for (const g of gens) {
       const rows = JSON.parse(g.dataset.gen);
@@ -36,6 +38,7 @@ export function initHero() {
       }
       g.classList.remove('is-live');
       g.classList.add('is-done');
+      document.dispatchEvent(new CustomEvent('hero:part', { detail: { index: gens.indexOf(g) } }));
     }
     heroReady(total);
   })();
