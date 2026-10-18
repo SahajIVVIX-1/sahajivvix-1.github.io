@@ -504,10 +504,7 @@ main { position: relative; z-index: 1; }
 .contact-links { display: flex; flex-wrap: wrap; gap: 12px 30px; margin-top: 44px; font-size: 13px; }
 
 /* ---------- footer ---------- */
-.site-foot { max-width: var(--maxw); margin: 0 auto; padding: 28px var(--gutter) 40px; border-top: 1px solid var(--rule); }
-.foot-privacy { margin-top: 10px; color: var(--ink-3); font-size: 11.5px; }
-.foot-line b { font-weight: 500; color: var(--ink-2); }
-.foot-line { display: flex; flex-wrap: wrap; gap: 8px 26px; color: var(--ink-3); font-size: 11.5px; }
+/* site footer: see the "footer" block at the end of this file */
 
 /* ---------- attention overlay ---------- */
 .attn-layer { position: fixed; inset: 0; width: 100vw; height: 100vh; pointer-events: none; z-index: 45; overflow: visible; }
@@ -757,3 +754,54 @@ body.is-leaving main, body.is-leaving .site-foot { animation: softmaxOut .35s va
 .gen .gbox:not(.gbox-on) { opacity: 0; transform: translateY(14px); }
 .gen .gbox.gbox-on { transition: opacity .6s var(--ease-out), transform .6s var(--ease-out); }
 @media print { .gt { opacity: 1 !important; } .gen-cv, .gen-lab, .gn { display: none; } .gn-host { color: inherit !important; } }
+
+/* ---------- footer: sign-off, link grid, model card, bottom bar ---------- */
+.site-foot { position: relative; max-width: var(--maxw); margin: 0 auto; padding: clamp(64px, 9vw, 128px) var(--gutter) 40px; border-top: 1px solid var(--rule); }
+.foot-sign { position: relative; padding-bottom: clamp(48px, 6vw, 80px); border-bottom: 1px solid var(--rule); }
+.foot-attn { position: absolute; inset: -40px -20px 0 -20px; width: calc(100% + 40px); height: calc(100% + 40px); opacity: .5; pointer-events: none; }
+.foot-title { position: relative; font: italic 400 clamp(2.4rem, 4vw + 1.4rem, 6rem)/1.02 var(--serif); letter-spacing: -.03em; max-width: 22ch; text-wrap: balance; }
+.foot-accent { color: var(--accent); text-shadow: var(--glow); cursor: default; border-radius: 6px; outline-offset: 4px; }
+.foot-accent.gt, .foot-accent .gt { font-style: inherit; }
+.foot-mailrow { position: relative; display: flex; flex-wrap: wrap; align-items: center; gap: 12px 20px; margin-top: clamp(24px, 3vw, 40px); }
+.foot-mail { font: 400 clamp(1.15rem, 1rem + 1.6vw, 2.1rem)/1.2 var(--sans); letter-spacing: -.02em; overflow-wrap: anywhere; color: var(--ink); background: linear-gradient(var(--accent), var(--accent)) 0 100% / 0 2px no-repeat; padding-bottom: 4px; transition: background-size .4s var(--ease-out), color .2s; }
+.foot-mail:hover, .foot-mail:focus-visible { background-size: 100% 2px; color: var(--accent); }
+.foot-copy { font: 500 13px/1 var(--mono); padding: 9px 14px; border-radius: 999px; border: 1px solid var(--rule-2); background: transparent; color: var(--ink-2); cursor: pointer; transition: border-color .2s, color .2s, background .2s; }
+.foot-copy:hover { border-color: var(--ink-3); color: var(--ink); }
+.foot-copy.is-done { border-color: var(--accent); color: var(--accent); }
+.foot-grid { display: grid; grid-template-columns: 1fr 1fr 2fr; gap: 40px clamp(24px, 5vw, 80px); padding: clamp(40px, 5vw, 64px) 0; }
+.foot-col ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; }
+.foot-label { margin: 0 0 16px; font-weight: 500; font-size: 11px; letter-spacing: .12em; text-transform: uppercase; color: var(--ink-3); }
+.foot-link { display: inline-block; font: 400 16px/1.5 var(--sans); color: var(--ink); background: linear-gradient(currentColor, currentColor) 0 100% / 0 1px no-repeat; transition: background-size .3s var(--ease-out), color .2s; }
+.foot-link:hover, .foot-link:focus-visible { background-size: 100% 1px; color: var(--accent); }
+.foot-arrow { color: var(--ink-3); font-size: .85em; }
+.foot-spec { display: grid; gap: 10px; margin: 0; font-size: 12px; }
+.foot-spec > div { display: grid; grid-template-columns: minmax(8.5em, 11em) 1fr; gap: 4px 16px; align-items: baseline; }
+.foot-spec[hidden], .foot-spec > div[hidden] { display: none; }
+.foot-spec dt { color: var(--ink-3); }
+.foot-spec dd { margin: 0; color: var(--ink); font-variant-numeric: tabular-nums; overflow-wrap: anywhere; min-width: 0; }
+.foot-spec b { font-weight: 500; }
+.foot-ago { color: var(--ink-3); }
+.foot-i { position: relative; width: 18px; height: 18px; padding: 0; border-radius: 50%; border: 1px solid var(--rule-2); background: transparent; color: var(--ink-3); font: 500 11px/1 var(--serif); font-style: italic; cursor: help; vertical-align: 1px; }
+.foot-i:hover, .foot-i:focus-visible { color: var(--ink); border-color: var(--ink-3); }
+.foot-spec dd { position: relative; }
+.foot-tip { position: absolute; left: 0; bottom: calc(100% + 8px); width: min(300px, 80vw); padding: 10px 12px; border-radius: 10px; border: 1px solid var(--rule-2); background: var(--paper); color: var(--ink-2); font: 400 13px/1.45 var(--sans); box-shadow: 0 10px 30px -12px rgba(0,0,0,.4); opacity: 0; transform: translateY(4px); pointer-events: none; transition: opacity .15s, transform .15s; z-index: 5; }
+.foot-i:hover + .foot-tip, .foot-i:focus-visible + .foot-tip { opacity: 1; transform: none; }
+.foot-bar { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px 24px; padding-top: 24px; border-top: 1px solid var(--rule); }
+.foot-copy-line { margin: 0; font: 400 13px/1.4 var(--sans); color: var(--ink-3); }
+.foot-actions { display: flex; flex-wrap: wrap; gap: 8px; }
+.foot-btn { font: 400 12.5px/1 var(--sans); padding: 9px 14px; border-radius: 999px; border: 1px solid var(--rule); background: transparent; color: var(--ink-2); cursor: pointer; transition: border-color .2s, color .2s; }
+.foot-btn .mono { font-size: 11.5px; }
+.foot-btn:hover { border-color: var(--ink-3); color: var(--ink); }
+.foot-privacy { margin: 16px 0 0; font: 400 13px/1.5 var(--sans); color: var(--ink-3); max-width: 62ch; }
+.site-foot a:focus-visible, .site-foot button:focus-visible, .foot-accent:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; border-radius: 6px; }
+@media (max-width: 860px) {
+  .foot-grid { grid-template-columns: 1fr 1fr; }
+  .foot-col:last-child { grid-column: 1 / -1; }
+}
+@media (max-width: 560px) {
+  .site-foot { padding-top: 64px; padding-bottom: 96px; } /* room for the floating Ask button */
+  .foot-grid { grid-template-columns: 1fr; gap: 32px; }
+  .foot-spec > div { grid-template-columns: 1fr; gap: 2px; }
+  .foot-title { max-width: none; }
+}
+@media print { .foot-attn { display: none; } }
