@@ -804,3 +804,67 @@ html[data-thinking] .brand-logo .ring-prog { stroke-dasharray: 26 74; animation:
 @media (prefers-reduced-motion: reduce) { .brand-logo { transition: none; } html[data-busy] .brand-logo .cursor { animation: none; } }
 
 @media (min-width: 1200px) { .about-grid { grid-template-columns: 340px 1fr 300px; gap: 56px; } }
+
+/* ---------- Guinness World Records card: a benchmark entry that "reads" its certificate ---------- */
+.gwr { position: relative; display: grid; grid-template-columns: auto 1fr; gap: 20px 24px; align-items: start; padding: 28px 0 32px; margin-bottom: 40px; border-top: 1px solid #C6922C; border-bottom: 1px solid var(--rule); scroll-margin-top: 90px; }
+.gwr-badge { position: relative; display: grid; place-items: center; width: 68px; height: 68px; border-radius: 50%; background: #fff; box-shadow: 0 0 0 1px rgba(0,0,0,.08); }
+.gwr-logo { display: block; width: 56px; height: 56px; }
+.gwr-star { position: absolute; left: 50%; top: 36%; width: 14px; height: 14px; margin: -7px 0 0 -7px; border-radius: 50%; background: radial-gradient(circle, rgba(255,255,255,.95), rgba(255,236,170,.5) 45%, transparent 70%); opacity: 0; pointer-events: none; }
+.gwr-badge:hover .gwr-star, .gwr:focus-within .gwr-star { animation: starShimmer .9s ease-out 1; }
+@keyframes starShimmer { 0% { opacity: 0; transform: scale(.5) rotate(0); } 40% { opacity: 1; transform: scale(1.5) rotate(45deg); } 100% { opacity: 0; transform: scale(1.1) rotate(90deg); } }
+.gwr-body { min-width: 0; }
+.gwr-title { margin: 0 0 14px; font: 500 clamp(1.15rem, 1rem + .8vw, 1.5rem)/1.25 var(--sans); letter-spacing: -.015em; }
+.gwr-rows { display: grid; gap: 8px; margin: 0; }
+.gwr-rows > div { display: grid; grid-template-columns: 11ch 1fr; gap: 4px 16px; align-items: baseline; }
+.gwr-rows dt { color: var(--ink-3); font-size: 12px; }
+.gwr-rows dd { margin: 0; color: var(--ink); font: 400 15px/1.45 var(--sans); }
+.gwr-ok { color: #C6922C; font-weight: 600; }
+.gwr-note { margin: 16px 0 0; max-width: 62ch; color: var(--ink-3); font-size: 13.5px; }
+.gwr-thumb { grid-column: 1 / -1; justify-self: start; display: grid; gap: 8px; padding: 0; border: 0; background: none; color: var(--ink-3); text-align: left; cursor: zoom-in; }
+.gwr-frame { position: relative; display: block; width: 150px; border-radius: 8px; overflow: hidden; border: 1px solid var(--rule-2); background: #fff; }
+.gwr-frame img { display: block; width: 100%; height: auto; }
+.gwr-hint { font-size: 11px; }
+.gwr-thumb:hover .gwr-frame { border-color: #C6922C; }
+.gwr-thumb:focus-visible { outline: 2px solid var(--accent); outline-offset: 4px; border-radius: 8px; }
+.gwr-ocr { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; }
+.gwr-ocr rect { fill: rgba(198,146,44,.12); stroke: #C6922C; stroke-width: 2; opacity: 0; transition: opacity .25s; }
+.gwr-ocr rect.is-on { opacity: 1; }
+.gwr-scan { position: absolute; left: 0; right: 0; top: 0; height: 2px; background: #C6922C; box-shadow: 0 0 10px 2px rgba(198,146,44,.55); opacity: 0; pointer-events: none; }
+.gwr-scan.is-run { animation: gwrScan .9s linear forwards; }
+@keyframes gwrScan { 0% { opacity: 1; transform: translateY(0); } 99% { opacity: 1; } 100% { opacity: 0; transform: translateY(var(--h, 220px)); } }
+.gwr-links { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; pointer-events: none; }
+.gwr-links path { fill: none; stroke: #C6922C; stroke-width: 1; stroke-dasharray: 1; stroke-dashoffset: 1; opacity: .8; }
+.gwr-links path.is-draw { stroke-dashoffset: 0; transition: stroke-dashoffset .5s var(--ease-out); }
+.gwr-links path.is-out { opacity: 0; transition: opacity .4s; }
+@media (min-width: 720px) {
+  .gwr { grid-template-columns: auto 1fr 168px; }
+  .gwr-thumb { grid-column: 3; grid-row: 1; justify-self: end; }
+  .gwr-frame { width: 168px; }
+}
+@media (max-width: 560px) {
+  .gwr { grid-template-columns: 1fr; }
+  .gwr-rows > div { grid-template-columns: 1fr; gap: 0; }
+  .gwr-frame { width: 160px; }
+}
+.gwr-lb { position: fixed; inset: 0; z-index: 90; display: grid; grid-template-rows: auto 1fr; background: rgba(8,10,18,.86); backdrop-filter: blur(6px); animation: lbIn .2s var(--ease-out); }
+@keyframes lbIn { from { opacity: 0; } }
+.gwr-lb-bar { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; padding: 12px var(--gutter); color: #ddd; }
+.gwr-lb-bar .sp { margin-left: auto; }
+.gwr-lb button { font: 400 13px/1 var(--sans); padding: 9px 13px; border-radius: 999px; border: 1px solid rgba(255,255,255,.25); background: rgba(255,255,255,.06); color: #eee; cursor: pointer; }
+.gwr-lb button:hover { border-color: #C6922C; }
+.gwr-lb button[aria-pressed="true"] { background: #C6922C; border-color: #C6922C; color: #1a1205; }
+.gwr-lb button:focus-visible { outline: 2px solid #fff; outline-offset: 2px; }
+.gwr-lb-main { position: relative; min-height: 0; display: grid; grid-template-columns: 1fr; }
+.gwr-stage { position: relative; overflow: hidden; touch-action: none; cursor: grab; }
+.gwr-pan { position: absolute; left: 0; top: 0; transform-origin: 0 0; will-change: transform; }
+.gwr-pan img { display: block; max-width: none; user-select: none; -webkit-user-drag: none; }
+.gwr-pan svg { position: absolute; inset: 0; width: 100%; height: 100%; opacity: 0; transition: opacity .25s; pointer-events: none; }
+.gwr-lb.is-ocr .gwr-pan svg { opacity: 1; }
+.gwr-pan rect { fill: rgba(198,146,44,.1); stroke: #C6922C; stroke-width: 2; }
+.gwr-pan text { font: 600 11px ui-monospace, "JetBrains Mono", monospace; fill: #1a1205; }
+.gwr-pan .tag { fill: #C6922C; }
+.gwr-json { display: none; margin: 0; padding: 16px; overflow: auto; background: rgba(0,0,0,.45); color: #e8e2d4; font: 12.5px/1.5 var(--mono); border-top: 1px solid rgba(255,255,255,.12); max-height: 38vh; }
+.gwr-lb.is-ocr .gwr-json { display: block; }
+.gwr-json .k { color: #C6922C; } .gwr-json small { display: block; white-space: normal; margin-bottom: 8px; color: #aaa; font-family: var(--sans); }
+@media (min-width: 900px) { .gwr-lb-main { grid-template-columns: 1fr 340px; } .gwr-json { max-height: none; border-top: 0; border-left: 1px solid rgba(255,255,255,.12); } }
+@media print { .gwr-lb { display: none; } }

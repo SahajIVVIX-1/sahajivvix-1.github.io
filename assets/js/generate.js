@@ -42,7 +42,7 @@ export function initGenerate({ reducedMotion = false, lowPower = false } = {}) {
   const jobs = [];
   const taken = new Set();
   for (const el of q(TEXT, main)) {
-    if (!outside(el) || inMap(el) || taken.has(el) || el.closest('[data-gen-done]')) continue;
+    if (!outside(el) || inMap(el) || el.closest('.gwr') || taken.has(el) || el.closest('[data-gen-done]')) continue;
     if ([...taken].some((t) => t.contains(el))) continue;
     for (const t of [...taken]) if (el.contains(t)) taken.delete(t);
     taken.add(el);
@@ -127,7 +127,7 @@ export function initGenerate({ reducedMotion = false, lowPower = false } = {}) {
 }
 
 // ---------- text ----------
-function wrapTokens(el) {
+export function wrapTokens(el) {
   const out = [];
   const walker = document.createTreeWalker(el, NodeFilter.SHOW_TEXT, {
     acceptNode: (n) => (n.nodeValue.trim() && !n.parentElement.closest('.dist, script, style, svg') ? NodeFilter.FILTER_ACCEPT : NodeFilter.FILTER_REJECT),
@@ -224,8 +224,8 @@ function numberJob(el) {
 }
 
 // ---------- image: diffusion-style denoising over the real <img> ----------
-function imageJob(img) {
-  const box = img.closest('.portrait-frame') || img.parentElement;
+export function imageJob(img, boxEl, { announce = true } = {}) {
+  const box = boxEl || img.closest('.portrait-frame') || img.parentElement;
   const STEPS = 8;
   const STEP_MS = 135;
   const cv = document.createElement('canvas');
@@ -234,7 +234,8 @@ function imageJob(img) {
   const label = document.createElement('span');
   label.className = 'gen-lab mono';
   label.setAttribute('aria-hidden', 'true');
-  const S = 192, SH = 240; // the frame is 4:5
+  const S = 192;
+  const SH = Math.round(S * ((Number(img.getAttribute('height')) || 5) / (Number(img.getAttribute('width')) || 4))); // follows the image's own aspect ratio
   cv.width = S; cv.height = SH;
   const c = cv.getContext('2d');
   const noise = document.createElement('canvas');
@@ -253,7 +254,7 @@ function imageJob(img) {
     c.imageSmoothingEnabled = false;
     c.clearRect(0, 0, S, SH);
     if (img.complete && img.naturalWidth) {
-      tiny.width = b; tiny.height = Math.max(1, Math.round(b * 1.25));
+      tiny.width = b; tiny.height = Math.max(1, Math.round(b * SH / S));
       tiny.getContext('2d').drawImage(img, 0, 0, tiny.width, tiny.height);
       c.drawImage(tiny, 0, 0, S, SH);
     } else { c.fillStyle = '#888'; c.fillRect(0, 0, S, SH); }
@@ -273,7 +274,7 @@ function imageJob(img) {
       if (done) return;
       done = true;
       cv.classList.add('is-out'); label.classList.add('is-out');
-      setTimeout(() => { cv.remove(); label.remove(); box.classList.remove('gen-box'); window.__portraitReady = true; document.dispatchEvent(new Event('portrait:ready')); }, 420);
+      setTimeout(() => { cv.remove(); label.remove(); box.classList.remove('gen-box'); if (announce) { window.__portraitReady = true; document.dispatchEvent(new Event('portrait:ready')); } }, 420);
     },
   };
 }
