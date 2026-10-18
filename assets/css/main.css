@@ -235,13 +235,11 @@ main { position: relative; z-index: 1; }
 .tk { position: relative; display: inline; white-space: pre; }
 .tk.is-new { animation: sharpen .55s var(--ease-out) both; }
 @keyframes sharpen { from { filter: blur(10px); opacity: 0; } 60% { opacity: 1; } to { filter: blur(0); opacity: 1; } }
-.gen.is-live .tk { box-shadow: inset 0 -1px 0 color-mix(in srgb, var(--accent) 40%, transparent); }
 .gen .tk + .tk::before { content: ""; position: absolute; left: 0; top: 18%; bottom: 14%; width: 1px; background: var(--rule-2); opacity: calc(1 - var(--fade, 0)); transition: opacity 1.2s; }
 .gen.is-done .tk::before { --fade: 1; }
-.gen.is-done .tk { box-shadow: none; transition: box-shadow 1.2s; }
 
 .dist {
-  position: absolute; left: 0; bottom: calc(100% + 10px); z-index: 5; width: 170px; padding: 8px 10px 9px;
+  position: absolute; left: 0; top: calc(100% + 12px); z-index: 30; width: 170px; padding: 8px 10px 9px;
   font: 500 10.5px/1.25 var(--mono); letter-spacing: 0; color: var(--ink-2); font-style: normal;
   background: color-mix(in srgb, var(--paper) 88%, transparent); border: 1px solid var(--rule-2); border-radius: 8px;
   backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); pointer-events: none;
@@ -251,8 +249,8 @@ main { position: relative; z-index: 1; }
 .dist.is-out { animation: distOut .3s var(--ease) forwards; }
 /* Transform and clip only: an opacity fade would briefly make the chart text fail contrast checks.
    The clip box is 12px larger on every side so the notch (which sits outside the border) is never cut off. */
-@keyframes distIn { from { transform: translateY(4px); clip-path: inset(-12px 100% -12px -12px); } to { clip-path: inset(-12px); } }
-@keyframes distOut { to { transform: translateY(-4px); clip-path: inset(-12px -12px 100% -12px); } }
+@keyframes distIn { from { transform: translateY(-4px); clip-path: inset(50%); } to { clip-path: inset(-12px); } }
+@keyframes distOut { to { transform: translateY(4px); clip-path: inset(50%); } }
 /* placePopup() (popup.js) sets data-side and --nx / --ny so this notch always points at the token it describes. */
 .dist::after { content: ""; position: absolute; width: 9px; height: 9px; background: color-mix(in srgb, var(--paper) 88%, transparent); border: 1px solid var(--rule-2); transform: rotate(45deg); }
 .dist[data-side="above"]::after { bottom: -6px; left: calc(var(--nx, 16px) - 4px); border-top: 0; border-left: 0; }
