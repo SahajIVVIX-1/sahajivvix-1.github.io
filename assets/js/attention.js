@@ -7,7 +7,8 @@ export async function initAttention({ lowPower = false } = {}) {
   const svg = document.querySelector('[data-attn-layer]');
   if (!svg) return;
   let map;
-  try { map = await (await fetch('/data/attention.json')).json(); } catch { return; }
+  // The boot screen may already have fetched this file; fall back to fetching it here.
+  try { map = (await window.__data?.attention) || await (await fetch('/data/attention.json')).json(); } catch { return; }
 
   const keys = new Set(Object.keys(map));
   const targets = new Set(Object.values(map).flat().map(([w]) => w));

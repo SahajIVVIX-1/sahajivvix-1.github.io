@@ -17,6 +17,17 @@ initLoss();
 initHeader();
 initTransitions();
 initLazy();
+initSessionTag();
+// Tells the inline boot screen that the main script is ready (part of its real progress).
+window.__boot?.mark('js');
+
+// Shows the visitor tag (made in the browser by the inline head script) in the footer.
+function initSessionTag() {
+  const el = document.querySelector('[data-session]');
+  if (!el || !window.__visitor) return;
+  el.querySelector('b').textContent = window.__visitor;
+  el.hidden = false;
+}
 
 function initHeader() {
   const head = document.querySelector('[data-head]');

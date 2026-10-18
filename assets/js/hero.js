@@ -19,6 +19,7 @@ export function initHero() {
   }
 
   (async () => {
+    await bootGate();
     let step = 0;
     for (const g of gens) {
       const rows = JSON.parse(g.dataset.gen);
@@ -37,6 +38,15 @@ export function initHero() {
     cursor?.classList.add('is-on');
     if (trace) typeLine(trace, `generated ${total} tokens · <eos> withheld · waiting for your prompt_`);
   })();
+}
+
+// The hero starts generating as the boot screen dissolves (the inline script sets html.booting).
+function bootGate() {
+  return new Promise((resolve) => {
+    if (!document.documentElement.classList.contains('booting')) return resolve();
+    document.addEventListener('boot:done', resolve, { once: true });
+    setTimeout(resolve, 4000);
+  });
 }
 
 function renderStatic(g) {

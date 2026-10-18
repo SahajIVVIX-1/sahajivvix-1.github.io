@@ -6,7 +6,7 @@ const KIND_NAME = ['word', 'passage', 'item', 'README sentence'];
 
 export async function initMap(stage, { lowPower = false, reducedMotion = false } = {}) {
   let data;
-  try { data = await (await fetch('/data/latent-map.json')).json(); } catch { return; }
+  try { data = (await window.__data?.map) || await (await fetch('/data/latent-map.json')).json(); } catch { return; }
   const canvas = stage.querySelector('canvas');
   const labelsEl = stage.querySelector('.map-labels');
   const tip = stage.querySelector('.map-tip');

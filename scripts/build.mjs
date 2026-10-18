@@ -10,6 +10,14 @@ if (process.argv.includes('--embed')) {
 }
 
 const SITE = 'https://info.sahaj.si';
+
+// Boot screen and visitor tag are inlined (see scripts/boot/): they must run before anything else loads.
+// Minifier is deliberately simple: the sources use explicit semicolons and no '//' inside strings.
+const minify = (s) => s.replace(/\/\*[\s\S]*?\*\//g, '').replace(/^\s*\/\/.*$/gm, '').replace(/\s*\n\s*/g, ' ').replace(/ {2,}/g, ' ').trim();
+const BOOT_CSS = minify(readText('scripts/boot/boot.css'));
+const BOOT_HEAD = minify(readText('scripts/boot/head.js'));
+const BOOT_JS = minify(readText('scripts/boot/boot.js'));
+const BOOT_HTML = `<div id="boot" aria-hidden="true"><div class="boot-box"><p class="boot-line"><span id="boot-type"></span><i class="boot-caret"></i></p><div class="boot-bar"><i id="boot-fill"></i></div><p class="boot-pct" id="boot-pct">0%</p><ul id="boot-log"></ul><p class="boot-skip">click or press any key to skip</p></div></div><script>${BOOT_JS}</script>`;
 const profile = readJSON('content/profile.json');
 const projects = readJSON('content/projects.json');
 const github = readJSON('data/github.json', { repos: [], languages: {}, events: [], user: {} });
@@ -52,6 +60,8 @@ function head({ title, description, url, image = '/assets/img/og.png', type = 'w
 <link rel="preload" href="/assets/fonts/instrument-serif-latin-400-italic.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="/assets/fonts/inter-tight-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin>
 <script>${THEME_BOOT}</script>
+<style>${BOOT_CSS}</style>
+<script>${BOOT_HEAD}</script>
 <link rel="stylesheet" href="/assets/css/main.css?v=${BUILD_VERSION.replace(/\D/g, '')}">
 ${extra}
 </head>`;
@@ -95,7 +105,9 @@ function footer() {
     <span>© ${new Date().getFullYear()} Sahaj Saliya</span>
     <span>Static weights, served by GitHub Pages</span>
     ${synced ? `<span>Last forward pass <time datetime="${synced.toISOString()}">${synced.toISOString().slice(0, 16).replace('T', ' ')} UTC</time></span>` : ''}
+    <span data-session hidden>session <b></b></span>
   </p>
+  <p class="mono foot-privacy">The visitor tag in the URL is generated in your browser and never sent to any server.</p>
 </footer>`;
 }
 
@@ -430,6 +442,7 @@ function renderHome() {
     extra: personLD(),
   })}
 <body class="home">
+${BOOT_HTML}
 ${header({ home: true })}
 ${railNav()}
 <main id="main">
@@ -455,6 +468,7 @@ ${shellScripts()}
 function simplePage({ title, description, url, layer, kicker, heading, body, noindex = false }) {
   return `${head({ title, description, url, extra: noindex ? '<meta name="robots" content="noindex">' : '' })}
 <body class="page">
+${BOOT_HTML}
 ${header()}
 <main id="main" class="page-main">
   <section class="layer solo" data-layer="${layer}" data-layer-name="${esc(kicker)}">
