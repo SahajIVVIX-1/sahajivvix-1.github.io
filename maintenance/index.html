@@ -57,19 +57,19 @@
   .activity{--fit:1;position:relative;display:inline-flex;align-items:center;gap:.55em;max-width:100%;
     padding:.3em 0;white-space:nowrap;line-height:1.5;
     font-size:calc(clamp(.95rem,2.8vw,1.08rem) * var(--fit));color:#a9a6c6;
-    font-family:"Source Serif 4",Georgia,"Times New Roman",serif;font-variation-settings:"opsz" 20}
+    font-family:"Source Serif 4",Georgia,"Times New Roman",serif;font-variation-settings:"opsz" 20;
+    transition:font-size .9s cubic-bezier(.45,0,.25,1)}
   .act-dot{flex:none;width:.42em;height:.42em;border-radius:50%;background:#a996ff;
     box-shadow:0 0 0 3px rgba(169,150,255,.12);animation:actPulse 2.4s ease-in-out infinite}
   .act-verbs{position:relative;display:inline-flex;height:1.5em;color:#ece9ff;font-weight:500;letter-spacing:.005em}
   .act-verbs .slots{display:inline-flex}
   .act-verbs .ell{color:#8f8bb4;white-space:pre}
   /* one 3D tile per letter: front face shows the current letter, back face carries the next one */
-  .slot{position:relative;display:inline-block;height:1.5em;perspective:7em;
-    transition:width .26s cubic-bezier(.4,0,.2,1)}
+  .slot{position:relative;display:inline-block;height:1.5em;perspective:7em}
   .slot .card{position:absolute;inset:0;transform-style:preserve-3d;transform-origin:50% 50%;will-change:transform}
   .slot .face{position:absolute;inset:0;transform-origin:50% 50%;display:flex;justify-content:center;white-space:pre;
     -webkit-backface-visibility:hidden;backface-visibility:hidden}
-  .act-time{display:inline-block;overflow:hidden;text-align:left;font-variant-numeric:tabular-nums;
+  .act-time{display:inline-block;overflow:visible;text-align:left;font-variant-numeric:tabular-nums;
     color:#8f8cab;transition:width .35s cubic-bezier(.22,1,.36,1)}
   .activity.no-anim .slot,.activity.no-anim .act-time{transition:none}
   @keyframes actPulse{0%,100%{opacity:.55}50%{opacity:1}}
@@ -81,7 +81,7 @@
 
   @media (prefers-reduced-motion:reduce){
     .act-dot{animation:none}
-    .slot,.act-time{transition:none}
+    .slot,.act-time,.activity{transition:none}
   }
 </style>
 </head>

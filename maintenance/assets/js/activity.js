@@ -52,7 +52,10 @@
     up: { axis: "X", deg: 180 }, down: { axis: "X", deg: -180 },
     right: { axis: "Y", deg: 180 }, left: { axis: "Y", deg: -180 }
   };
-  const FLIP_MS = 640, STEP_MS = 42;
+  const FLIP_MS = 640, STEP_MS = 42, EASE = "cubic-bezier(.45,0,.25,1)";
+  // split into user-perceived characters so conjuncts like "क्व" stay on one tile
+  const seg = typeof Intl !== "undefined" && Intl.Segmenter ? new Intl.Segmenter(undefined, { granularity: "grapheme" }) : null;
+  const chars = w => (seg ? Array.from(seg.segment(w), x => x.segment) : Array.from(w));
 
   function mount(root, words) {
     const verbs = root.querySelector(".act-verbs");
@@ -95,7 +98,7 @@
       return glyphEm.get(ch);
     }
     function verbPx(word) {
-      return Array.from(word).reduce((sum, c) => sum + em(c), 0) * baseFont() + measurePx("...", ellEl);
+      return chars(word).reduce((sum, c) => sum + em(c), 0) * baseFont() + measurePx("...", ellEl);
     }
 
     // shrink the type a little when a long verb + timer would not fit the column (mobile)
@@ -121,19 +124,26 @@
       return i;
     }
 
-    // turn tile `slot` over so `to` shows; an empty `to` retires the tile
-    function flip(slot, to, dir, delay) {
+    // turn tile `slot` over so `to` shows; an empty `to` retires the tile.
+    // Every tile in a change resizes along one shared curve (`span`), so the line glides
+    // in one direction instead of nudging back and forth as staggered tiles resize.
+    function flip(slot, to, from, dir, delay, span) {
       const card = slot.firstChild, front = card.firstChild, back = card.lastChild;
       const { axis, deg } = TURN[dir];
+      const rot = a => "rotate" + axis + "(" + a + "deg)";
       back.textContent = to;
-      back.style.transform = "rotate" + axis + "(180deg)";
-      // resize while the tile is edge-on, so neither letter ever spills over its neighbours
-      slot.style.transitionDelay = Math.round(delay + FLIP_MS * 0.26) + "ms";
+      back.style.transform = rot(180);
+      slot.style.transition = "width " + span + "ms " + EASE;
       slot.style.width = em(to) + "em";
-      const anim = card.animate(
-        [{ transform: "rotate" + axis + "(0deg)" }, { transform: "rotate" + axis + "(" + deg + "deg)" }],
-        { duration: FLIP_MS, delay, easing: "cubic-bezier(.45,0,.25,1)", fill: "forwards" }
-      );
+      // tiles that open up or close down turn across the whole change and scale with their
+      // width, so the letter always fits the space it is given
+      const edge = !from || !to;
+      const frames = edge
+        ? [{ transform: rot(0) + " scale(" + (from ? 1 : 0) + ")" }, { transform: rot(deg) + " scale(" + (to ? 1 : 0) + ")" }]
+        : [{ transform: rot(0) }, { transform: rot(deg) }];
+      const anim = card.animate(frames, edge
+        ? { duration: span, easing: EASE, fill: "forwards" }
+        : { duration: FLIP_MS, delay, easing: EASE, fill: "forwards" });
       running.add(anim);
       anim.onfinish = () => {
         running.delete(anim);
@@ -146,7 +156,7 @@
 
     function showVerb(word, animate) {
       running.forEach(a => a.finish()); // settle any tiles still turning
-      const prev = Array.from(verbText), nextChars = Array.from(word);
+      const prev = chars(verbText), nextChars = chars(word);
       verbText = word;
       const slots = Array.from(slotsEl.children);
       const n = Math.max(prev.length, nextChars.length);
@@ -167,11 +177,17 @@
       void slotsEl.offsetWidth; // commit the zero widths so the growth transitions
 
       const p = PATTERNS[pattern++ % PATTERNS.length];
+      let last = 0;
+      for (let i = 0; i < n; i++) if ((prev[i] || "") !== (nextChars[i] || "")) last = Math.max(last, rank(p.order, i, n));
+      const span = last * STEP_MS + FLIP_MS;
       for (let i = 0; i < n; i++) {
         const from = prev[i] || "", to = nextChars[i] || "";
         if (from === to) continue; // same letter in the same place stays put
-        flip(slots[i], to, p.dir(i, n), rank(p.order, i, n) * STEP_MS);
+        flip(slots[i], to, from, p.dir(i, n), rank(p.order, i, n) * STEP_MS, span);
       }
+      // the mobile type-fit and the timer slot follow the same curve as the tiles
+      root.style.transition = "font-size " + span + "ms " + EASE;
+      time.style.transition = "width " + span + "ms " + EASE;
       layout();
     }
 
