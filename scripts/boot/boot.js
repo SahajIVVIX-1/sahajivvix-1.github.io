@@ -1,155 +1,158 @@
-/* Boot screen, runs right after the #boot element is parsed.
-   Progress is real: fonts, the main script (main.js calls __boot.mark('js')) and the data JSON files.
-   Shown at least MIN ms (so it never flashes) and at most MAX ms (then the page is revealed anyway). */
+/* "Forward pass" boot screen: the small inline core. Runs right after the #boot element is parsed.
+   - Progress is REAL: tasks are fonts, the main script, the renderer, and (registered by boot-fx.js) the data files.
+   - Everything is computed in the browser; nothing is sent anywhere.
+   - The heavy parts (visitor context, heuristic intent classifier, greeting, canvas) live in assets/js/boot-fx.js. */
 (function () {
   var d = document.documentElement;
   var el = document.getElementById('boot');
   if (!el) return;
-  var full = d.classList.contains('boot-full');
-  if (!full && !d.classList.contains('boot-quick')) return;
+  var cl = d.classList;
+  var mode = cl.contains('boot-full') ? 'full' : cl.contains('boot-calm') ? 'calm' : cl.contains('boot-mini') ? 'mini' : '';
+  if (!mode) return;
+  var rich = mode !== 'mini';
+  var $ = function (id) { return document.getElementById(id); };
+  var kb = function (n) { return (n / 1024).toFixed(1) + ' KB'; };
 
-  var P = { fonts: 0, js: 0, data: 0 };
-  var W = full ? { fonts: 0.3, js: 0.3, data: 0.4 } : { fonts: 0.5, js: 0.5, data: 0 };
-  var MIN = full ? 800 : 260;
-  var MAX = full ? 2500 : 700;
-  var fill = document.getElementById('boot-fill');
-  var pct = document.getElementById('boot-pct');
-  var log = document.getElementById('boot-log');
-  var typed = document.getElementById('boot-type');
-  var t0 = performance.now();
-  var shown = 0;
-  var done = false;
-  var queue = [];
-  var pumping = false;
+  // Weights sum to 1. boot-fx.js completes att / map / gh / img.
+  var W = rich ? { f0: 0.07, f1: 0.07, f2: 0.07, js: 0.22, fx: 0.06, att: 0.14, map: 0.2, gh: 0.08, img: 0.09 } : { f0: 0.17, f1: 0.17, f2: 0.16, js: 0.5 };
+  var T = {};
+  Object.keys(W).forEach(function (k) { T[k] = { w: W[k], p: 0, done: false }; });
+  var real = function () { var s = 0; for (var k in T) s += T[k].w * T[k].p; return s; };
 
-  window.__boot = { mark: function (k) { if (k === 'js') { P.js = 1; line('attention heads: 12'); } } };
+  var B = window.__boot = {
+    mode: mode, ev: [], fx: null, p: 0, kb: kb,
+    emit: function (t, v) { B.ev.push([t, v]); if (B.fx) B.fx.on(t, v); },
+    attach: function (fx) { B.fx = fx; B.ev.forEach(function (e) { fx.on(e[0], e[1]); }); },
+    setp: function (k, p) { if (T[k] && !T[k].done) T[k].p = p; },
+    done: complete, log: log,
+    size: function (test) {
+      var s = 0;
+      performance.getEntriesByType('resource').forEach(function (r) { if (test(r.name)) s += r.transferSize || r.encodedBodySize || 0; });
+      return s;
+    },
+    mark: function (k) {
+      if (k === 'js') complete('js', 'sampler ready · ' + kb(B.size(function (n) { return /\/assets\/js\//.test(n) && !/boot-fx/.test(n); })));
+    }
+  };
+  B.sizeOf = function (part) { return B.size(function (n) { return n.indexOf(part) > -1; }); };
 
-  // Fonts.
+  function complete(k, msg) {
+    var t = T[k];
+    if (!t || t.done) return;
+    t.p = 1; t.done = true;
+    B.emit('task', { id: k, w: t.w });
+    if (msg) log(msg);
+  }
+
   var faces = ['italic 400 1em "Instrument Serif"', '400 1em "Inter Tight"', '400 1em "JetBrains Mono"'];
   var loaded = 0;
   var fontDone = function () {
-    loaded++;
-    P.fonts = loaded / faces.length;
-    if (loaded === faces.length) line('tokenizer ready');
+    complete('f' + loaded, null);
+    if (++loaded === faces.length) log('fonts resolved · 3/3 · ' + kb(B.sizeOf('.woff2')));
   };
-  faces.forEach(function (f) {
-    if (document.fonts && document.fonts.load) document.fonts.load(f).then(fontDone, fontDone); else fontDone();
-  });
+  faces.forEach(function (f) { if (document.fonts && document.fonts.load) document.fonts.load(f).then(fontDone, fontDone); else fontDone(); });
 
-  // Data files used by the attention lines and the embedding map (full boot only).
-  if (full) {
-    window.__data = {};
-    var frac = { attention: 0, map: 0 };
-    var update = function () { P.data = (frac.attention + frac.map) / 2; };
-    var read = function (r, on) {
-      var len = Number(r.headers.get('content-length')) || 0;
-      if (!r.body || !r.body.getReader) return r.text();
-      var rd = r.body.getReader();
-      var parts = [];
-      var got = 0;
-      return rd.read().then(function step(x) {
-        if (x.done) return new Blob(parts).text();
-        parts.push(x.value);
-        got += x.value.length;
-        if (len) on(Math.min(0.95, got / len));
-        return rd.read().then(step);
-      });
-    };
-    [['attention', 'attention'], ['latent-map', 'map']].forEach(function (n) {
-      var key = n[1];
-      window.__data[key] = fetch('/data/' + n[0] + '.json')
-        .then(function (r) { return read(r, function (f) { frac[key] = f; update(); }); })
-        .then(function (t) { return JSON.parse(t); })
-        .catch(function () { return null; })
-        .then(function (v) {
-          frac[key] = 1;
-          update();
-          if (frac.attention === 1 && frac.map === 1) line('portfolio embedded', 'embedding portfolio…');
-          return v;
-        });
-    });
-    line('embedding portfolio…');
+  if (rich) {
+    var s = document.createElement('script');
+    s.src = '/assets/js/boot-fx.js?v=__V__';
+    s.async = true;
+    s.onload = s.onerror = function () { complete('fx', null); };
+    document.head.appendChild(s);
   }
 
-  // Typed first line.
-  var text = 'loading weights...';
-  if (full) {
-    var i = 0;
-    var type = function () {
-      if (done) return;
-      typed.textContent = text.slice(0, ++i);
-      if (i < text.length) setTimeout(type, 30);
-    };
-    type();
-  }
-
-  // Status lines are queued so each one is readable, and flicker briefly as they appear.
-  function line(msg, replace) {
-    if (!full) return;
-    queue.push([msg, replace]);
+  /* ---------- streaming log: 3-4 lines visible, older ones fade upward ---------- */
+  var logEl = $('boot-log');
+  var queue = [];
+  var pumping = false;
+  function log(msg) {
+    if (!rich) return;
+    queue.push(msg);
     if (!pumping) pump();
   }
   function pump() {
-    var item = queue.shift();
-    if (!item) { pumping = false; return; }
+    var msg = queue.shift();
+    if (!msg) { pumping = false; return; }
     pumping = true;
-    var li = null;
-    if (item[1]) {
-      var items = log.children;
-      for (var k = 0; k < items.length; k++) if (items[k].textContent === item[1]) li = items[k];
-    }
-    if (!li) { li = document.createElement('li'); log.appendChild(li); }
-    li.textContent = item[0];
-    li.className = '';
-    void li.offsetWidth;
+    var li = document.createElement('li');
+    li.textContent = msg;
     li.className = 'flick';
-    setTimeout(pump, 150);
+    logEl.appendChild(li);
+    while (logEl.children.length > 5) logEl.removeChild(logEl.firstChild);
+    setTimeout(pump, 130);
   }
 
-  function paint(v) {
-    fill.style.transform = 'scaleX(' + v + ')';
-    if (pct) pct.textContent = Math.round(v * 100) + '%';
-  }
+  /* ---------- timeline ---------- */
+  var MIN = rich ? 1200 : 400;
+  var MAX = rich ? 3000 : 800;
+  var t0 = performance.now();
+  var shown = 0;
+  var done = false;
+  var decStarted = false;
+  var decDone = false;
+  var greetText = '';
+  var capEl = $('boot-cap');
+  var greetEl = $('boot-greet');
+  var live = $('boot-live');
+  var announce = function (t) { if (live) live.textContent = t; };
+  announce("Loading Sahaj Saliya's portfolio");
 
-  function real() { return P.fonts * W.fonts + P.js * W.js + P.data * W.data; }
+  function startDecode() {
+    decStarted = true;
+    var fx = B.fx;
+    // Full text comes from boot-fx.js (it knows the visitor context). Mini reuses the greeting of this session.
+    try { greetText = fx && fx.greeting ? fx.greeting() : sessionStorage.getItem('greeting') || ''; } catch (e) { }
+    greetText = greetText || "Loading Sahaj Saliya's portfolio.";
+    var fin = function () { decDone = true; announce(greetText); };
+    if (mode === 'full' && fx && fx.decode) fx.decode(greetText, fin);
+    else { greetEl.textContent = greetText; fin(); }
+  }
 
   function tick() {
     if (done) return;
-    var elapsed = performance.now() - t0;
+    var t = performance.now() - t0;
     var r = real();
-    // The bar can never run ahead of real progress, nor fill faster than MIN allows.
-    var cap = Math.min(r, elapsed / MIN, 1);
-    shown += (cap - shown) * 0.25;
+    // The display never runs ahead of real progress, nor fills faster than ~1.1 s.
+    var cap = Math.min(r, t / 1100, 1);
+    shown += (cap - shown) * 0.2;
     if (cap - shown < 0.002) shown = cap;
-    paint(shown);
-    if (elapsed >= MAX) return finish(r >= 1 ? 'ok' : 'late');
-    if (r >= 1 && shown >= 1 && elapsed >= MIN) return finish('ok');
+    B.p = shown;
+    if (rich) capEl.firstChild.textContent = 'forward pass · layer ' + Math.min(5, 1 + Math.floor(shown * 5)) + '/5 · ' + Math.round(shown * 100) + '%';
+    var waitGh = rich && B.returning && !T.gh.done && t < 1000;
+    var ready = !rich || ((B.fx || t >= 1400) && t >= 600 && (shown >= 0.5 || t >= 1400));
+    if (!decStarted && ready && !waitGh) startDecode();
+    if (t >= MAX) return go('late');
+    if (decDone && t >= MIN && (!rich || (r >= 1 && shown >= 0.995))) return go('ok');
     (window.requestAnimationFrame || setTimeout)(tick, 16);
   }
 
-  function finish(how) {
+  function go(how) {
     if (done) return;
     done = true;
-    if (how === 'ok') { paint(1); line('ready'); }
-    var go = function () {
-      el.classList.add('out');
-      d.classList.add('boot-reveal');
-      d.classList.remove('booting');
-      document.dispatchEvent(new Event('boot:done'));
-      setTimeout(function () {
-        if (el.parentNode) el.parentNode.removeChild(el);
-        d.classList.remove('boot-full', 'boot-quick');
-      }, 900);
-    };
-    setTimeout(go, full && how === 'ok' ? 260 : 0);
+    if (!decStarted) startDecode();
+    if (!decDone) { if (B.fx && B.fx.skipDecode) B.fx.skipDecode(); else greetEl.textContent = greetText; announce(greetText); }
+    if (how === 'ok') {
+      B.emit('task', { id: 'done' });
+      log('forward pass complete · ' + ((performance.now() - t0) / 1000).toFixed(1) + ' s');
+    }
+    // Only the home page counts as a visit, so reading the blog first does not make a visitor "returning".
+    if (rich) try { localStorage.setItem('lastVisit', new Date().toISOString()); } catch (e) { }
+    var fly = mode === 'full' && how !== 'skip' && B.fx && B.fx.handoff;
+    var ms = 0;
+    el.classList.add('out');
+    cl.add('boot-reveal');
+    cl.remove('booting');
+    if (fly) ms = B.fx.handoff() || 0;
+    document.dispatchEvent(new Event('boot:done'));
+    setTimeout(function () {
+      if (el.parentNode) el.parentNode.removeChild(el);
+      cl.remove('boot-full', 'boot-calm', 'boot-mini');
+    }, 900 + ms);
   }
 
   // Click or any key skips.
-  var skip = function () { finish('skip'); };
+  var skip = function () { go('skip'); };
   document.addEventListener('keydown', skip, { once: true });
   el.addEventListener('pointerdown', skip, { once: true });
-
-  // If anything above stalls, never leave the screen up.
-  setTimeout(function () { finish('late'); }, MAX + 400);
+  setTimeout(function () { go('late'); }, MAX + 400);
   tick();
 })();

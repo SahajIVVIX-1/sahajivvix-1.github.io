@@ -1,6 +1,7 @@
 // Renders the static site (index, 404, blogs, sitemap) from content/ and data/.
 // Usage: node scripts/build.mjs [--embed]   (--embed also recomputes the ML data first)
-import { readdirSync, existsSync } from 'node:fs';
+import { readdirSync, readFileSync, existsSync } from 'node:fs';
+import { createHash } from 'node:crypto';
 import { marked } from 'marked';
 import { readJSON, readText, write, esc, fmtMonth, fmtRange, parseFrontMatter, slug, path } from './lib.mjs';
 
@@ -17,7 +18,7 @@ const minify = (s) => s.replace(/\/\*[\s\S]*?\*\//g, '').replace(/^\s*\/\/.*$/gm
 const BOOT_CSS = minify(readText('scripts/boot/boot.css'));
 const BOOT_HEAD = minify(readText('scripts/boot/head.js'));
 const BOOT_JS = minify(readText('scripts/boot/boot.js'));
-const BOOT_HTML = `<div id="boot" aria-hidden="true"><div class="boot-box"><p class="boot-line"><span id="boot-type"></span><i class="boot-caret"></i></p><div class="boot-bar"><i id="boot-fill"></i></div><p class="boot-pct" id="boot-pct">0%</p><ul id="boot-log"></ul><p class="boot-skip">click or press any key to skip</p></div></div><script>${BOOT_JS}</script>`;
+const bootHtml = () => `<div id="boot-live" class="bs" role="status" aria-live="polite"></div><div id="boot" aria-hidden="true"><canvas id="boot-cv"></canvas><div class="boot-box"><p class="boot-cap" id="boot-cap"><span>forward pass · layer 1/5 · 0%</span><span>τ 0.7 · weights seeded by your visitor tag</span></p><p class="boot-feat" id="boot-feat"></p><div class="boot-stage"></div><p class="boot-greet" id="boot-greet"></p><div class="boot-bottom"><ul id="boot-log"></ul><div class="boot-mat"><canvas id="boot-mat"></canvas><p>attention · head 3</p></div></div><p class="boot-hint"><span>heuristic guess · computed in your browser, nothing is sent anywhere</span><span>click or press any key to skip</span></p></div></div><script>${BOOT_JS.replace('__V__', ASSET_VERSION)}</script>`;
 const profile = readJSON('content/profile.json');
 const projects = readJSON('content/projects.json');
 const github = readJSON('data/github.json', { repos: [], languages: {}, events: [], user: {} });
@@ -25,6 +26,15 @@ const heatmaps = readJSON('data/heatmaps.json', {});
 const posts = loadPosts();
 const BLOG_LIVE = posts.length > 0;
 const BUILD_VERSION = (github.fetched_at || new Date().toISOString()).slice(0, 16);
+// Cache-busting token for CSS/JS URLs: a hash of the files themselves, so a changed asset is never served stale.
+const ASSET_VERSION = (() => {
+  const h = createHash('sha1');
+  const walk = (dir) => readdirSync(path(dir), { withFileTypes: true }).forEach((e) => {
+    if (e.isDirectory()) walk(`${dir}/${e.name}`); else if (/\.(css|js)$/.test(e.name)) h.update(readFileSync(path(`${dir}/${e.name}`)));
+  });
+  walk('assets/css'); walk('assets/js');
+  return h.digest('hex').slice(0, 8);
+})();
 
 // ---------- shared shell ----------
 
@@ -62,7 +72,7 @@ function head({ title, description, url, image = '/assets/img/og.png', type = 'w
 <script>${THEME_BOOT}</script>
 <style>${BOOT_CSS}</style>
 <script>${BOOT_HEAD}</script>
-<link rel="stylesheet" href="/assets/css/main.css?v=${BUILD_VERSION.replace(/\D/g, '')}">
+<link rel="stylesheet" href="/assets/css/main.css?v=${ASSET_VERSION}">
 ${extra}
 </head>`;
 }
@@ -114,7 +124,7 @@ function footer() {
 function shellScripts() {
   return `<button class="ask-fab shimmer" type="button" data-ask-open aria-label="Ask my portfolio (chatbot)"><span class="fab-dot" aria-hidden="true"></span><span>Ask</span></button>
 <div id="ask-root"></div>
-<script type="module" src="/assets/js/main.js?v=${BUILD_VERSION.replace(/\D/g, '')}"></script>`;
+<script type="module" src="/assets/js/main.js?v=${ASSET_VERSION}"></script>`;
 }
 
 // ---------- home sections ----------
@@ -155,12 +165,26 @@ function heroSection() {
     <p class="hero-trace mono" aria-hidden="true" data-trace>&nbsp;</p>
     <div class="hero-foot">
       <p class="hero-lede">${esc(profile.tagline)}</p>
-      <button class="prompt-btn shimmer" type="button" data-ask-open>
-        <span class="mono prompt-caret" aria-hidden="true">›</span>
-        <span>Ask my portfolio anything</span>
-        <span class="prompt-blink" aria-hidden="true"></span>
-      </button>
+      <div class="hero-actions">
+        <button class="prompt-btn shimmer" type="button" data-ask-open>
+          <span class="mono prompt-caret" aria-hidden="true">›</span>
+          <span>Ask my portfolio anything</span>
+          <span class="prompt-blink" aria-hidden="true"></span>
+        </button>
+        <a class="cta2 shimmer" data-persona-cta hidden></a>
+      </div>
     </div>
+    <p class="persona-line mono" data-persona-line hidden>
+      <span>view tuned for <b data-persona-name></b></span>
+      <span aria-hidden="true">·</span>
+      <button type="button" class="tok-link persona-switch" data-persona-switch aria-expanded="false" aria-controls="persona-menu">not you? switch</button>
+      <span id="persona-menu" class="persona-menu" data-persona-menu hidden role="group" aria-label="Choose a view">
+        <button type="button" data-persona="recruiter" aria-pressed="false">recruiter</button>
+        <button type="button" data-persona="developer" aria-pressed="false">developer</button>
+        <button type="button" data-persona="researcher" aria-pressed="false">researcher</button>
+        <button type="button" data-persona="curious" aria-pressed="false">curious</button>
+      </span>
+    </p>
     <ul class="focus-chips mono" aria-label="Focus areas">
       ${profile.focus.map((f, i) => `<li><span class="tid">${String(1000 + i * 137).padStart(5, '0')}</span>${esc(f)}</li>`).join('')}
     </ul>
@@ -173,7 +197,7 @@ function aboutSection() {
   const e = profile.education;
   return `<section class="layer about" id="about" data-layer="2" data-layer-name="Embedding" aria-labelledby="about-h">
   <header class="layer-head">
-    <p class="layer-tag mono">Layer 02 · Embedding</p>
+    <p class="layer-tag mono" data-lt="Embedding">Layer 02 · Embedding</p>
     <h2 id="about-h" class="layer-title">A dense vector of <em>one person</em>.</h2>
   </header>
   <div class="about-grid">
@@ -201,7 +225,7 @@ function aboutSection() {
 function mapSection() {
   return `<section class="layer map" id="map" data-layer="3" data-layer-name="Latent space" aria-labelledby="map-h">
   <header class="layer-head">
-    <p class="layer-tag mono">Layer 03 · Latent space</p>
+    <p class="layer-tag mono" data-lt="Latent space">Layer 03 · Latent space</p>
     <h2 id="map-h" class="layer-title">Everything I know, <em>projected</em>.</h2>
     <p class="layer-sub">Each point is a word or passage from my projects, skills and experience, embedded with MiniLM and reduced with UMAP. Similar meanings land close together. Hover to read a point, click a labelled one to go there.</p>
   </header>
@@ -242,11 +266,11 @@ function heatmapSVG(id) {
 function projectCard(p, i) {
   const repo = `https://github.com/SahajIVVIX-1/${p.repo}`;
   const gh = github.repos.find((r) => r.name === p.repo);
-  return `<article class="card layer" id="p-${p.id}" data-layer="${4 + i}" data-layer-name="Head ${i + 1} · ${esc(p.name)}" aria-labelledby="p-${p.id}-h">
+  return `<article class="card layer" id="p-${p.id}" data-default-index="${i}" data-layer="${4 + i}" data-layer-name="Head ${i + 1} · ${esc(p.name)}" aria-labelledby="p-${p.id}-h">
   <header class="card-head">
     ${heatmapSVG(p.id)}
     <div class="card-id">
-      <p class="mono card-kicker">Model card · ${String(i + 1).padStart(2, '0')} / ${String(projects.length).padStart(2, '0')} · ${esc(p.kind)}</p>
+      <p class="mono card-kicker">Model card · <span data-ci>${String(i + 1).padStart(2, '0')}</span> / ${String(projects.length).padStart(2, '0')} · ${esc(p.kind)}</p>
       <h3 id="p-${p.id}-h" class="card-title">${esc(p.name)}</h3>
       <p class="mono card-task">${esc(p.task)}</p>
       <div class="card-metric"><span class="metric-val">${esc(p.metric.value)}</span><span class="metric-label mono">${esc(p.metric.label)}</span></div>
@@ -270,7 +294,7 @@ function projectCard(p, i) {
 function workSection() {
   return `<section class="work" id="work" aria-labelledby="work-h">
   <header class="layer-head work-head">
-    <p class="layer-tag mono">Layers 04–08 · Attention heads</p>
+    <p class="layer-tag mono" data-lt-range="Attention heads">Layers 04–08 · Attention heads</p>
     <h2 id="work-h" class="layer-title">Five heads, <em>five things</em> they learned.</h2>
     <p class="layer-sub">Every project is documented like a model card: problem, approach, evaluation and limits. The header heatmap is real self-attention over that project's README, computed when the site builds.</p>
   </header>
@@ -282,7 +306,7 @@ function skillsSection() {
   let n = 0;
   return `<section class="layer skills" id="skills" data-layer="9" data-layer-name="Parameters" aria-labelledby="skills-h">
   <header class="layer-head">
-    <p class="layer-tag mono">Layer 09 · Parameters</p>
+    <p class="layer-tag mono" data-lt="Parameters">Layer 09 · Parameters</p>
     <h2 id="skills-h" class="layer-title">The weights I <em>reach for</em>.</h2>
   </header>
   <div class="skill-groups" data-attend>
@@ -356,7 +380,7 @@ function experienceSection() {
   const { ms, svg } = lossCurve();
   return `<section class="layer training" id="experience" data-layer="10" data-layer-name="Training run" aria-labelledby="exp-h">
   <header class="layer-head">
-    <p class="layer-tag mono">Layer 10 · Training run</p>
+    <p class="layer-tag mono" data-lt="Training run">Layer 10 · Training run</p>
     <h2 id="exp-h" class="layer-title">Loss goes down. <em>Checkpoints</em> stay.</h2>
     <p class="layer-sub">My time at PDEU drawn as a training run. The checkpoint dates are real. The curve itself is illustrative, with a smoothed line over noisy raw loss as in TensorBoard.</p>
   </header>
@@ -381,7 +405,7 @@ function evalSection() {
   const recent = (github.repos || []).slice().sort((a, b) => b.pushed_at.localeCompare(a.pushed_at)).slice(0, 5);
   return `<section class="layer eval" id="certs" data-layer="11" data-layer-name="Evaluation" aria-labelledby="eval-h">
   <header class="layer-head">
-    <p class="layer-tag mono">Layer 11 · Evaluation</p>
+    <p class="layer-tag mono" data-lt="Evaluation">Layer 11 · Evaluation</p>
     <h2 id="eval-h" class="layer-title">Held-out <em>benchmarks</em>.</h2>
   </header>
   <div class="eval-grid">
@@ -403,7 +427,7 @@ function evalSection() {
 
 function contactSection() {
   return `<section class="layer contact" id="contact" data-layer="12" data-layer-name="Output head" aria-labelledby="contact-h">
-  <p class="layer-tag mono">Layer 12 · Output</p>
+  <p class="layer-tag mono" data-lt="Output">Layer 12 · Output</p>
   <h2 id="contact-h" class="contact-title">The next token<br><em>is yours.</em></h2>
   <p class="contact-lede">Open to AI/ML internships, research collaborations and roles after May 2027. Email is the fastest way to reach me.</p>
   <a class="contact-mail shimmer" href="mailto:${profile.email}">${esc(profile.email)}</a>
@@ -442,7 +466,7 @@ function renderHome() {
     extra: personLD(),
   })}
 <body class="home">
-${BOOT_HTML}
+${bootHtml()}
 ${header({ home: true })}
 ${railNav()}
 <main id="main">
@@ -468,7 +492,7 @@ ${shellScripts()}
 function simplePage({ title, description, url, layer, kicker, heading, body, noindex = false }) {
   return `${head({ title, description, url, extra: noindex ? '<meta name="robots" content="noindex">' : '' })}
 <body class="page">
-${BOOT_HTML}
+${bootHtml()}
 ${header()}
 <main id="main" class="page-main">
   <section class="layer solo" data-layer="${layer}" data-layer-name="${esc(kicker)}">

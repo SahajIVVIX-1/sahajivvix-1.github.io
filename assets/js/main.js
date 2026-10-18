@@ -3,6 +3,7 @@ import { initTheme } from './theme.js';
 import { initHero } from './hero.js';
 import { initRail } from './rail.js';
 import { initLoss } from './loss.js';
+import { initPersona } from './persona.js';
 
 export const reducedMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
 // Phones, low core counts and data-saver get lighter versions of the effects.
@@ -11,6 +12,8 @@ export const lowPower = matchMedia('(max-width: 700px), (pointer: coarse)').matc
   || navigator.connection?.saveData === true;
 
 initTheme();
+// Persona first: it reorders and renumbers the layers that the rail and hero then read.
+initPersona();
 initRail();
 initHero();
 initLoss();
@@ -74,7 +77,11 @@ function initLazy() {
   // Attention lines: after the page is idle, only for fine pointers (hover does not exist on touch).
   const idle = window.requestIdleCallback || ((f) => setTimeout(f, 1200));
   if (matchMedia('(hover: hover)').matches && !reducedMotion) {
-    idle(() => import('./attention.js').then((m) => m.initAttention({ lowPower })));
+    // Wrapping ~400 words in spans is DOM work; wait until the boot screen has finished so it cannot cause jank.
+    const afterBoot = (fn) => (document.documentElement.classList.contains('booting')
+      ? document.addEventListener('boot:done', () => setTimeout(fn, 1200), { once: true })
+      : fn());
+    idle(() => afterBoot(() => import('./attention.js').then((m) => m.initAttention({ lowPower }))));
   }
 
   // Latent map: when it is about to scroll into view.

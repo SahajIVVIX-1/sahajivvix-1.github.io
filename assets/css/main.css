@@ -70,13 +70,12 @@ body {
   overflow-x: hidden;
   transition: background-color .5s var(--ease), color .5s var(--ease);
 }
-body::before { /* paper grain: a fixed noise field, cheaper than an image */
-  content: ""; position: fixed; inset: 0; pointer-events: none; z-index: 100; opacity: var(--grain-opacity);
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 .9 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
-  mix-blend-mode: multiply;
+body::before { /* paper grain: a small pre-rendered noise tile; no blend mode or filter, which are slow to composite */
+  content: ""; position: fixed; inset: 0; pointer-events: none; z-index: 100;
+  background: url("/assets/img/grain-light.png");
 }
-:root[data-theme="dark"] body::before { mix-blend-mode: screen; }
-@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) body::before { mix-blend-mode: screen; } }
+:root[data-theme="dark"] body::before { background-image: url("/assets/img/grain-dark.png"); }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) body::before { background-image: url("/assets/img/grain-dark.png"); } }
 
 img, svg, canvas { display: block; max-width: 100%; }
 a { color: inherit; }
@@ -590,3 +589,24 @@ body.is-leaving main, body.is-leaving .site-foot { animation: softmaxOut .35s va
 .pal-list li.is-ask > span:first-child { font-family: var(--serif); font-style: italic; font-size: 1.1em; }
 .pal-foot { display: flex; gap: 16px; padding: 10px 16px; border-top: 1px solid var(--rule); color: var(--ink-3); font-size: 11px; }
 .pal-foot kbd { margin-right: 3px; }
+
+/* ---------- persona: hero button and "not you? switch" ---------- */
+.hero-actions { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }
+.cta2 {
+  display: inline-flex; align-items: center; min-height: 52px; padding: 0 22px; border-radius: 999px; text-decoration: none;
+  border: 1px solid var(--ink); color: var(--ink); font-weight: 500; transition: transform .25s var(--ease), background .2s, color .2s;
+}
+.cta2:hover { transform: translateY(-2px); background: var(--ink); color: var(--paper); }
+.cta2[hidden] { display: none; }
+.persona-line { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 10px; margin-top: 18px; color: var(--ink-3); font-size: 11.5px; }
+.persona-line b { font-weight: 500; color: var(--ink-2); }
+.persona-switch { border: 0; background-color: transparent; padding: 10px 2px; margin: -10px 0; cursor: pointer; color: var(--ink-2); font: inherit; }
+.persona-menu { display: inline-flex; flex-wrap: wrap; gap: 6px; }
+.persona-menu[hidden] { display: none; }
+.persona-menu button { min-height: 32px; padding: 0 12px; border-radius: 999px; border: 1px solid var(--rule-2); background: transparent; color: var(--ink-2); cursor: pointer; font: inherit; }
+.persona-menu button:hover { border-color: var(--accent); color: var(--accent); }
+.persona-menu button[aria-pressed="true"] { border-color: var(--accent); background: var(--accent-soft); color: var(--ink); }
+
+/* Off-screen sections are not rendered until they are near the viewport: this cuts the first layout of the
+   page (the boot screen needs it early) a lot. The map section is left out because its canvas needs a real size. */
+.card, .skills, .training, .eval, .contact { content-visibility: auto; contain-intrinsic-size: auto 800px; }

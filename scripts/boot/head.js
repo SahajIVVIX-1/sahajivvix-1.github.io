@@ -1,15 +1,18 @@
 /* Runs in <head>, before first paint.
-   1. Picks the boot mode: "full" on the first load of a visit to the home page, otherwise "quick".
+   1. Picks the boot mode:
+        full  first visit of a session, home page: the whole "forward pass"
+        calm  same, but the visitor prefers reduced motion: static network + greeting
+        mini  anything else (same-session return, other pages): greeting only, ~400 ms
    2. Gives the visitor a tag (random 6 characters, kept in this browser) and puts it in the address bar. */
 (function () {
   var d = document.documentElement;
-  var mode = 'quick';
+  var mode = 'mini';
   try {
+    // Only the home page counts: reading the blog first must not use up the full boot.
     var seen = sessionStorage.getItem('booted');
-    sessionStorage.setItem('booted', '1');
     var home = location.pathname === '/' || location.pathname === '/index.html';
     var calm = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
-    if (home && !seen && !calm) mode = 'full';
+    if (home) { sessionStorage.setItem('booted', '1'); if (!seen) mode = calm ? 'calm' : 'full'; }
   } catch (e) { }
   d.className += ' booting boot-' + mode;
 

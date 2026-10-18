@@ -1,8 +1,8 @@
 // "Layer n / 12" rail: tracks which section (layer) is in the middle of the viewport.
+// Layers can be reordered by persona.js, so the rail re-reads them on "persona:change".
 export function initRail() {
   const rail = document.querySelector('[data-rail]');
-  const layers = [...document.querySelectorAll('.layer[data-layer]')].filter((l) => Number(l.dataset.layer) > 0);
-  if (!rail || !layers.length) return;
+  if (!rail) return;
   const n = rail.querySelector('[data-rail-n]');
   const name = rail.querySelector('[data-rail-name]');
   const ticks = [...rail.querySelectorAll('[data-rail-tick]')];
@@ -11,12 +11,9 @@ export function initRail() {
   bar.setAttribute('aria-hidden', 'true');
   document.body.append(bar);
 
-  ticks.forEach((t) => {
-    const target = layers.find((l) => l.dataset.layer === t.dataset.railTick);
-    if (target?.id) t.href = `#${target.id}`;
-  });
-
   let current = null;
+  let io = null;
+
   const set = (layer) => {
     if (layer === current) return;
     current = layer;
@@ -31,10 +28,22 @@ export function initRail() {
     });
   };
 
-  const io = new IntersectionObserver((entries) => {
-    for (const e of entries) if (e.isIntersecting) set(e.target);
-  }, { rootMargin: '-45% 0px -50% 0px' });
-  layers.forEach((l) => io.observe(l));
+  const bind = () => {
+    const layers = [...document.querySelectorAll('.layer[data-layer]')].filter((l) => Number(l.dataset.layer) > 0);
+    if (!layers.length) return;
+    ticks.forEach((t) => {
+      const target = layers.find((l) => l.dataset.layer === t.dataset.railTick);
+      if (target?.id) t.href = `#${target.id}`;
+    });
+    io?.disconnect();
+    current = null;
+    io = new IntersectionObserver((entries) => {
+      for (const e of entries) if (e.isIntersecting) set(e.target);
+    }, { rootMargin: '-45% 0px -50% 0px' });
+    layers.forEach((l) => io.observe(l));
+  };
+  bind();
+  document.addEventListener('persona:change', bind);
 
   const onScroll = () => {
     const max = document.documentElement.scrollHeight - innerHeight;
