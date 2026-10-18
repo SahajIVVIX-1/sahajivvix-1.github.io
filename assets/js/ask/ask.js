@@ -76,8 +76,10 @@ export function initAsk() {
     } else start();
   });
 
+  let closeTimer = 0;
   function open(q) {
     opener = document.activeElement;
+    clearTimeout(closeTimer);
     panel.hidden = false;
     requestAnimationFrame(() => panel.classList.add('is-open'));
     input.focus();
@@ -85,7 +87,8 @@ export function initAsk() {
   }
   function close() {
     panel.classList.remove('is-open');
-    setTimeout(() => { panel.hidden = true; }, 250);
+    clearTimeout(closeTimer);
+    closeTimer = setTimeout(() => { panel.hidden = true; }, 250);
     opener?.focus?.();
   }
 
@@ -132,7 +135,7 @@ export function initAsk() {
       const cite = document.createElement('p');
       cite.className = 'cite mono';
       cite.innerHTML = `${by ? `<span class="muted">${by}</span>` : ''}${sources.map((s) => `<a class="tok-link" href="${s.url}"${s.url.startsWith('http') ? ' target="_blank" rel="noopener"' : ''}>${esc(s.label)}</a>`).join('')}`;
-      cite.addEventListener('click', (e) => { const a = e.target.closest('a'); if (a && a.getAttribute('href').startsWith('/#') && location.pathname === '/') { close(); } });
+      cite.addEventListener('click', (e) => { const a = e.target.closest('a'); if (a && a.getAttribute('href').startsWith('/#') && (location.pathname === '/' || /^\/ip=/.test(location.pathname))) { close(); } });
       bubble.append(cite);
     }
     log.scrollTop = log.scrollHeight;
