@@ -209,6 +209,11 @@ function heroSection() {
     <ul class="focus-chips mono" aria-label="Focus areas">
       ${profile.focus.map((f, i) => `<li><span class="tid">${String(1000 + i * 137).padStart(5, '0')}</span>${esc(f)}</li>`).join('')}
     </ul>
+    <a class="hero-badge" href="#recognition" data-badge aria-label="Guinness World Records participant, 2022. See details">
+      <span class="hb-logo"><span class="hb-disc"><img class="hb-img" src="/assets/achievements/guinness/guinness-world-records-logo.svg" width="92" height="92" alt="" decoding="async"><i class="gwr-star" aria-hidden="true"></i></span><canvas class="hb-cv" aria-hidden="true"></canvas></span>
+      <span class="hb-text"><span class="hb-name">Guinness World Records</span><span class="hb-sub mono">participant · 2022</span></span>
+      <span class="hb-ph mono" aria-hidden="true">&lt;next&gt; …</span>
+    </a>
   </div>
   <a class="scroll-cue mono" href="#about" aria-label="forward pass, scroll to layer 2"><span>forward pass</span><span class="cue-line" aria-hidden="true"></span></a>
 </section>`;
@@ -241,7 +246,7 @@ function aboutSection() {
       <div><dt>span</dt><dd>${fmtRange(e.start, e.end)}</dd></div>
       <div><dt>cgpa</dt><dd>${esc(e.cgpa)}</dd></div>
       <div><dt>based</dt><dd>${esc(profile.location)}</dd></div>
-      <div><dt>recognition</dt><dd><a class="tok-link" href="#guinness">${esc(gwr.title)} · ${gwr.year}</a></dd></div>
+      <div id="recognition"><dt>recognition</dt><dd><a class="tok-link" href="#guinness">${esc(gwr.title)} · ${gwr.year}</a></dd></div>
     </dl>
   </div>
 </section>`;
