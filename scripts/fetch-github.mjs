@@ -33,10 +33,26 @@ try {
   }
   let events = [];
   try {
-    events = (await gh(`/users/${USER}/events/public?per_page=30`))
+    const raw = (await gh(`/users/${USER}/events/public?per_page=30`))
       .filter((e) => ['PushEvent', 'CreateEvent', 'ReleaseEvent', 'PullRequestEvent'].includes(e.type))
-      .slice(0, 12)
-      .map((e) => ({ type: e.type, repo: e.repo.name.split('/')[1], at: e.created_at }));
+      .slice(0, 30);
+    const known = new Map((previous?.events || []).filter((e) => e.head).map((e) => [e.head, e.commits]));
+    for (const e of raw) {
+      const ev = { type: e.type, repo: e.repo.name.split('/')[1], at: e.created_at };
+      if (e.type === 'PushEvent') {
+        // The events API no longer reports commit counts, so ask the compare endpoint once per push
+        // and remember the answer (keyed by head sha) so hourly runs stay cheap.
+        ev.head = e.payload.head;
+        const before = e.payload.before;
+        if (known.has(ev.head)) ev.commits = known.get(ev.head);
+        else if (!before || /^0+$/.test(before)) ev.commits = null; // new branch: count unknown
+        else {
+          try { ev.commits = (await gh(`/repos/${e.repo.name}/compare/${before}...${ev.head}`)).total_commits; }
+          catch { ev.commits = null; }
+        }
+      }
+      events.push(ev);
+    }
   } catch { events = previous?.events || []; }
 
   const slim = repos.map((r) => ({

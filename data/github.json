@@ -1,5 +1,5 @@
 {
- "fetched_at": "2026-10-18T10:36:15.338Z",
+ "fetched_at": "2026-10-18T10:46:13.098Z",
  "user": {
   "login": "SahajIVVIX-1",
   "public_repos": 15,
@@ -183,17 +183,23 @@
   {
    "type": "PushEvent",
    "repo": "BDA-Analytics",
-   "at": "2026-10-16T15:07:22Z"
+   "at": "2026-10-16T15:07:22Z",
+   "head": "5d4aea280a7b3eb9808da6d8ec577ae6fe20c451",
+   "commits": 2
   },
   {
    "type": "PushEvent",
    "repo": "BDA-Analytics",
-   "at": "2026-10-16T14:17:18Z"
+   "at": "2026-10-16T14:17:18Z",
+   "head": "a4392f7975fde953b14c43167a0187f63bc5b557",
+   "commits": 1
   },
   {
    "type": "PushEvent",
    "repo": "BDA-Analytics",
-   "at": "2026-10-16T15:14:57Z"
+   "at": "2026-10-16T15:14:57Z",
+   "head": "01926986200ec5b7004d9db48e410499d15eee96",
+   "commits": 1
   },
   {
    "type": "CreateEvent",
@@ -208,37 +214,121 @@
   {
    "type": "PushEvent",
    "repo": "BDA-Analytics",
-   "at": "2026-10-16T13:06:31Z"
+   "at": "2026-10-16T13:06:31Z",
+   "head": "cd681bbf3901e1fb180c94f69abebd5bbe108a78",
+   "commits": 1
   },
   {
    "type": "PushEvent",
    "repo": "BDA-Analytics",
-   "at": "2026-10-16T13:06:25Z"
+   "at": "2026-10-16T13:06:25Z",
+   "head": "d977dcb04323fb8eb92e18f01678b7a46fb6bebc",
+   "commits": null
   },
   {
    "type": "PushEvent",
    "repo": "BDA-Analytics",
-   "at": "2026-10-16T14:17:19Z"
+   "at": "2026-10-16T14:17:19Z",
+   "head": "9d33d64b55b4f10f2d93354c381635cf91d9a569",
+   "commits": 1
   },
   {
    "type": "PushEvent",
    "repo": "BDA-Analytics",
-   "at": "2026-10-16T12:42:23Z"
+   "at": "2026-10-16T12:42:23Z",
+   "head": "a2b288a925f7fbdf7bf4e0866a6d8858274b551a",
+   "commits": 1
   },
   {
    "type": "PushEvent",
    "repo": "BDA-Analytics",
-   "at": "2026-10-16T13:06:28Z"
+   "at": "2026-10-16T13:06:28Z",
+   "head": "912fc91d1e7b7186e975267c1fd716f07b5bc218",
+   "commits": null
   },
   {
    "type": "PushEvent",
    "repo": "SahajIVVIX-1",
-   "at": "2026-10-16T15:17:38Z"
+   "at": "2026-10-16T15:17:38Z",
+   "head": "1104dc9564db90b0d44c5ca73bde01c6150faa21",
+   "commits": 2
   },
   {
    "type": "PushEvent",
    "repo": "BDA-Analytics",
-   "at": "2026-10-16T15:16:07Z"
+   "at": "2026-10-16T15:16:07Z",
+   "head": "144e5ba68d6aeedac6cb69a87d9e3c5369a3d460",
+   "commits": 2
+  },
+  {
+   "type": "PushEvent",
+   "repo": "BDA-Analytics",
+   "at": "2026-10-16T11:08:06Z",
+   "head": "95cac3e33cf15317510c66161bdae920cb107156",
+   "commits": 1
+  },
+  {
+   "type": "PushEvent",
+   "repo": "BDA-Analytics",
+   "at": "2026-10-16T12:47:25Z",
+   "head": "9770ed9defc906ed233f0766f1d2fc18d6a32665",
+   "commits": 1
+  },
+  {
+   "type": "PushEvent",
+   "repo": "BDA-Analytics",
+   "at": "2026-10-16T12:14:47Z",
+   "head": "399106d42d217471ccc7af51332d5840f7e5e4e8",
+   "commits": 1
+  },
+  {
+   "type": "PullRequestEvent",
+   "repo": "BDA-Analytics",
+   "at": "2026-10-16T15:07:21Z"
+  },
+  {
+   "type": "PullRequestEvent",
+   "repo": "BDA-Analytics",
+   "at": "2026-10-16T15:15:56Z"
+  },
+  {
+   "type": "PullRequestEvent",
+   "repo": "BDA-Analytics",
+   "at": "2026-10-16T15:16:05Z"
+  },
+  {
+   "type": "PullRequestEvent",
+   "repo": "BDA-Analytics",
+   "at": "2026-10-16T15:15:56Z"
+  },
+  {
+   "type": "PullRequestEvent",
+   "repo": "BDA-Analytics",
+   "at": "2026-10-16T15:15:56Z"
+  },
+  {
+   "type": "PullRequestEvent",
+   "repo": "BDA-Analytics",
+   "at": "2026-10-16T15:07:09Z"
+  },
+  {
+   "type": "ReleaseEvent",
+   "repo": "BDA-Analytics",
+   "at": "2026-10-16T12:22:54Z"
+  },
+  {
+   "type": "PushEvent",
+   "repo": "Crohn-Disease-Early-Prediction",
+   "at": "2026-10-12T16:26:39Z",
+   "head": "3175539897c2764f5305ec16c2e30dd64687e61c",
+   "commits": 1
+  },
+  {
+   "type": "PushEvent",
+   "repo": "NLP-Based-Search",
+   "at": "2026-10-11T12:19:45Z",
+   "head": "18d52ae4c6f2cfd6d4563ad3f0aad0a85f5476a4",
+   "commits": 1
   }
  ]
 }
