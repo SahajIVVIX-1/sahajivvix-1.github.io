@@ -85,6 +85,7 @@
       const cs = getComputedStyle(src);
       probe.style.fontFamily = cs.fontFamily;
       probe.style.fontWeight = cs.fontWeight;
+      probe.style.fontStyle = cs.fontStyle; // italic glyphs have their own widths
       probe.style.letterSpacing = cs.letterSpacing;
       probe.style.fontVariantNumeric = cs.fontVariantNumeric;
       probe.style.fontVariationSettings = cs.fontVariationSettings;
