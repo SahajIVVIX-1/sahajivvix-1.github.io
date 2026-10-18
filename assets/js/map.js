@@ -312,7 +312,7 @@ export async function initMap(root, { lowPower = false, reducedMotion = false } 
     if (!u) return;
     if (u.startsWith('#')) {
       document.querySelector(u)?.scrollIntoView({ behavior: reducedMotion ? 'auto' : 'smooth', block: 'start' });
-      // keep ?ip= and any other query in the address bar: only the hash changes
+      // keep the path (/ip=...) and any query in the address bar: only the hash changes
       history.replaceState(null, '', location.pathname + location.search + u);
     } else window.open(u, '_blank', 'noopener');
   }
