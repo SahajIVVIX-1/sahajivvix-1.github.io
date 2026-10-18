@@ -268,14 +268,12 @@ main { position: relative; z-index: 1; }
 
 /* ---------- about ---------- */
 .about-grid { display: grid; gap: 34px; }
-.portrait { margin: 0; width: min(280px, 62vw); position: relative; }
-.portrait img { width: 100%; height: auto; border-radius: 50%; aspect-ratio: 1; object-fit: cover; filter: grayscale(.15) contrast(1.02); }
-.portrait::after { /* a ring of 32 "dimensions" */
-  content: ""; position: absolute; inset: -10px; border-radius: 50%; aspect-ratio: 1; height: auto;
-  background: repeating-conic-gradient(var(--rule-2) 0 1.4deg, transparent 1.4deg 11.25deg);
-  -webkit-mask: radial-gradient(farthest-side, transparent calc(100% - 6px), #000 calc(100% - 5px)); mask: radial-gradient(farthest-side, transparent calc(100% - 6px), #000 calc(100% - 5px));
-}
-.portrait figcaption { margin-top: 16px; color: var(--ink-3); font-size: 11px; }
+.portrait { margin: 0; width: min(260px, 100%); position: relative; }
+.portrait-frame { position: relative; aspect-ratio: 4 / 5; border-radius: 20px; overflow: hidden; border: 1px solid var(--rule-2); background: var(--paper-2); isolation: isolate; }
+.portrait-frame picture { display: block; width: 100%; height: 100%; }
+.portrait-frame img { display: block; width: 100%; height: 100%; object-fit: cover; object-position: 50% 38%; filter: grayscale(.12) contrast(1.02); }
+.cnn-cv { position: absolute; inset: 0; width: 100%; height: 100%; opacity: 0; pointer-events: none; transition: opacity .3s; }
+.portrait figcaption { margin-top: 14px; color: var(--ink-3); font-size: 11px; line-height: 1.4; min-height: 1.4em; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .about-text { display: grid; gap: 18px; max-width: 60ch; }
 .about-text .lead { font-size: clamp(1.25rem, 2.2vw, 1.6rem); line-height: 1.38; letter-spacing: -.015em; }
 .about-text p:not(.lead) { color: var(--ink-2); }
@@ -553,6 +551,7 @@ body.is-leaving main, body.is-leaving .site-foot { animation: softmaxOut .35s va
   .temp-label { display: inline; font-size: 11px; color: var(--ink-3); }
   .hero-foot { grid-template-columns: 1fr auto; }
   .about-grid { grid-template-columns: auto 1fr; }
+  .portrait { width: 280px; }
   .facts { grid-column: 1 / -1; }
   .card-head { grid-template-columns: 200px 1fr; }
   .cb-row { grid-template-columns: 14ch 1fr; gap: 24px; }
@@ -561,7 +560,8 @@ body.is-leaving main, body.is-leaving .site-foot { animation: softmaxOut .35s va
 @media (min-width: 900px) {
   .kbd-btn { display: inline-flex; }
   .site-nav { display: flex; }
-  .about-grid { grid-template-columns: 280px 1fr 300px; gap: 56px; align-items: start; }
+  .about-grid { grid-template-columns: 300px 1fr 280px; gap: 48px; align-items: start; }
+  .portrait { width: 100%; }
   .facts { grid-column: auto; }
   .card-head { grid-template-columns: 240px 1fr; gap: 48px; }
   .heat { width: 240px; }
@@ -739,8 +739,8 @@ body.is-leaving main, body.is-leaving .site-foot { animation: softmaxOut .35s va
 .gt.gt-anchor { position: relative; }
 .gn-host { position: relative; color: transparent !important; }
 .gn { position: absolute; left: 0; top: 0; white-space: pre; font: inherit; letter-spacing: inherit; }
-.gen-box { position: relative; display: block; }
-.gen-cv { position: absolute; inset: 0; width: 100%; height: 100%; border-radius: 50%; transition: opacity .4s; pointer-events: none; }
+.gen-box { position: relative; }
+.gen-cv { position: absolute; inset: 0; width: 100%; height: 100%; transition: opacity .4s; pointer-events: none; }
 .gen-lab { position: absolute; left: 50%; bottom: 8%; transform: translateX(-50%); padding: 2px 8px; border-radius: 999px; font-size: 10px; white-space: nowrap; background: color-mix(in srgb, var(--paper) 80%, transparent); border: 1px solid var(--rule-2); color: var(--ink-2); transition: opacity .4s; pointer-events: none; }
 .gen-cv.is-out, .gen-lab.is-out { opacity: 0; }
 .gen .gen-bars span { transform: scaleX(0); transform-origin: 0 50%; }
@@ -829,3 +829,5 @@ html[data-thinking] .brand-logo .ring-prog { stroke-dasharray: 26 74; animation:
 .bt-cur .dist { font-style: normal; }
 @media (max-width: 640px) { .brand-text { font-size: 17px; } }
 @media (prefers-reduced-motion: reduce) { .brand-logo { transition: none; } html[data-busy] .brand-logo .cursor { animation: none; } }
+
+@media (min-width: 1200px) { .about-grid { grid-template-columns: 340px 1fr 300px; gap: 56px; } }

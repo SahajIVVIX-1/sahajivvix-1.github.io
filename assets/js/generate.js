@@ -8,7 +8,7 @@ import { setBusy } from './busy.js';
 
 const SEEN = 'sahaj:generated';
 const TEXT = [
-  '.layer-tag', '.layer-title', '.contact-title', '.foot-title', '.contact-lede', '.lead', '.about-text p', '.facts dt', '.facts dd', '.portrait figcaption',
+  '.layer-tag', '.layer-title', '.contact-title', '.foot-title', '.contact-lede', '.lead', '.about-text p', '.facts dt', '.facts dd',
   '.card-kicker', '.card-title', '.card-task', '.card-body', '.metric-label', '.card-foot',
   '.sg-name', '.sg-items li', '.role-title', '.role-org', '.role-when', '.ck-t', '.ck-d',
   '.cert-name', '.cert-by', '.gh .sg-name', '.gh-sub', '.gh-recent li', '.lang-key li', '.contact-links li',
@@ -54,7 +54,7 @@ export function initGenerate({ reducedMotion = false, lowPower = false } = {}) {
     if (toks.length) jobs.push(textJob(el, toks, lowPower));
   }
   for (const el of q(NUMBERS, main)) if (outside(el) && !inMap(el)) jobs.push(numberJob(el));
-  const portrait = main.querySelector('.portrait img');
+  const portrait = main.querySelector('.portrait-frame img');
   if (portrait) jobs.push(imageJob(portrait));
   for (const el of q('.lang-bar', main)) jobs.push(barJob(el));
   for (const el of q(BOXES, main)) if (outside(el) && !inMap(el)) jobs.push(boxJob(el));
@@ -226,7 +226,7 @@ function numberJob(el) {
 
 // ---------- image: diffusion-style denoising over the real <img> ----------
 function imageJob(img) {
-  const box = img.closest('picture') || img.parentElement;
+  const box = img.closest('.portrait-frame') || img.parentElement;
   const STEPS = 8;
   const STEP_MS = 135;
   const cv = document.createElement('canvas');
@@ -235,13 +235,13 @@ function imageJob(img) {
   const label = document.createElement('span');
   label.className = 'gen-lab mono';
   label.setAttribute('aria-hidden', 'true');
-  const S = 192;
-  cv.width = S; cv.height = S;
+  const S = 192, SH = 240; // the frame is 4:5
+  cv.width = S; cv.height = SH;
   const c = cv.getContext('2d');
   const noise = document.createElement('canvas');
-  noise.width = noise.height = S;
+  noise.width = S; noise.height = SH;
   const nc = noise.getContext('2d');
-  const id = nc.createImageData(S, S);
+  const id = nc.createImageData(S, SH);
   for (let i = 0; i < id.data.length; i += 4) { const v = 90 + Math.random() * 120; id.data[i] = id.data[i + 1] = id.data[i + 2] = v; id.data[i + 3] = 255; }
   nc.putImageData(id, 0, 0);
   const tiny = document.createElement('canvas');
@@ -252,12 +252,12 @@ function imageJob(img) {
     drawn = step;
     const b = blocks[Math.min(step, STEPS - 1)];
     c.imageSmoothingEnabled = false;
-    c.clearRect(0, 0, S, S);
+    c.clearRect(0, 0, S, SH);
     if (img.complete && img.naturalWidth) {
-      tiny.width = tiny.height = b;
-      tiny.getContext('2d').drawImage(img, 0, 0, b, b);
-      c.drawImage(tiny, 0, 0, S, S);
-    } else { c.fillStyle = '#888'; c.fillRect(0, 0, S, S); }
+      tiny.width = b; tiny.height = Math.max(1, Math.round(b * 1.25));
+      tiny.getContext('2d').drawImage(img, 0, 0, tiny.width, tiny.height);
+      c.drawImage(tiny, 0, 0, S, SH);
+    } else { c.fillStyle = '#888'; c.fillRect(0, 0, S, SH); }
     c.globalAlpha = Math.max(0, 0.85 * (1 - step / (STEPS - 1)) ** 1.3);
     c.drawImage(noise, Math.floor(rand(0, 60)) - 60, Math.floor(rand(0, 60)) - 60);
     c.drawImage(noise, 0, 0);
@@ -274,7 +274,7 @@ function imageJob(img) {
       if (done) return;
       done = true;
       cv.classList.add('is-out'); label.classList.add('is-out');
-      setTimeout(() => { cv.remove(); label.remove(); box.classList.remove('gen-box'); }, 420);
+      setTimeout(() => { cv.remove(); label.remove(); box.classList.remove('gen-box'); window.__portraitReady = true; document.dispatchEvent(new Event('portrait:ready')); }, 420);
     },
   };
 }

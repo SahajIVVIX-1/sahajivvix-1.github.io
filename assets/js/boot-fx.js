@@ -164,8 +164,8 @@
     };
     loadJSON('github', 'gh', function (v) { ghData = v; return 'GitHub data · synced ' + ago(v.fetched_at); }).then(function (v) { ghData = v; });
     var im = new Image();
-    im.onload = im.onerror = function () { B.done('img', 'portrait decoded · ' + B.kb(B.sizeOf('profile-240'))); };
-    im.src = '/assets/img/profile-240.avif';
+    im.onload = im.onerror = function () { B.done('img', 'portrait decoded · ' + B.kb(B.sizeOf('profile-260'))); };
+    im.src = '/assets/img/profile-260.avif';
 
     B.log('model config · 12 layers · 12 heads');
     setTimeout(function () { B.log('theme: ' + theme); }, 120);

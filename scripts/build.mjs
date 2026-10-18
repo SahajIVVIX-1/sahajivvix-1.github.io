@@ -249,11 +249,14 @@ function aboutSection() {
   </header>
   <div class="about-grid">
     <figure class="portrait">
-      <picture>
-        <source type="image/avif" srcset="/assets/img/profile-240.avif 240w, /assets/img/profile-480.avif 480w" sizes="(min-width: 900px) 280px, 46vw">
-        <img src="/assets/img/profile-480.webp" srcset="/assets/img/profile-240.webp 240w, /assets/img/profile-480.webp 480w" sizes="(min-width: 900px) 280px, 46vw" width="480" height="480" alt="Portrait of Sahaj Saliya by a lake, wearing glasses and a white polo shirt" loading="lazy" decoding="async">
-      </picture>
-      <figcaption class="mono">x ∈ ℝ³⁸⁴ · ‖x‖ = 1</figcaption>
+      <div class="portrait-frame" data-cnn>
+        <picture>
+          <source type="image/avif" srcset="/assets/img/profile-260.avif 260w, /assets/img/profile-340.avif 340w, /assets/img/profile-520.avif 520w" sizes="(min-width: 1200px) 340px, (min-width: 900px) 300px, (min-width: 640px) 280px, 260px">
+          <img src="/assets/img/profile-520.webp" srcset="/assets/img/profile-260.webp 260w, /assets/img/profile-340.webp 340w, /assets/img/profile-520.webp 520w" sizes="(min-width: 1200px) 340px, (min-width: 900px) 300px, (min-width: 640px) 280px, 260px" width="520" height="650" alt="Portrait of Sahaj Saliya by a lake, wearing glasses and a white polo shirt" loading="lazy" decoding="async">
+        </picture>
+        <canvas class="cnn-cv" aria-hidden="true" data-cnn-cv></canvas>
+      </div>
+      <figcaption class="mono" data-cnn-cap>x ∈ ℝ³⁸⁴ · ‖x‖ = 1</figcaption>
     </figure>
     <div class="about-text" data-attend>
       ${profile.about.map((p, i) => `<p${i === 0 ? ' class="lead"' : ''}>${esc(p).replace(/\*([^*]+)\*/g, '<em>$1</em>')}</p>`).join('\n      ')}
@@ -520,7 +523,7 @@ function personLD() {
     '@type': 'Person',
     name: profile.name,
     url: SITE,
-    image: `${SITE}/assets/img/profile-480.webp`,
+    image: `${SITE}/assets/img/profile-520.webp`,
     jobTitle: 'AI Engineer',
     email: `mailto:${profile.email}`,
     alumniOf: { '@type': 'CollegeOrUniversity', name: profile.education.school },
