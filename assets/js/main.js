@@ -4,6 +4,7 @@ import { initHero } from './hero.js';
 import { initRail } from './rail.js';
 import { initLoss } from './loss.js';
 import { initPersona } from './persona.js';
+import { initThink } from './think.js';
 
 export const reducedMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
 // Phones, low core counts and data-saver get lighter versions of the effects.
@@ -16,6 +17,7 @@ initTheme();
 initPersona();
 initRail();
 initHero();
+initThink();
 initLoss();
 initHeader();
 initTransitions();

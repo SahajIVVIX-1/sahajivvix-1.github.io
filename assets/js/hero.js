@@ -7,14 +7,12 @@ export function initHero() {
   const gens = [...document.querySelectorAll('[data-gen]')];
   if (!gens.length) return;
   const trace = document.querySelector('[data-trace]');
-  const cursor = document.querySelector('.hero .cursor');
   const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
   const total = gens.reduce((n, g) => n + JSON.parse(g.dataset.gen).length, 0);
 
   if (reduced) {
     for (const g of gens) renderStatic(g);
-    cursor?.classList.add('is-on');
-    if (trace) trace.textContent = `generated ${total} tokens · temperature ${T} · waiting for your prompt`;
+    heroReady(total);
     return;
   }
 
@@ -35,9 +33,15 @@ export function initHero() {
       g.classList.remove('is-live');
       g.classList.add('is-done');
     }
-    cursor?.classList.add('is-on');
-    if (trace) typeLine(trace, `generated ${total} tokens · <eos> withheld · waiting for your prompt_`);
+    heroReady(total);
   })();
+}
+
+// Tells the thinking line (think.js) that the name and tagline are finished, and how many tokens they took,
+// so its running token count can continue from there.
+function heroReady(tokens) {
+  window.__heroReady = { tokens };
+  document.dispatchEvent(new CustomEvent('hero:ready', { detail: { tokens } }));
 }
 
 // The hero starts generating as the boot screen dissolves (the inline script sets html.booting).
@@ -125,8 +129,3 @@ async function sampleToken(container, row, step, total, trace) {
 const softmax = (z) => { const m = Math.max(...z); const e = z.map((v) => Math.exp(v - m)); const s = e.reduce((a, b) => a + b, 0); return e.map((v) => v / s); };
 const vis = (t) => t.replace(/ /g, '·').replace(/</g, '&lt;');
 const wait = (ms) => new Promise((r) => setTimeout(r, ms));
-
-async function typeLine(el, text) {
-  el.textContent = '';
-  for (const ch of text) { el.textContent += ch; await wait(14); }
-}

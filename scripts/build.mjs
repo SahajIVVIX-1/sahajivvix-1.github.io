@@ -160,17 +160,17 @@ function heroSection() {
       <span class="gen" data-gen="${enc(HERO.name)}" data-gen-delay="300">Sahaj Saliya</span>
     </h1>
     <p class="hero-title">
-      <span class="gen" data-gen="${enc(HERO.title)}" data-gen-delay="120">${esc(profile.title)}</span><span class="cursor" aria-hidden="true"></span>
+      <span class="gen" data-gen="${enc(HERO.title)}" data-gen-delay="120">${esc(profile.title)}</span>
     </p>
+    <div class="think" data-think>
+      <div class="think-line" aria-hidden="true"><span class="think-label mono">now ▸</span><span class="think-word"></span><span class="think-caret"></span></div>
+      <div class="think-next mono" aria-hidden="true"></div>
+      <p class="think-sr" role="status" aria-live="polite"></p>
+    </div>
     <p class="hero-trace mono" aria-hidden="true" data-trace>&nbsp;</p>
     <div class="hero-foot">
       <p class="hero-lede">${esc(profile.tagline)}</p>
       <div class="hero-actions">
-        <button class="prompt-btn shimmer" type="button" data-ask-open>
-          <span class="mono prompt-caret" aria-hidden="true">›</span>
-          <span>Ask my portfolio anything</span>
-          <span class="prompt-blink" aria-hidden="true"></span>
-        </button>
         <a class="cta2 shimmer" data-persona-cta hidden></a>
       </div>
     </div>
