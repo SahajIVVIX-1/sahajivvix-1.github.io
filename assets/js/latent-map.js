@@ -76,6 +76,9 @@ export async function initMap(stage, { lowPower = false, reducedMotion = false }
   }
   new ResizeObserver(resize).observe(stage);
   resize();
+  // Portrait viewports need a wider field of view so edge labels stay inside the frame.
+  const baseZoom = () => Math.max(0.58, Math.min(1, (W / H) * 0.95));
+  cam.zoom = baseZoom();
 
   new IntersectionObserver((e) => { visible = e[0].isIntersecting; if (visible) loop(); }, { rootMargin: '100px' }).observe(stage);
   document.addEventListener('visibilitychange', () => { if (!document.hidden) loop(); });
@@ -202,7 +205,7 @@ export async function initMap(stage, { lowPower = false, reducedMotion = false }
       setTimeout(() => tip.classList.remove('is-on'), 2200);
     }
   });
-  stage.addEventListener('dblclick', () => { goal = { ...cam, tx: 0, ty: 0, tz: 0, zoom: 1 }; });
+  stage.addEventListener('dblclick', () => { goal = { ...cam, tx: 0, ty: 0, tz: 0, zoom: baseZoom() }; });
 
   // Fly the camera to an item, then open it (scroll to its section or follow the link).
   function fly(it) {
