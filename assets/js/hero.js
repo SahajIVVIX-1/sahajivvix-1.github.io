@@ -105,7 +105,7 @@ async function sampleToken(container, row, step, total, trace) {
   dist.setAttribute('aria-hidden', 'true');
   dist.innerHTML = cands.map((c) => `<div class="dist-row"><span class="dist-tok">${vis(c.t)}</span><span class="dist-bar"><i></i></span><span class="dist-p"></span></div>`).join('');
   anchor.append(dist);
-  // Above the token if there is room under the fixed header, else below, else beside; always inside the viewport.
+  // Below the token (never over the name or any text above it); above only if there is no room below; always inside the viewport.
   placePopup(anchor, dist);
   const bars = [...dist.querySelectorAll('.dist-bar i')];
   const ps = [...dist.querySelectorAll('.dist-p')];
