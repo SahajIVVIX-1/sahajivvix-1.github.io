@@ -269,8 +269,8 @@
     };
     if (document.fonts && document.fonts.ready) {
       document.fonts.ready.then(remeasure);
-      // a locally installed Anthropic Serif can arrive after `ready`; measure again once it has
-      Promise.all(['400 1em "Anthropic Serif Text"', '500 1em "Anthropic Serif Text"'].map(f => document.fonts.load(f).catch(() => [])))
+      // the Anthropic Serif italics can arrive after `ready`; measure again once they have
+      Promise.all(['italic 400 1em "Anthropic Serif Text"', 'italic 500 1em "Anthropic Serif Text"'].map(f => document.fonts.load(f).catch(() => [])))
         .then(found => { if (found.some(list => list.length)) remeasure(); });
     }
 
