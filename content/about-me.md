@@ -144,3 +144,12 @@ A blog is being written and will appear at /blogs.
 
 ## Does Sahaj use Kaggle or Hugging Face profiles?
 Those profiles are not listed on this site. His code lives on GitHub (SahajIVVIX-1).
+
+## Does this site track visitors? {#site}
+No. There are no cookies, no analytics and no tracking scripts. When you open the site, your browser makes a random six-character visitor tag, keeps it in your own browser storage and shows it in the address bar (for example ?visitor=a7f3k9) and in the footer. It is generated in your browser and never sent to any server. Clearing your site data removes it.
+
+## What is the visitor tag in the URL?
+A random six-character label made in your browser so the same browser keeps the same tag. It has no connection to your name or IP address and is not stored on any server. If you share a link that contains your tag, anyone who opens it gets their own tag instead.
+
+## What is the loading screen at the start?
+A short boot sequence that looks like a model loading its weights. Its progress bar follows real loading (fonts, the main script and the data files), it shows once per visit, and you can click or press any key to skip it.
