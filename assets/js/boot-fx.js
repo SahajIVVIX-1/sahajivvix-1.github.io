@@ -1,7 +1,7 @@
 /* Boot screen brains and visuals ("forward pass"). Loaded by the inline boot script; plain script, no modules.
    Holds the visitor context, the heuristic intent classifier, the greeting, the data loading and the canvas.
    What is real: the progress (B.p), every pulse (one per finished asset), the log numbers (all in the inline part).
-   What is illustrative: connection weights are seeded from the visitor tag, and the attention matrix is a
+   What is illustrative: connection weights are seeded from a random id kept in this browser, and the attention matrix is a
    visualisation seeded from the visitor's context features. Neither is a trained model. */
 (function () {
   var B = window.__boot;
@@ -39,7 +39,7 @@
   }
   var rgba = function (c, a) { return 'rgba(' + c[0] + ',' + c[1] + ',' + c[2] + ',' + a + ')'; };
 
-  /* ---------- visitor context: computed in the browser, nothing is sent anywhere ---------- */
+  /* ---------- visitor context: computed in the browser (the only network call to a third party is the IP lookup in head.js) ---------- */
   var store = function (area) {
     return function (k, v) {
       try { if (v === undefined) return window[area].getItem(k); window[area].setItem(k, v); } catch (e) { }
@@ -169,7 +169,8 @@
 
     B.log('model config · 12 layers · 12 heads');
     setTimeout(function () { B.log('theme: ' + theme); }, 120);
-    setTimeout(function () { B.log('visitor tag · ' + window.__visitor); }, 240);
+    // the IP is looked up by the head script (api.ipify.org); show it, or say honestly that the lookup failed
+    (window.__ipPromise || Promise.resolve(null)).then(function (ip) { B.log('visitor ip · ' + (ip || 'lookup unavailable')); });
     // Input features are "read" one by one; each one lights an input neuron.
     var featEl = document.getElementById('boot-feat');
     B.feat.forEach(function (f, i) {
@@ -212,7 +213,7 @@
         lines[l][k].lineTo(nodes[l + 1][j].x, nodes[l + 1][j].y);
       }
     }
-    box = [Math.max(0, r.left - 40), Math.max(0, r.top - 30), Math.min(VW, r.width + 80), Math.min(VH, r.height + 60)];
+    box = [r.left - 40, r.top - 30, r.width + 80, r.height + 60]; // same box the CSS gives the canvas
     sizeCanvas();
     lastUpto = -1;
     // matrix canvas
@@ -221,9 +222,9 @@
 
   // While loading, the canvas only covers the network (a quarter of the pixels to composite).
   // The handoff uses a NEW full-viewport canvas: resizing a visible element would count as a layout shift.
+  // The canvas sits inside .boot-stage from the first paint (CSS: 40px / 30px bigger than the stage on every side),
+  // so only its pixel buffer is sized here. Changing its on-screen box would count as a layout shift.
   function sizeCanvas() {
-    cv.style.inset = 'auto';
-    cv.style.left = box[0] + 'px'; cv.style.top = box[1] + 'px'; cv.style.width = box[2] + 'px'; cv.style.height = box[3] + 'px';
     cv.width = Math.round(box[2] * dpr); cv.height = Math.round(box[3] * dpr);
     origin = [box[0], box[1]];
   }

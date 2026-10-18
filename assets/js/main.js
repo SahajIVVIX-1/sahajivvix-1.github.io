@@ -26,12 +26,15 @@ initSessionTag();
 // Tells the inline boot screen that the main script is ready (part of its real progress).
 window.__boot?.mark('js');
 
-// Shows the visitor tag (made in the browser by the inline head script) in the footer.
+// Shows the visitor's public IP (looked up by the inline head script) in the footer once it is known.
 function initSessionTag() {
   const el = document.querySelector('[data-session]');
-  if (!el || !window.__visitor) return;
-  el.querySelector('b').textContent = window.__visitor;
-  el.hidden = false;
+  if (!el) return;
+  (window.__ipPromise || Promise.resolve(null)).then((ip) => {
+    if (!ip) return;
+    el.querySelector('b').textContent = ip;
+    el.hidden = false;
+  });
 }
 
 function initHeader() {

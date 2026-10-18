@@ -146,16 +146,16 @@ A blog is being written and will appear at /blogs.
 Those profiles are not listed on this site. His code lives on GitHub (SahajIVVIX-1).
 
 ## Does this site track visitors? {#site}
-No. There are no cookies, no analytics and no tracking scripts. When you open the site, your browser makes a random six-character visitor tag, keeps it in your own browser storage and shows it in the address bar (for example ?visitor=a7f3k9) and in the footer. It is generated in your browser and never sent to any server. Clearing your site data removes it.
+There are no cookies, no analytics and no tracking scripts, and the site stores nothing about you on any server. One thing does leave your browser: when a page opens, it asks the free service api.ipify.org for your public IP address and shows it back to you in the address bar (for example ?ip=203.0.113.9) and in the footer. This site does not store or log that address. It is kept only for the current browser session and is gone when you close the tab. If you would rather not use it, block api.ipify.org (for example with an ad blocker) and the site works the same without it.
 
-## What is the visitor tag in the URL?
-A random six-character label made in your browser so the same browser keeps the same tag. It has no connection to your name or IP address and is not stored on any server. If you share a link that contains your tag, anyone who opens it gets their own tag instead.
+## What is the ?ip= part of the URL?
+Your own public IP address, as reported by api.ipify.org when you opened the page. It is added to the address bar without reloading the page. Be aware that it is then part of the URL, so it appears in your browser history and in screenshots, and anyone you send that exact link to will see it. If someone opens a link that contains another person's address, the site removes it at once and shows their own instead.
 
 ## What is the loading screen at the start?
 A short boot sequence that looks like a model loading its weights. Its progress bar follows real loading (fonts, the main script and the data files), it shows once per visit, and you can click or press any key to skip it.
 
 ## Does the site change depending on who I am?
-A little, and only in your browser. At the start it reads harmless context (time of day, device type, language, light or dark mode, where you came from, and whether you have visited before) and a simple hand-written rule set, not a trained model, guesses whether you are probably a recruiter, a developer, a researcher or just curious. It then adjusts the greeting, the order of the sections and the second button in the top section. The guess is only a heuristic and often says "curious" because many apps hide where a visit came from. You can correct it with "not you? switch" under the headline. The guess is kept only for the current browser session and nothing is sent to any server.
+A little, and only in your browser. At the start it reads harmless context (time of day, device type, language, light or dark mode, where you came from, and whether you have visited before) and a simple hand-written rule set, not a trained model, guesses whether you are probably a recruiter, a developer, a researcher or just curious. It then adjusts the greeting, the order of the sections and the second button in the top section. The guess is only a heuristic and often says "curious" because many apps hide where a visit came from. You can correct it with "not you? switch" under the headline. The guess is worked out in your browser and kept only for the current browser session; the only thing that leaves your browser is the public IP lookup described above.
 
 ## What does the loading animation show?
 A small neural network doing one forward pass. Each pulse is a real file finishing loading (fonts, scripts, data, the portrait), the log lines carry real sizes and counts, and the greeting at the end is decoded token by token. At the end the network collapses into the first letters of the headline. It plays once per session, and you can click or press any key to skip it.

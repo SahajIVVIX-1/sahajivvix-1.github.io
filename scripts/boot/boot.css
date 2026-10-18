@@ -19,11 +19,11 @@ html[data-theme="dark"] #boot { --bg: #0B1020; --fg: #ECE8DE; --dim: #8F8C84; --
 /* The backdrop fades out at the end; the text box is hidden first, so no half-faded text. */
 #boot::after { content: ""; position: absolute; inset: 0; z-index: -2; background: var(--bg); }
 
-#boot-cv { position: absolute; inset: 0; width: 100%; height: 100%; z-index: 0; transition: opacity .25s; }
+#boot-cv { position: absolute; left: -40px; top: -30px; width: calc(100% + 80px); height: calc(100% + 60px); transition: opacity .25s; }
 .boot-box { position: relative; z-index: 1; width: min(900px, 94vw); display: flex; flex-direction: column; gap: 12px; }
 .boot-cap { display: flex; justify-content: space-between; gap: 12px; margin: 0; color: var(--dim); font-size: 11px; }
 .boot-feat { display: none; margin: 0; min-height: 3.3em; color: var(--dim); font-size: 10.5px; }
-.boot-stage { height: clamp(210px, 36vh, 330px); }
+.boot-stage { position: relative; height: clamp(210px, 36vh, 330px); }
 .boot-greet { margin: 0; min-height: 2.7em; text-align: center; color: var(--fg); font: italic 400 clamp(19px, 3.3vw, 30px)/1.25 "Instrument Serif", Georgia, serif; }
 .boot-greet .tk { white-space: pre-wrap; }
 .boot-greet .dist { width: 118px; }

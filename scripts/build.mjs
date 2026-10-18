@@ -18,7 +18,11 @@ const minify = (s) => s.replace(/\/\*[\s\S]*?\*\//g, '').replace(/^\s*\/\/.*$/gm
 const BOOT_CSS = minify(readText('scripts/boot/boot.css'));
 const BOOT_HEAD = minify(readText('scripts/boot/head.js'));
 const BOOT_JS = minify(readText('scripts/boot/boot.js'));
-const bootHtml = () => `<div id="boot-live" class="bs" role="status" aria-live="polite"></div><div id="boot" aria-hidden="true"><canvas id="boot-cv"></canvas><div class="boot-box"><p class="boot-cap" id="boot-cap"><span>forward pass · layer 1/5 · 0%</span><span>τ 0.7 · weights seeded by your visitor tag</span></p><p class="boot-feat" id="boot-feat"></p><div class="boot-stage"></div><p class="boot-greet" id="boot-greet"></p><div class="boot-bottom"><ul id="boot-log"></ul><div class="boot-mat"><canvas id="boot-mat"></canvas><p>attention · head 3</p></div></div><p class="boot-hint"><span>heuristic guess · computed in your browser, nothing is sent anywhere</span><span>click or press any key to skip</span></p></div></div><script>${BOOT_JS.replace('__V__', ASSET_VERSION)}</script>`;
+// The minifier is deliberately simple (it only strips whole-line // comments). Refuse to build if it ever breaks a script.
+for (const [name, code] of [['head.js', BOOT_HEAD], ['boot.js', BOOT_JS]]) {
+  try { new Function(code); } catch (e) { throw new Error(`scripts/boot/${name} is not valid JavaScript after minifying (${e.message}). Put comments on their own line.`); }
+}
+const bootHtml = () => `<div id="boot-live" class="bs" role="status" aria-live="polite"></div><div id="boot" aria-hidden="true"><div class="boot-box"><p class="boot-cap" id="boot-cap"><span>forward pass · layer 1/5 · 0%</span><span>τ 0.7 · weights seeded per visitor</span></p><p class="boot-feat" id="boot-feat"></p><div class="boot-stage"><canvas id="boot-cv"></canvas></div><p class="boot-greet" id="boot-greet"></p><div class="boot-bottom"><ul id="boot-log"></ul><div class="boot-mat"><canvas id="boot-mat"></canvas><p>attention · head 3</p></div></div><p class="boot-hint"><span>heuristic guess · computed in your browser; only your public IP is looked up</span><span>click or press any key to skip</span></p></div></div><script>${BOOT_JS.replace('__V__', ASSET_VERSION)}</script>`;
 const profile = readJSON('content/profile.json');
 const projects = readJSON('content/projects.json');
 const github = readJSON('data/github.json', { repos: [], languages: {}, events: [], user: {} });
@@ -115,9 +119,9 @@ function footer() {
     <span>© ${new Date().getFullYear()} Sahaj Saliya</span>
     <span>Static weights, served by GitHub Pages</span>
     ${synced ? `<span>Last forward pass <time datetime="${synced.toISOString()}">${synced.toISOString().slice(0, 16).replace('T', ' ')} UTC</time></span>` : ''}
-    <span data-session hidden>session <b></b></span>
+    <span data-session hidden>your ip <b></b></span>
   </p>
-  <p class="mono foot-privacy">The visitor tag in the URL is generated in your browser and never sent to any server.</p>
+  <p class="mono foot-privacy">Your public IP in the URL is looked up from api.ipify.org when the page opens. It is shown only to you and this site does not store it.</p>
 </footer>`;
 }
 
