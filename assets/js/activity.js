@@ -101,12 +101,20 @@
       return chars(word).reduce((sum, c) => sum + em(c), 0) * baseFont() + measurePx("...", ellEl);
     }
 
-    // shrink the type a little when a long verb + timer would not fit the column (mobile)
+    // shrink the type a little when the widest verb + timer would not fit the column (mobile).
+    // Sizing for the widest verb, not the current one, keeps the type size fixed while words
+    // change, so letters are never re-rendered at a new size mid-transition.
+    let widestEm = 0;
+    function measureWidest() {
+      widestEm = words.reduce((m, w) => Math.max(m, chars(w).reduce((s, c) => s + em(c), 0)), 0);
+    }
     function layout() {
       const chrome = root.offsetWidth - verbs.offsetWidth - time.offsetWidth;
       const avail = (root.parentElement.clientWidth || innerWidth) - 2;
-      fit = Math.max(0.68, Math.min(1, (avail - chrome) / (verbPx(verbText) + timeW)));
-      root.style.setProperty("--fit", fit.toFixed(3));
+      const font = baseFont();
+      const room = widestEm * font + measurePx("...", ellEl) + Math.max(timeW, measurePx("59m59s", time));
+      const nextFit = Math.max(0.68, Math.min(1, (avail - chrome) / room));
+      if (Math.abs(nextFit - fit) > 0.004) { fit = nextFit; root.style.setProperty("--fit", fit.toFixed(3)); }
       time.style.width = Math.ceil(timeW * fit) + "px";
     }
 
@@ -185,8 +193,7 @@
         if (from === to) continue; // same letter in the same place stays put
         flip(slots[i], to, from, p.dir(i, n), rank(p.order, i, n) * STEP_MS, span);
       }
-      // the mobile type-fit and the timer slot follow the same curve as the tiles
-      root.style.transition = "font-size " + span + "ms " + EASE;
+      // the timer slot follows the same curve as the tiles
       time.style.transition = "width " + span + "ms " + EASE;
       layout();
     }
@@ -210,6 +217,7 @@
     }
 
     root.classList.add("no-anim");
+    measureWidest();
     showVerb(next(), false);
     tick();
     requestAnimationFrame(() => requestAnimationFrame(() => root.classList.remove("no-anim")));
@@ -220,6 +228,7 @@
     if (document.fonts && document.fonts.ready) {
       document.fonts.ready.then(() => {
         glyphEm.clear();
+        measureWidest();
         Array.from(slotsEl.children).forEach(s => { s.style.width = em(s.querySelector(".front").textContent) + "em"; });
         timeW = measurePx(timeText, time);
         layout();
