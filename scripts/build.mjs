@@ -25,6 +25,7 @@ for (const [name, code] of [['head.js', BOOT_HEAD], ['boot.js', BOOT_JS]]) {
 }
 const bootHtml = () => `<div id="boot-live" class="bs" role="status" aria-live="polite"></div><div id="boot" aria-hidden="true"><div class="boot-box"><p class="boot-cap" id="boot-cap"><span>forward pass · layer 1/5 · 0%</span><span>τ 0.7 · weights seeded per visitor</span></p><p class="boot-feat" id="boot-feat"></p><div class="boot-stage"><canvas id="boot-cv"></canvas></div><p class="boot-greet" id="boot-greet"></p><div class="boot-bottom"><ul id="boot-log"></ul><div class="boot-mat"><canvas id="boot-mat"></canvas><p>attention · head 3</p></div></div><p class="boot-hint"><span>heuristic guess · computed in your browser; only your public IP is looked up</span><span>click or press any key to skip</span></p></div></div><script>${BOOT_JS.replace('__V__', ASSET_VERSION)}</script>`;
 const profile = readJSON('content/profile.json');
+const gwr = readJSON('content/guinness.json');
 // the live header logo: the S as one stroke (so it can be styled), two end nodes, and the cursor dot
 const LOGO_MARK = (() => {
   const m = buildLogo('full');
@@ -240,6 +241,7 @@ function aboutSection() {
       <div><dt>span</dt><dd>${fmtRange(e.start, e.end)}</dd></div>
       <div><dt>cgpa</dt><dd>${esc(e.cgpa)}</dd></div>
       <div><dt>based</dt><dd>${esc(profile.location)}</dd></div>
+      <div><dt>recognition</dt><dd><a class="tok-link" href="#guinness">${esc(gwr.title)} · ${gwr.year}</a></dd></div>
     </dl>
   </div>
 </section>`;
@@ -446,6 +448,39 @@ function experienceSection() {
 </section>`;
 }
 
+// The Guinness World Records participation, shown as a benchmark entry whose values are "read" from the certificate.
+function guinnessCard() {
+  const A = '/assets/achievements/guinness';
+  const [cw, ch] = gwr.size;
+  const rows = [
+    ['benchmark', gwr.benchmark, ''],
+    ['task', gwr.task, 'task'],
+    ['role', gwr.role, 'role'],
+    ['when·where', `${gwr.when} · ${gwr.where}`, 'when'],
+  ];
+  return `<article class="gwr" id="guinness" aria-labelledby="gwr-h" data-gwr>
+  <span class="gwr-badge" aria-hidden="false"><img class="gwr-logo" src="${A}/guinness-world-records-logo.svg" width="56" height="56" alt="Guinness World Records logo" loading="lazy" decoding="async"><i class="gwr-star" aria-hidden="true"></i></span>
+  <div class="gwr-body">
+    <h3 id="gwr-h" class="gwr-title">${esc(gwr.title)}</h3>
+    <dl class="gwr-rows">
+      ${rows.map(([k, v, key]) => `<div${key ? ` data-row="${key}"` : ''}><dt class="mono">${k}</dt><dd>${esc(v)}</dd></div>`).join('\n      ')}
+      <div data-row="status"><dt class="mono">status</dt><dd><span class="gwr-ok" aria-hidden="true">✓</span> ${esc(gwr.status)}</dd></div>
+    </dl>
+    <p class="gwr-note">${esc(gwr.certificate)}: ${esc(gwr.record)}, ${esc(gwr.place)}, ${esc(gwr.when)}. Sahaj took part as a participant.</p>
+  </div>
+  <button class="gwr-thumb" type="button" aria-haspopup="dialog" data-gwr-open aria-label="Open the certificate: ${esc(gwr.certificate)}, ${esc(gwr.when)}">
+    <span class="gwr-frame" style="aspect-ratio:${cw} / ${ch}">
+      <img src="${A}/certificate-thumb.webp" width="300" height="435" alt="${esc(gwr.alt)}" loading="lazy" decoding="async">
+      <svg class="gwr-ocr" viewBox="0 0 ${cw} ${ch}" aria-hidden="true">${gwr.boxes.map((b) => `<rect data-ocr="${b.id}" x="${b.rect[0]}" y="${b.rect[1]}" width="${b.rect[2]}" height="${b.rect[3]}" rx="3"/>`).join('')}</svg>
+      <i class="gwr-scan" aria-hidden="true"></i>
+    </span>
+    <span class="gwr-hint mono">open · see what the model sees</span>
+  </button>
+  <svg class="gwr-links" aria-hidden="true"></svg>
+  <script type="application/json" data-gwr-data>${JSON.stringify({ boxes: gwr.boxes, json: gwr.json, confidence: gwr.confidence, size: gwr.size, full: `${A}/certificate.webp`, fullJpg: `${A}/certificate.jpg`, alt: gwr.alt }).replace(/</g, '\\u003c')}</script>
+</article>`;
+}
+
 function evalSection() {
   const langs = Object.entries(github.languages || {}).sort((a, b) => b[1] - a[1]).slice(0, 6);
   const total = langs.reduce((s, [, v]) => s + v, 0) || 1;
@@ -455,6 +490,7 @@ function evalSection() {
     <p class="layer-tag mono" data-lt="Evaluation">Layer 11 · Evaluation</p>
     <h2 id="eval-h" class="layer-title">Held-out <em>benchmarks</em>.</h2>
   </header>
+  ${guinnessCard()}
   <div class="eval-grid">
     <div>
       <h3 class="mono sg-name">Certifications</h3>

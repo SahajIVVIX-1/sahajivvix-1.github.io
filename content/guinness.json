@@ -1,0 +1,25 @@
+{
+  "title": "Guinness World Records participant",
+  "year": 2022,
+  "benchmark": "Guinness World Records",
+  "task": "Largest book · 2,121 words",
+  "role": "participant",
+  "when": "18 May 2022",
+  "where": "Vadodara, India",
+  "status": "verified certificate",
+  "certificate": "Certificate of Participation",
+  "record": "Largest book (word count 2,121), achieved by Shree Swaminarayan Bhagwan and Param Pujya Sadguru Shree Gyanjivandasji Swami, Kundaldham",
+  "place": "Vadodara, Gujarat, India",
+  "iso": "2022-05-18",
+  "alt": "Guinness World Records Certificate of Participation issued to Sahaj Saliya, 18 May 2022, Vadodara.",
+  "size": [552, 800],
+  "boxes": [
+    { "id": "person", "label": "PERSON", "rect": [118, 394, 300, 32], "row": null },
+    { "id": "role", "label": "ROLE", "rect": [104, 435, 346, 19], "row": "role" },
+    { "id": "event", "label": "EVENT", "rect": [88, 461, 372, 86], "row": "task" },
+    { "id": "location", "label": "LOCATION", "rect": [154, 548, 116, 22], "row": "when" },
+    { "id": "date", "label": "DATE", "rect": [292, 548, 110, 22], "row": "when" }
+  ],
+  "json": { "person": "Sahaj Saliya", "event": "Largest book", "words": 2121, "date": "2022-05-18", "place": "Vadodara, Gujarat, India", "role": "participant" },
+  "confidence": 0.99
+}

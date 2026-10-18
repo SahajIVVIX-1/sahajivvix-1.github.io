@@ -162,3 +162,9 @@ A small neural network doing one forward pass. Each pulse is a real file finishi
 
 ## Why does the greeting mention commits since my last visit?
 If you have visited before, the site compares the time of your last visit (saved in your own browser) with Sahaj's public GitHub activity, which the site refreshes every hour, and tells you how many commits landed since then.
+
+## Does Sahaj have a world record?
+Sahaj took part in a Guinness World Records record event as a participant and has the Certificate of Participation. The record, the largest book (word count 2,121), was achieved by Shree Swaminarayan Bhagwan and Param Pujya Sadguru Shree Gyanjivandasji Swami, Kundaldham, in Vadodara, Gujarat, India on 18 May 2022. His role was participant. The certificate is shown in the Evaluation section of this site.
+
+## What is the Guinness World Records certificate?
+A Certificate of Participation from Guinness World Records for the largest book (word count 2,121), a record event in Vadodara, Gujarat, India on 18 May 2022, achieved by Shree Swaminarayan Bhagwan and Param Pujya Sadguru Shree Gyanjivandasji Swami, Kundaldham. Sahaj was a participant. On the site you can open the certificate and switch on "show what the model sees" to see the fields a document model would extract from it.
