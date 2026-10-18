@@ -9,7 +9,7 @@ export function headerBottom() {
   return h ? h.getBoundingClientRect().bottom : 0;
 }
 
-export function placePopup(anchor, pop, { gap = 12, margin = 8 } = {}) {
+export function placePopup(anchor, pop, { gap = 12, margin = 8, order = ['above', 'below', 'right', 'left'] } = {}) {
   // Measure with only left/bottom set (the stylesheet default), so the size is its natural size.
   pop.style.left = '0'; pop.style.right = 'auto'; pop.style.top = 'auto'; pop.style.bottom = '0';
   const a = anchor.getBoundingClientRect();
@@ -23,7 +23,6 @@ export function placePopup(anchor, pop, { gap = 12, margin = 8 } = {}) {
     right: limit.right - (a.right + gap) - pw,
     left: a.left - gap - limit.left - pw,
   };
-  const order = ['above', 'below', 'right', 'left'];
   // the first side with enough room; if none fits, the roomiest one (it is still clamped below)
   const side = order.find((s) => room[s] >= 0) || order.reduce((best, s) => (room[s] > room[best] ? s : best), 'above');
   const clamp = (v, lo, hi) => Math.max(lo, Math.min(hi, v));

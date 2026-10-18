@@ -740,3 +740,20 @@ body.is-leaving main, body.is-leaving .site-foot { animation: softmaxOut .35s va
   .persona-line { margin-top: 12px; }
   .scroll-cue { display: none; }
 }
+
+/* ---- first-visit generation (assets/js/generate.js). Only opacity and transform change; the layout is final from the start. ---- */
+.gt { transition: opacity .16s linear, color .5s; }
+.gen .gt:not(.gt-on) { opacity: 0; }
+.gt.gt-new { color: var(--accent); }
+.gt.gt-anchor { position: relative; }
+.gn-host { position: relative; color: transparent !important; }
+.gn { position: absolute; left: 0; top: 0; white-space: pre; font: inherit; letter-spacing: inherit; }
+.gen-box { position: relative; display: block; }
+.gen-cv { position: absolute; inset: 0; width: 100%; height: 100%; border-radius: 50%; transition: opacity .4s; pointer-events: none; }
+.gen-lab { position: absolute; left: 50%; bottom: 8%; transform: translateX(-50%); padding: 2px 8px; border-radius: 999px; font-size: 10px; white-space: nowrap; background: color-mix(in srgb, var(--paper) 80%, transparent); border: 1px solid var(--rule-2); color: var(--ink-2); transition: opacity .4s; pointer-events: none; }
+.gen-cv.is-out, .gen-lab.is-out { opacity: 0; }
+.gen .gen-bars span { transform: scaleX(0); transform-origin: 0 50%; }
+.gen .gen-bars.gen-on span { transform: none; transition: transform .7s var(--ease-out) calc(var(--i, 0) * 90ms); }
+.gen .gbox:not(.gbox-on) { opacity: 0; transform: translateY(14px); }
+.gen .gbox.gbox-on { transition: opacity .6s var(--ease-out), transform .6s var(--ease-out); }
+@media print { .gt { opacity: 1 !important; } .gen-cv, .gen-lab, .gn { display: none; } .gn-host { color: inherit !important; } }
