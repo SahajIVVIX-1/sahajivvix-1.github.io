@@ -30,22 +30,45 @@ export function initBadge({ reducedMotion = false } = {}) {
   // sampled token by token alongside the tagline.
   let resolved = false;
   let stopFlicker = () => {};
+  let startAt = performance.now();
+  let heroDone = !!window.__heroReady;
+  document.addEventListener('hero:ready', () => { heroDone = true; }, { once: true });
+  const heroEnd = () => new Promise((r) => (heroDone ? r() : document.addEventListener('hero:ready', r, { once: true })));
+  // How long the tagline still needs, from how fast the name was sampled; the badge is paced to end exactly then.
+  const remaining = () => {
+    try {
+      const gens = [...document.querySelectorAll('.hero [data-gen]')];
+      const nameN = JSON.parse(gens[0].dataset.gen).length;
+      const titleN = gens[1] ? JSON.parse(gens[1].dataset.gen).length : 0;
+      const avg = (performance.now() - startAt - 300) / Math.max(1, nameN);
+      return 120 + titleN * avg * 0.72;
+    } catch { return 3500; }
+  };
   const resolve = async () => {
     if (resolved) return;
     resolved = true;
+    const R = heroDone ? 900 : Math.max(1800, remaining());
     const pop = stopFlicker();
-    await wait(380);
+    await wait(250);
     pop?.classList.add('is-out');
     setTimeout(() => pop?.remove(), 320);
     badge.classList.add('is-decoding');
-    await assemble(badge);
+    // inner design first (star, pillar), then the ring and its lettering; then the two text lines.
+    // The last token waits for the hero, so the badge and the tagline finish together.
+    await assemble(badge, R * 0.6, () => heroDone);
     badge.classList.remove('is-pending');
     badge.classList.add('is-shimmer');
-    for (const s of [...name, ...sub]) { s.classList.add('gt-on'); await wait(40); }
-    await wait(250);
+    const toks = [...name, ...sub];
+    const step = Math.max(30, (R * 0.3) / toks.length);
+    for (let i = 0; i < toks.length; i++) {
+      if (i === toks.length - 1) await heroEnd();
+      toks[i].classList.add('gt-on');
+      await wait(heroDone ? 12 : step);
+    }
+    await wait(200);
     done();
   };
-  const begin = () => { stopFlicker = flicker(badge.querySelector('.hb-ph')); };
+  const begin = () => { startAt = performance.now(); stopFlicker = flicker(badge.querySelector('.hb-ph')); };
   if (window.__heroReady) { begin(); resolve(); }
   else {
     if (window.__heroStarted) begin(); else document.addEventListener('hero:start', begin, { once: true });
@@ -109,8 +132,9 @@ function flicker(anchor) {
   };
 }
 
-// The logo assembles from scattered points onto the real <img>, which then fades in.
-async function assemble(badge) {
+// The logo assembles from scattered points onto the real <img>, from the inside out: the points near the centre (star,
+// pillar) start first and the outer ring and its lettering last. Then the real image fades in.
+async function assemble(badge, DUR, isDone) {
   const cv = badge.querySelector('.hb-cv');
   const img = badge.querySelector('.hb-img');
   if (!cv || !img) return;
@@ -130,15 +154,28 @@ async function assemble(badge) {
   const pts = [];
   for (let y = 0; y < S; y += step) for (let x = 0; x < S; x += step) {
     const i = (y * S + x) * 4;
-    if (px[i + 3] > 128 && px[i] + px[i + 1] + px[i + 2] < 700) pts.push({ x, y, c: `rgb(${px[i]},${px[i + 1]},${px[i + 2]})`, sx: Math.random() * S, sy: Math.random() * S });
+    if (px[i + 3] > 128 && px[i] + px[i + 1] + px[i + 2] < 700) {
+      const r = Math.min(1, Math.hypot(x - S / 2, y - S / 2) / (S / 2));
+      pts.push({ x, y, c: `rgb(${px[i]},${px[i + 1]},${px[i + 2]})`, sx: Math.random() * S, sy: Math.random() * S, delay: r * 0.55 });
+    }
   }
-  const DUR = 950, t0 = performance.now(), sz = Math.max(2, step - 0.5);
+  const t0 = performance.now(), sz = Math.max(2, step - 0.5);
+  let doneAt = 0, tAt = 0;
   await new Promise((res) => {
     const f = (now) => {
-      const t = Math.min(1, (now - t0) / DUR);
-      const e = 1 - (1 - t) ** 3;
+      let t = Math.min(1, (now - t0) / DUR);
+      // the hero finished first: bring the rest in quickly
+      if (isDone()) { if (!doneAt) { doneAt = now; tAt = t; } t = Math.min(1, tAt + (1 - tAt) * ((now - doneAt) / 250)); }
       ctx.clearRect(0, 0, S, S);
-      for (const p of pts) { ctx.fillStyle = p.c; ctx.fillRect(p.sx + (p.x - p.sx) * e, p.sy + (p.y - p.sy) * e, sz, sz); }
+      for (const p of pts) {
+        const lt = Math.max(0, Math.min(1, (t - p.delay) / 0.45));
+        if (lt <= 0) continue;
+        const e = 1 - (1 - lt) ** 3;
+        ctx.globalAlpha = Math.min(1, lt * 4);
+        ctx.fillStyle = p.c;
+        ctx.fillRect(p.sx + (p.x - p.sx) * e, p.sy + (p.y - p.sy) * e, sz, sz);
+      }
+      ctx.globalAlpha = 1;
       if (t < 1) requestAnimationFrame(f); else res();
     };
     requestAnimationFrame(f);
