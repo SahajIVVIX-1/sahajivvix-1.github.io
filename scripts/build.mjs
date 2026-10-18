@@ -130,48 +130,14 @@ function header({ home = false } = {}) {
 
 function footer() {
   const synced = github.fetched_at ? new Date(github.fetched_at) : null;
-  const meta = readJSON('data/meta.json', {});
-  const nav = [['Work', '/#work'], ['Map', '/#map'], ['Training', '/#experience'], ['Contact', '/#contact'], ['Blog', '/blogs/']];
   const utc = synced ? `${synced.toISOString().slice(0, 16).replace('T', ' ')} UTC` : '';
-  const params = [`${projects.length} projects`, meta.points ? `${meta.points} map points` : '', meta.chunks ? `${meta.chunks} chunks` : ''].filter(Boolean).join(' · ');
   const privacy = 'Your IP is looked up from api.ipify.org when the page opens, shown only to you, and never stored.';
+  const ext = (l) => `<a class="foot-link" href="${l.url}" target="_blank" rel="me noopener" aria-label="${esc(l.label)} (opens in a new tab)">${esc(l.label)}</a>`;
   return `<footer class="site-foot" data-foot>
-  <div class="foot-sign">
-    <canvas class="foot-attn" aria-hidden="true" data-foot-attn></canvas>
-    <p class="foot-title">Let&#39;s build something <em class="foot-accent" tabindex="0" data-foot-accent>intelligent</em>.</p>
-    <div class="foot-mailrow">
-      <a class="foot-mail" href="mailto:${profile.email}">${esc(profile.email)}</a>
-      <button class="foot-copy" type="button" data-copy="${esc(profile.email)}" aria-label="Copy email address"><span data-copy-label>copy</span></button>
-      <span class="sr" role="status" aria-live="polite" data-copy-live></span>
-    </div>
-  </div>
-  <div class="foot-grid">
-    <nav class="foot-col" aria-label="Footer">
-      <h2 class="foot-label mono">Navigate</h2>
-      <ul>${nav.map(([l, h]) => `<li><a class="foot-link" href="${h}">${l}</a></li>`).join('')}</ul>
-    </nav>
-    <div class="foot-col">
-      <h2 class="foot-label mono">Elsewhere</h2>
-      <ul>${profile.links.map((l) => `<li><a class="foot-link" href="${l.url}" rel="me noopener">${esc(l.label)}<span class="foot-arrow" aria-hidden="true"> ↗</span></a></li>`).join('')}</ul>
-    </div>
-    <div class="foot-col">
-      <h2 class="foot-label mono">Model card</h2>
-      <dl class="foot-spec mono">
-        <div><dt>weights</dt><dd>static, served by GitHub Pages</dd></div>
-        ${synced ? `<div><dt>last forward pass</dt><dd><time datetime="${synced.toISOString()}" title="${utc}" data-foot-time>${utc}</time> <span class="foot-ago" data-foot-ago></span></dd></div>` : ''}
-        <div><dt>params</dt><dd>${esc(params)}</dd></div>
-        <div data-session hidden><dt>your ip</dt><dd><b></b> <button class="foot-i" type="button" aria-label="About the IP lookup" aria-describedby="ip-tip">i</button><span class="foot-tip" id="ip-tip" role="tooltip">${privacy}</span></dd></div>
-      </dl>
-    </div>
-  </div>
-  <div class="foot-bar">
-    <p class="foot-copy-line">© ${new Date().getFullYear()} Sahaj Saliya</p>
-    <div class="foot-actions">
-      <button class="foot-btn" type="button" data-foot-theme aria-label="Change theme"><span class="mono">theme</span> <span class="mono" data-foot-theme-val>auto</span></button>
-      <button class="foot-btn" type="button" data-to-top>Back to top <span aria-hidden="true">↑</span></button>
-    </div>
-  </div>
-  <p class="foot-privacy">${privacy}</p>
+  <p class="foot-copy-line">© ${new Date().getFullYear()} Sahaj Saliya</p>
+  <nav class="foot-links" aria-label="Elsewhere">${profile.links.map(ext).join('')}<a class="foot-link" href="mailto:${profile.email}" aria-label="Email Sahaj Saliya">Email</a></nav>
+  <p class="foot-card mono">${synced ? `last forward pass <time datetime="${synced.toISOString()}" title="${utc}" data-foot-time>${utc}</time> <span data-foot-ago></span>` : ''}<span data-session hidden> · ip <b></b> <button class="foot-i" type="button" aria-label="About the IP lookup" aria-describedby="ip-tip">i</button><span class="foot-tip" id="ip-tip" role="tooltip">${privacy}</span></span></p>
+  <button class="foot-top" type="button" data-to-top>↑ top</button>
 </footer>`;
 }
 
