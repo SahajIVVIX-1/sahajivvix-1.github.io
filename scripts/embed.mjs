@@ -18,8 +18,7 @@ export async function embedAll({ force = process.argv.includes('--force') } = {}
   const github = readJSON('data/github.json', { repos: [], languages: {}, user: {} });
   const aboutMd = readText('content/about-me.md');
   const readmes = Object.fromEntries(projects.map((p) => [p.repo, readText(`data/readmes/${p.repo}.md`)]));
-  const site = readJSON('data/site.json', { blogLive: false });
-  const posts = site.blogLive ? loadPosts() : [];
+  const posts = loadPosts(); // read from content/blog directly so a first post is indexed in the same run
 
   // GitHub timestamps change hourly but do not change meaning; hash only the stable parts.
   const ghStable = { user: github.user, languages: github.languages, repos: github.repos.map(({ pushed_at, ...r }) => r) };
@@ -254,7 +253,8 @@ function buildChunks({ profile, projects, github, aboutMd, readmes, posts }) {
 
 function buildQA({ profile, projects, github, aboutMd }) {
   const qa = [];
-  const src = (url) => [{ label: SECTION_LABEL[url] || (url.startsWith('http') ? 'GitHub' : 'Site'), url }];
+  const projectLabel = Object.fromEntries([...projects.map((p) => [`/#p-${p.id}`, p.name]), ...profile.experience.map((r) => [`/#x-${r.id}`, r.org])]);
+  const src = (url) => [{ label: projectLabel[url] || SECTION_LABEL[url] || (url.startsWith('http') ? 'GitHub' : 'Site'), url }];
   const add = (qs, a, url) => { for (const q of [].concat(qs)) qa.push({ q, a, src: src(url) }); };
 
   // FAQ entries plus natural paraphrases.

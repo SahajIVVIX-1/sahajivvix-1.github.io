@@ -18,7 +18,7 @@ export function initTheme() {
     root.dataset.effectiveTheme = effective;
     if (btn) {
       btn.dataset.themeState = mode;
-      btn.setAttribute('aria-label', `Theme: ${NAME[mode]}. Click to change.`);
+      btn.setAttribute('aria-label', `temp ${LABEL[mode]}, theme ${NAME[mode]}. Click to change.`);
       const val = btn.querySelector('[data-theme-val]');
       if (val) val.textContent = LABEL[mode];
     }

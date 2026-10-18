@@ -172,11 +172,13 @@ kbd { font: 500 11px/1 var(--mono); padding: 4px 6px; border-radius: 6px; backgr
   }
   .rail-label, .rail-name { font-size: 11px; color: var(--ink-2); writing-mode: vertical-rl; transform: rotate(180deg); white-space: nowrap; }
   .rail-name { color: var(--accent); max-height: 30vh; overflow: hidden; text-overflow: ellipsis; }
-  .rail-ticks { display: flex; flex-direction: column; gap: 7px; pointer-events: auto; }
-  .rail-ticks a { display: block; width: 12px; height: 2px; margin-left: auto; background: var(--rule-2); transition: width .35s var(--ease-out), background .3s; }
-  .rail-ticks a:hover { background: var(--ink-3); width: 18px; }
-  .rail-ticks a.is-past { background: var(--ink-3); }
-  .rail-ticks a.is-on { width: 26px; background: var(--accent); box-shadow: var(--glow); }
+  .rail-ticks { display: flex; flex-direction: column; pointer-events: auto; }
+  /* 24px-tall hit area (WCAG 2.5.8); the visible tick is the pseudo-element. */
+  .rail-ticks a { position: relative; display: block; width: 28px; height: 24px; margin-left: auto; }
+  .rail-ticks a::before { content: ""; position: absolute; right: 0; top: 11px; width: 12px; height: 2px; background: var(--rule-2); transition: width .35s var(--ease-out), background .3s; }
+  .rail-ticks a:hover::before { background: var(--ink-3); width: 18px; }
+  .rail-ticks a.is-past::before { background: var(--ink-3); }
+  .rail-ticks a.is-on::before { width: 26px; background: var(--accent); box-shadow: var(--glow); }
 }
 .rail-mobile {
   position: fixed; left: 0; right: 0; top: 0; height: 2px; z-index: 60; pointer-events: none;
@@ -254,10 +256,12 @@ main { position: relative; z-index: 1; }
   backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); pointer-events: none;
   animation: distIn .18s var(--ease-out) both;
 }
+
 .hero-title .dist { bottom: auto; top: calc(100% + 12px); }
 .dist.is-out { animation: distOut .3s var(--ease) forwards; }
-@keyframes distIn { from { opacity: 0; transform: translateY(4px); } }
-@keyframes distOut { to { opacity: 0; transform: translateY(-4px); } }
+/* Transform and clip only: an opacity fade would briefly make the chart text fail contrast checks. */
+@keyframes distIn { from { transform: translateY(4px); clip-path: inset(0 100% 0 0); } to { clip-path: inset(0); } }
+@keyframes distOut { to { transform: translateY(-4px); clip-path: inset(0 0 100% 0); } }
 .dist-row { display: grid; grid-template-columns: 7ch 1fr 3.6ch; align-items: center; gap: 7px; padding: 1.5px 0; }
 .dist-tok { white-space: pre; overflow: hidden; text-overflow: clip; }
 .dist-bar { height: 5px; border-radius: 3px; background: var(--rule); position: relative; overflow: hidden; }
@@ -310,8 +314,10 @@ main { position: relative; z-index: 1; }
   border-radius: 8px; background: var(--ink); color: var(--paper); opacity: 0; transition: opacity .15s;
 }
 .map-tip.is-on { opacity: 1; }
-.map-tip b { color: var(--accent); font-weight: 500; }
+/* Tooltips use inverted colours, so emphasis uses the accent tuned for the opposite theme. */
+.map-tip b { color: #FF8A5B; font-weight: 500; }
 :root[data-theme="dark"] .map-tip b { color: #B23E0E; }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .map-tip b { color: #B23E0E; } }
 .map-legend { position: absolute; z-index: 2; left: var(--gutter); bottom: 14px; display: flex; flex-wrap: wrap; gap: 6px 14px; font-size: 11px; color: var(--ink-2); pointer-events: none; }
 .map-legend i { display: inline-block; width: 8px; height: 8px; border-radius: 50%; margin-right: 6px; vertical-align: 0; }
 .map-fallback { position: absolute; inset: 0; width: 100%; height: 100%; }

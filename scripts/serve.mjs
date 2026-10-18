@@ -1,5 +1,6 @@
 // Local static server that behaves like GitHub Pages (directory index.html, 404.html fallback).
 import { createServer } from 'node:http';
+import { gzipSync } from 'node:zlib';
 import { readFile, stat } from 'node:fs/promises';
 import { extname, join, normalize } from 'node:path';
 import { ROOT } from './lib.mjs';
@@ -18,8 +19,11 @@ createServer(async (req, res) => {
   try {
     if ((await stat(file)).isDirectory()) file = join(file, 'index.html');
     const body = await readFile(file);
-    res.writeHead(200, { 'Content-Type': TYPES[extname(file)] || 'application/octet-stream', 'Cache-Control': 'no-cache' });
-    res.end(body);
+    const type = TYPES[extname(file)] || 'application/octet-stream';
+    // Like GitHub Pages, compress text assets when the client accepts it.
+    const gz = /text|json|javascript|svg|xml/.test(type) && /gzip/.test(req.headers['accept-encoding'] || '');
+    res.writeHead(200, { 'Content-Type': type, 'Cache-Control': 'no-cache', ...(gz ? { 'Content-Encoding': 'gzip' } : {}) });
+    res.end(gz ? gzipSync(body) : body);
   } catch { send(404); }
 
   async function send(code) {

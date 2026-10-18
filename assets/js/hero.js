@@ -23,8 +23,8 @@ export function initHero() {
     for (const g of gens) {
       const rows = JSON.parse(g.dataset.gen);
       const label = g.textContent;
-      g.setAttribute('aria-label', label);
       g.textContent = '';
+      g.append(srText(label));
       g.classList.add('is-live');
       await wait(Number(g.dataset.genDelay || 0));
       for (const row of rows) {
@@ -41,10 +41,18 @@ export function initHero() {
 
 function renderStatic(g) {
   const rows = JSON.parse(g.dataset.gen);
-  g.setAttribute('aria-label', g.textContent);
+  const label = g.textContent;
   g.textContent = '';
+  g.append(srText(label));
   for (const r of rows) g.append(makeTok(r[0], false));
   g.classList.add('is-done');
+}
+
+function srText(t) {
+  const s = document.createElement('span');
+  s.className = 'sr';
+  s.textContent = t;
+  return s;
 }
 
 function makeTok(text, animate) {

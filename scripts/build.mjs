@@ -68,7 +68,7 @@ function header({ home = false } = {}) {
   ];
   return `<a class="skip" href="#main">Skip to content</a>
 <header class="site-head" data-head>
-  <a class="brand" href="/" aria-label="Sahaj Saliya, home">
+  <a class="brand" href="/" title="Sahaj Saliya, home">
     <span class="brand-mark" aria-hidden="true">S.</span>
     <span class="brand-name mono">sahaj.si</span>
   </a>
@@ -76,10 +76,10 @@ function header({ home = false } = {}) {
     ${nav.map(([l, h]) => `<a class="tok-link" href="${h}">${l}</a>`).join('\n    ')}
   </nav>
   <div class="head-tools">
-    <button class="kbd-btn" type="button" data-palette-open aria-label="Open command palette (Ctrl K)">
+    <button class="kbd-btn" type="button" data-palette-open>
       <span class="mono">Search or ask</span><kbd>Ctrl K</kbd>
     </button>
-    <button class="temp" type="button" data-theme-toggle aria-label="Theme: follow system">
+    <button class="temp" type="button" data-theme-toggle aria-label="temp auto, theme follow system. Click to change.">
       <span class="temp-label mono">temp</span>
       <span class="temp-track" aria-hidden="true"><span class="temp-knob"></span></span>
       <span class="temp-val mono" data-theme-val>auto</span>
@@ -153,7 +153,7 @@ function heroSection() {
       ${profile.focus.map((f, i) => `<li><span class="tid">${String(1000 + i * 137).padStart(5, '0')}</span>${esc(f)}</li>`).join('')}
     </ul>
   </div>
-  <a class="scroll-cue mono" href="#about" aria-label="Scroll to layer 2"><span>forward pass</span><span class="cue-line" aria-hidden="true"></span></a>
+  <a class="scroll-cue mono" href="#about" aria-label="forward pass, scroll to layer 2"><span>forward pass</span><span class="cue-line" aria-hidden="true"></span></a>
 </section>`;
 }
 
