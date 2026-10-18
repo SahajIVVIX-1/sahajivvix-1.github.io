@@ -4,30 +4,29 @@
         calm  same, but the visitor prefers reduced motion: static network + greeting
         mini  anything else (same-session return, other pages): greeting only, ~400 ms
    2. Looks up the visitor's public IP address (api.ipify.org, the only network call this site makes to a third
-      party) and writes it into the address bar as /ip=<address> (home page) or /blogs/ip=<address> (blog) with history.replaceState: no reload and no extra
+      party) and writes it into the address bar as /ip=<address> (home page), /blogs/ip=<address> (blog), on every page with history.replaceState: no reload and no extra
       back-button entry. Other query parameters and the #hash stay exactly as they were. A foreign IP (from a
       shared link) is removed at once and replaced by the visitor's own.
    3. Keeps a random id in this browser (never shown, never sent) that only seeds the loading animation. */
 (function () {
   var d = document.documentElement;
-  // The address bar shows the visitor's IP as a path, /ip=<address>, not as a query. A static host answers an
-  // unknown path with 404.html, so when that page is opened on such a path it swaps in the home page at once.
-  var IP_PATH = /^\/ip=[0-9a-fA-F:.]{2,45}\/?$/;
-  var BLOG_IP_PATH = /^\/blogs\/ip=[0-9a-fA-F:.]{2,45}\/?$/;
-  if (!window.__ipSwap && (IP_PATH.test(location.pathname) || BLOG_IP_PATH.test(location.pathname))) {
-    window.__ipSwap = true;
-    d.style.visibility = 'hidden';
-    fetch(BLOG_IP_PATH.test(location.pathname) ? '/blogs/index.html' : '/index.html', { cache: 'no-store' })
-      .then(function (r) { return r.text(); })
-      .then(function (html) { document.open(); document.write(html); document.close(); })
-      .catch(function () { d.style.visibility = ''; });
-    return;
-  }
+  // The address bar shows the visitor's IP as the last path segment: /ip=<address> on the home page, /blogs/ip=<address>
+  // on the blog, and so on (also on the 404 page). A static host answers such an unknown path with 404.html, so when a
+  // page is opened on an /ip= path, the real page for the path without that segment is fetched and swapped in. If
+  // there is no such page, the 404 page stays (it is the right page).
+  var SEG = /\/?ip=[0-9a-fA-F:.]{2,45}\/?$/;
+  var basePath = function (p) {
+    p = p.replace(SEG, '/');
+    if (p.slice(-11) === '/index.html') p = p.slice(0, -10);
+    if (p.charAt(p.length - 1) !== '/') p += '/';
+    return p;
+  };
+  var run = function () {
   var mode = 'mini';
   try {
     // Only the home page counts: reading the blog first must not use up the full boot.
     var seen = sessionStorage.getItem('booted');
-    var home = location.pathname === '/' || location.pathname === '/index.html' || IP_PATH.test(location.pathname);
+    var home = basePath(location.pathname) === '/';
     var calm = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
     if (home) { sessionStorage.setItem('booted', '1'); if (!seen) mode = calm ? 'calm' : 'full'; }
   } catch (e) { }
@@ -66,9 +65,8 @@
       parts = parts ? parts.split('&') : [];
       var out = parts.filter(function (p) { var k = p.split('=')[0]; return k !== 'visitor' && k !== 'ip'; });
       var search = out.length ? '?' + out.join('&') : '';
-      var path = location.pathname;
-      if (path === '/' || path === '/index.html' || IP_PATH.test(path)) path = ip ? '/ip=' + ip : '/';
-      else if (path === '/blogs/' || path === '/blogs/index.html' || BLOG_IP_PATH.test(path)) path = ip ? '/blogs/ip=' + ip : '/blogs/';
+      var base = basePath(location.pathname);
+      var path = ip ? base + 'ip=' + ip : base;
       var next = path + search + location.hash;
       if (next !== location.pathname + location.search + location.hash) history.replaceState(history.state, '', next);
     } catch (e) { }
@@ -102,4 +100,13 @@
       } catch (e) { resolve(null); }
     });
   }
+  };
+  if (!window.__ipSwap && SEG.test(location.pathname)) {
+    window.__ipSwap = true;
+    d.style.visibility = 'hidden';
+    fetch(basePath(location.pathname) + 'index.html', { cache: 'no-store' })
+      .then(function (r) { if (!r.ok) throw new Error('no page'); return r.text(); })
+      .then(function (html) { if (html.indexOf('<html') < 0) throw new Error('not a page'); document.open(); document.write(html); document.close(); })
+      .catch(function () { d.style.visibility = ''; run(); });
+  } else run();
 })();
