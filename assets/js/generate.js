@@ -4,6 +4,7 @@
 // layout is final from the first frame and nothing shifts. Only opacity and transform change.
 // Return visits, reduced motion and ?noreplay get the plain page. ?replay forces the effect again.
 import { placePopup } from './popup.js';
+import { setBusy } from './busy.js';
 
 const SEEN = 'sahaj:generated';
 const TEXT = [
@@ -86,6 +87,7 @@ export function initGenerate({ reducedMotion = false, lowPower = false } = {}) {
       if (j.step(j.t)) { j.finish(); running.delete(j); }
     }
     raf = running.size ? requestAnimationFrame(tick) : 0;
+    if (!running.size) setBusy('gen', false);
   }
   let batchAt = 0, batchN = 0;
   function start(j) {
@@ -95,6 +97,7 @@ export function initGenerate({ reducedMotion = false, lowPower = false } = {}) {
     if (now - batchAt > 140) { batchAt = now; batchN = 0; }
     j.t = -batchN++ * (j.stagger ?? 70); // blocks that enter together are staggered
     running.add(j);
+    setBusy('gen', true);
     j.begin?.();
     if (!raf) { last = performance.now(); raf = requestAnimationFrame(tick); }
   }

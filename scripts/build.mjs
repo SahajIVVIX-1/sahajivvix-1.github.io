@@ -73,6 +73,7 @@ function head({ title, description, url, image = '/assets/img/og.png', type = 'w
 <link rel="apple-touch-icon" href="/assets/brand/apple-touch-icon.png">
 <link rel="manifest" href="/site.webmanifest">
 <link rel="preload" href="/assets/fonts/instrument-serif-latin-400-italic.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="/assets/fonts/anthropic-serif/anthropic-serif-text-500-italic.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="/assets/fonts/inter-tight-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin>
 <script>${THEME_BOOT}</script>
 <style>${BOOT_CSS}</style>
@@ -93,9 +94,16 @@ function header({ home = false } = {}) {
   ];
   return `<a class="skip" href="#main">Skip to content</a>
 <header class="site-head" data-head>
-  <a class="brand" href="/" title="Sahaj Saliya, home">
-    <span class="brand-mark" aria-hidden="true">S.</span>
-    <span class="brand-name mono">sahaj.si</span>
+  <a class="brand" href="/" aria-label="Sahaj Saliya, home" title="Sahaj Saliya, home" data-brand>
+    <svg class="brand-logo" viewBox="0 0 40 40" width="40" height="40" aria-hidden="true" focusable="false">
+      <circle class="ring-track" cx="20" cy="20" r="19.25"/>
+      <g transform="rotate(-90 20 20)"><circle class="ring-prog" cx="20" cy="20" r="19.25" pathLength="100"/></g>
+      <g class="ticks"><line x1="20.00" y1="-1.00" x2="20.00" y2="-3.20"/><line x1="30.50" y1="1.81" x2="31.00" y2="0.95"/><line x1="38.19" y1="9.50" x2="39.57" y2="8.70"/><line x1="41.00" y1="20.00" x2="41.80" y2="20.00"/><line x1="38.19" y1="30.50" x2="39.92" y2="31.50"/><line x1="30.50" y1="38.19" x2="31.10" y2="39.23"/><line x1="20.00" y1="41.00" x2="20.00" y2="41.90"/><line x1="9.50" y1="38.19" x2="8.60" y2="39.75"/><line x1="1.81" y1="30.50" x2="0.86" y2="31.05"/><line x1="-1.00" y1="20.00" x2="-3.20" y2="20.00"/><line x1="1.81" y1="9.50" x2="1.12" y2="9.10"/><line x1="9.50" y1="1.81" x2="8.75" y2="0.51"/></g>
+      <circle class="disc" cx="20" cy="20" r="17"/>
+      <text class="mark" x="18.2" y="26.4" text-anchor="end">S</text>
+      <circle class="cursor" cx="21.6" cy="25.3" r="1.7"/>
+    </svg>
+    <span class="brand-text" aria-hidden="true"><span class="bt-cur">info@sahaj.si</span><span class="bt-size">info@sahaj.si</span><span class="bt-size">Sahaj Saliya</span></span>
   </a>
   <nav class="site-nav" aria-label="Primary">
     ${nav.map(([l, h]) => `<a class="tok-link" href="${h}">${l}</a>`).join('\n    ')}

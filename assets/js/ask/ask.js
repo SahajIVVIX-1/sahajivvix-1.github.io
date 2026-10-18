@@ -100,6 +100,7 @@ export function initAsk() {
     bubble.classList.add('is-thinking');
     bubble.querySelector('p').innerHTML = '<span class="dots mono">attending<span>.</span><span>.</span><span>.</span></span>';
     send.classList.add('is-busy');
+    setBusy('chat', true);
     const eng = await enginePromise;
     if (!eng) { finish(bubble, 'The index failed to load. Please email sahajs7959@gmail.com.', []); return; }
     const res = await eng.answer(q);
@@ -123,6 +124,7 @@ export function initAsk() {
 
   function finish(bubble, text, sources, by = '') {
     send.classList.remove('is-busy');
+    setBusy('chat', false);
     bubble.classList.remove('is-thinking');
     const p = bubble.querySelector('p');
     p.innerHTML = linkify(text);
