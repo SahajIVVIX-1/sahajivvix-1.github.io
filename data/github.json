@@ -1,0 +1,244 @@
+{
+ "fetched_at": "2026-10-18T09:50:38.316Z",
+ "user": {
+  "login": "SahajIVVIX-1",
+  "public_repos": 15,
+  "followers": 6,
+  "bio": "AI/ML Engineer | Generative AI, LLMs, Agentic AI & AI Infrastructure | Building scalable, intelligent solutions through research and engineering.",
+  "since": "2023-09-01T13:00:47Z"
+ },
+ "totals": {
+  "stars": 2,
+  "repos": 11
+ },
+ "languages": {
+  "Python": 12061181,
+  "Dockerfile": 10639,
+  "JavaScript": 793493,
+  "CSS": 58592,
+  "Shell": 7063,
+  "PowerShell": 11451,
+  "HTML": 1679038,
+  "TypeScript": 203607,
+  "Batchfile": 3632,
+  "Makefile": 827,
+  "TeX": 535408
+ },
+ "repos": [
+  {
+   "name": "SahajIVVIX-1",
+   "description": "AI Engineer | Deep Learning • RL • Computer Vision Turning data into intelligent systems.",
+   "url": "https://github.com/SahajIVVIX-1/SahajIVVIX-1",
+   "language": "Python",
+   "stars": 1,
+   "forks": 0,
+   "topics": [],
+   "fork": false,
+   "created_at": "2024-01-24T19:11:08Z",
+   "pushed_at": "2026-10-18T05:53:12Z"
+  },
+  {
+   "name": "open-env-nuclei",
+   "description": "Intelligent data cleaning system using Reinforcement Learning and LLMs (OpenEnv) to optimize datasets with context-aware decisions.",
+   "url": "https://github.com/SahajIVVIX-1/open-env-nuclei",
+   "language": "Python",
+   "stars": 0,
+   "forks": 0,
+   "topics": [],
+   "fork": true,
+   "created_at": "2026-04-23T17:11:40Z",
+   "pushed_at": "2026-10-17T09:55:19Z"
+  },
+  {
+   "name": "BDA-Analytics",
+   "description": "It loads 2,944,814 real tweets into MongoDB, cleans them, adds sentiment, topics and keywords with lightweight NLP, pre-aggregates them with MongoDB aggregation pipelines, serves the results through a FastAPI REST API, and shows them in a React dashboard.",
+   "url": "https://github.com/SahajIVVIX-1/BDA-Analytics",
+   "language": "JavaScript",
+   "stars": 0,
+   "forks": 0,
+   "topics": [
+    "fastapi",
+    "mongodb",
+    "oxlint",
+    "pydantic",
+    "pymongo",
+    "react",
+    "ruff"
+   ],
+   "fork": false,
+   "created_at": "2026-10-08T09:56:06Z",
+   "pushed_at": "2026-10-16T15:16:05Z"
+  },
+  {
+   "name": "Crohn-Disease-Early-Prediction",
+   "description": "",
+   "url": "https://github.com/SahajIVVIX-1/Crohn-Disease-Early-Prediction",
+   "language": null,
+   "stars": 0,
+   "forks": 0,
+   "topics": [],
+   "fork": true,
+   "created_at": "2026-10-12T16:29:09Z",
+   "pushed_at": "2026-10-12T16:26:38Z"
+  },
+  {
+   "name": "AgentForge",
+   "description": "A multi-agent AI research assistant that shows its sources and its failures. You ask a question; three CrewAI agents work in sequence and return a sourced report.",
+   "url": "https://github.com/SahajIVVIX-1/AgentForge",
+   "language": "Python",
+   "stars": 0,
+   "forks": 0,
+   "topics": [
+    "agentic-ai",
+    "crewai",
+    "fastapi",
+    "react",
+    "typescript"
+   ],
+   "fork": false,
+   "created_at": "2026-10-07T10:13:22Z",
+   "pushed_at": "2026-10-07T10:54:16Z"
+  },
+  {
+   "name": "Multi-Agent-RAG",
+   "description": "Enterprise Agentic RAG Orchestrator with LangGraph CRAG, CrossEncoder reranking, Qdrant ANN caching, two-tier API auth, and benchmarked RAGAS scores (0.81 faithfulness, 1.00 context precision).",
+   "url": "https://github.com/SahajIVVIX-1/Multi-Agent-RAG",
+   "language": "Python",
+   "stars": 0,
+   "forks": 0,
+   "topics": [
+    "agentic-rag",
+    "fastapi",
+    "hybrid-search",
+    "langchain",
+    "langgraph",
+    "qdrant"
+   ],
+   "fork": false,
+   "created_at": "2026-09-10T01:44:38Z",
+   "pushed_at": "2026-09-10T01:54:26Z"
+  },
+  {
+   "name": "LabX",
+   "description": "",
+   "url": "https://github.com/SahajIVVIX-1/LabX",
+   "language": "Dockerfile",
+   "stars": 0,
+   "forks": 0,
+   "topics": [],
+   "fork": false,
+   "created_at": "2026-08-10T11:25:08Z",
+   "pushed_at": "2026-08-12T00:56:51Z"
+  },
+  {
+   "name": "Video-Analyzer-Scroller",
+   "description": "This repository contains desktop utility tools built with Python and PyQt6 for media processing and analysis.",
+   "url": "https://github.com/SahajIVVIX-1/Video-Analyzer-Scroller",
+   "language": "Python",
+   "stars": 0,
+   "forks": 0,
+   "topics": [],
+   "fork": false,
+   "created_at": "2026-04-06T18:29:04Z",
+   "pushed_at": "2026-08-09T09:29:25Z"
+  },
+  {
+   "name": "student-performance-platform",
+   "description": "The end-to-end Machine Learning platform for predicting student academic performance and explaining model predictions using SHAP and LIME.",
+   "url": "https://github.com/SahajIVVIX-1/student-performance-platform",
+   "language": "Python",
+   "stars": 0,
+   "forks": 0,
+   "topics": [],
+   "fork": false,
+   "created_at": "2026-07-28T10:09:56Z",
+   "pushed_at": "2026-07-28T10:43:28Z"
+  },
+  {
+   "name": "SentinelProxy-Suite",
+   "description": "Built with an architecture prepared for Artificial Intelligence (AI) and Machine Learning (ML) pipelines, it features dynamic ad-blocking, malicious domain filtering (powered by predictive SQLite3 database blocklists), automatic system proxy mapping.",
+   "url": "https://github.com/SahajIVVIX-1/SentinelProxy-Suite",
+   "language": "JavaScript",
+   "stars": 1,
+   "forks": 1,
+   "topics": [],
+   "fork": false,
+   "created_at": "2026-02-20T14:48:24Z",
+   "pushed_at": "2026-07-13T11:15:00Z"
+  },
+  {
+   "name": "vMix-Manager",
+   "description": "vMix Manager is a powerful Python utility built with PyQt6 designed to automate the tedious parts of vMix production management. Instead of manually dragging hundreds of files, this tool allows you to manipulate .vmix XML files directly to handle batch imports, deep category restructuring, and project cleaning in seconds.",
+   "url": "https://github.com/SahajIVVIX-1/vMix-Manager",
+   "language": "Python",
+   "stars": 0,
+   "forks": 0,
+   "topics": [],
+   "fork": false,
+   "created_at": "2026-03-29T21:14:02Z",
+   "pushed_at": "2026-04-07T20:51:11Z"
+  }
+ ],
+ "events": [
+  {
+   "type": "PushEvent",
+   "repo": "BDA-Analytics",
+   "at": "2026-10-16T15:07:22Z"
+  },
+  {
+   "type": "PushEvent",
+   "repo": "BDA-Analytics",
+   "at": "2026-10-16T14:17:18Z"
+  },
+  {
+   "type": "PushEvent",
+   "repo": "BDA-Analytics",
+   "at": "2026-10-16T15:14:57Z"
+  },
+  {
+   "type": "CreateEvent",
+   "repo": "BDA-Analytics",
+   "at": "2026-10-16T15:14:39Z"
+  },
+  {
+   "type": "CreateEvent",
+   "repo": "BDA-Analytics",
+   "at": "2026-10-16T15:05:39Z"
+  },
+  {
+   "type": "PushEvent",
+   "repo": "BDA-Analytics",
+   "at": "2026-10-16T13:06:31Z"
+  },
+  {
+   "type": "PushEvent",
+   "repo": "BDA-Analytics",
+   "at": "2026-10-16T13:06:25Z"
+  },
+  {
+   "type": "PushEvent",
+   "repo": "BDA-Analytics",
+   "at": "2026-10-16T14:17:19Z"
+  },
+  {
+   "type": "PushEvent",
+   "repo": "BDA-Analytics",
+   "at": "2026-10-16T12:42:23Z"
+  },
+  {
+   "type": "PushEvent",
+   "repo": "BDA-Analytics",
+   "at": "2026-10-16T13:06:28Z"
+  },
+  {
+   "type": "PushEvent",
+   "repo": "SahajIVVIX-1",
+   "at": "2026-10-16T15:17:38Z"
+  },
+  {
+   "type": "PushEvent",
+   "repo": "BDA-Analytics",
+   "at": "2026-10-16T15:16:07Z"
+  }
+ ]
+}
