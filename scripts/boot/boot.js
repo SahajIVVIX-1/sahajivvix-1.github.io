@@ -82,8 +82,8 @@
   }
 
   /* ---------- timeline ---------- */
-  var MIN = rich ? 1200 : 400;
-  var MAX = rich ? 3000 : 800;
+  var MIN = rich ? 4600 : 400;
+  var MAX = rich ? 6500 : 800;
   var t0 = performance.now();
   var shown = 0;
   var done = false;
@@ -111,8 +111,8 @@
     if (done) return;
     var t = performance.now() - t0;
     var r = real();
-    // The display never runs ahead of real progress, nor fills faster than ~1.1 s.
-    var cap = Math.min(r, t / 1100, 1);
+    // The display never runs ahead of real progress, nor fills faster than ~4.3 s (the first-visit boot is meant to be seen).
+    var cap = Math.min(r, t / (rich ? 4300 : 1100), 1);
     shown += (cap - shown) * 0.2;
     if (cap - shown < 0.002) shown = cap;
     B.p = shown;
