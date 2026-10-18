@@ -1,0 +1,80 @@
+// Entry point. Small modules run immediately; heavy ones load when they are about to be needed.
+import { initTheme } from './theme.js';
+import { initHero } from './hero.js';
+import { initRail } from './rail.js';
+import { initLoss } from './loss.js';
+
+export const reducedMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
+// Phones, low core counts and data-saver get lighter versions of the effects.
+export const lowPower = matchMedia('(max-width: 700px), (pointer: coarse)').matches
+  || (navigator.hardwareConcurrency || 8) <= 4
+  || navigator.connection?.saveData === true;
+
+initTheme();
+initRail();
+initHero();
+initLoss();
+initHeader();
+initTransitions();
+initLazy();
+
+function initHeader() {
+  const head = document.querySelector('[data-head]');
+  if (!head) return;
+  const onScroll = () => head.classList.toggle('is-scrolled', scrollY > 24);
+  addEventListener('scroll', onScroll, { passive: true });
+  onScroll();
+}
+
+// Softmax-style fade between pages: blur out, then the next page sharpens in.
+function initTransitions() {
+  if (reducedMotion) return;
+  document.addEventListener('click', (e) => {
+    const a = e.target.closest('a[href]');
+    if (!a || e.defaultPrevented || e.metaKey || e.ctrlKey || e.shiftKey || a.target === '_blank') return;
+    const url = new URL(a.href, location.href);
+    if (url.origin !== location.origin || url.hash && url.pathname === location.pathname) return;
+    if (/\.(xml|json|png|pdf)$/.test(url.pathname)) return;
+    e.preventDefault();
+    document.body.classList.add('is-leaving');
+    setTimeout(() => { location.href = url.href; }, 300);
+  });
+  addEventListener('pageshow', (e) => { if (e.persisted) document.body.classList.remove('is-leaving'); });
+}
+
+function initLazy() {
+  // Command palette and chat: load on first intent.
+  let paletteMod;
+  const palette = () => (paletteMod ||= import('./palette.js').then((m) => m.initPalette()));
+  let askMod;
+  const ask = () => (askMod ||= import('./ask/ask.js').then((m) => m.initAsk()));
+  window.__ask = (q) => ask().then((api) => api.open(q));
+  window.__palette = () => palette().then((api) => api.open());
+
+  document.addEventListener('click', (e) => {
+    if (e.target.closest('[data-ask-open]')) { e.preventDefault(); window.__ask(); }
+    if (e.target.closest('[data-palette-open]')) { e.preventDefault(); window.__palette(); }
+  });
+  addEventListener('keydown', (e) => {
+    if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'k') { e.preventDefault(); window.__palette(); }
+    else if (e.key === '/' && !/input|textarea/i.test(document.activeElement?.tagName || '') && !document.activeElement?.isContentEditable) { e.preventDefault(); window.__palette(); }
+  });
+
+  // Attention lines: after the page is idle, only for fine pointers (hover does not exist on touch).
+  const idle = window.requestIdleCallback || ((f) => setTimeout(f, 1200));
+  if (matchMedia('(hover: hover)').matches && !reducedMotion) {
+    idle(() => import('./attention.js').then((m) => m.initAttention({ lowPower })));
+  }
+
+  // Latent map: when it is about to scroll into view.
+  const stage = document.querySelector('[data-latent-map]');
+  if (stage) {
+    const io = new IntersectionObserver((entries) => {
+      if (entries.some((en) => en.isIntersecting)) {
+        io.disconnect();
+        import('./latent-map.js').then((m) => m.initMap(stage, { lowPower, reducedMotion }));
+      }
+    }, { rootMargin: '400px 0px' });
+    io.observe(stage);
+  }
+}
