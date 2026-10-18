@@ -1,6 +1,7 @@
 // Next-token generation for the hero. Each token shows its candidate distribution flickering
 // (logits plus decaying noise, softmax at temperature T) before the chosen token locks in.
 import { placePopup } from './popup.js';
+import { setBusy } from './busy.js';
 
 const T = 0.7;
 const KEY_TOKENS = new Set(['reads', 'sees', 'acts']);
@@ -20,6 +21,7 @@ export function initHero() {
 
   (async () => {
     await bootGate();
+    setBusy('hero', true);
     let step = 0;
     for (const g of gens) {
       const rows = JSON.parse(g.dataset.gen);
@@ -42,6 +44,7 @@ export function initHero() {
 // Tells the thinking line (think.js) that the name and tagline are finished, and how many tokens they took,
 // so its running token count can continue from there.
 function heroReady(tokens) {
+  setBusy('hero', false);
   window.__heroReady = { tokens };
   document.dispatchEvent(new CustomEvent('hero:ready', { detail: { tokens } }));
 }

@@ -6,6 +6,9 @@ import { initLoss } from './loss.js';
 import { initPersona } from './persona.js';
 import { initThink } from './think.js';
 import { initGenerate } from './generate.js';
+import { initFooter } from './footer.js';
+import { initBrand } from './brand.js';
+import { initCnn } from './cnn.js';
 
 export const reducedMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
 // Phones, low core counts and data-saver get lighter versions of the effects.
@@ -20,6 +23,9 @@ initRail();
 initHero();
 initThink();
 initGenerate({ reducedMotion, lowPower });
+initFooter({ reducedMotion, lowPower });
+initBrand({ reducedMotion });
+initCnn({ reducedMotion });
 initLoss();
 initHeader();
 initTransitions();
