@@ -146,10 +146,10 @@ A blog is being written and will appear at /blogs.
 Those profiles are not listed on this site. His code lives on GitHub (SahajIVVIX-1).
 
 ## Does this site track visitors? {#site}
-There are no cookies, no analytics and no tracking scripts, and the site stores nothing about you on any server. One thing does leave your browser: when a page opens, it asks the free service api.ipify.org for your public IP address and shows it back to you in the address bar (for example ?ip=203.0.113.9) and in the footer. This site does not store or log that address. It is kept only for the current browser session and is gone when you close the tab. If you would rather not use it, block api.ipify.org (for example with an ad blocker) and the site works the same without it.
+There are no cookies, no analytics and no tracking scripts, and the site stores nothing about you on any server. One thing does leave your browser: when a page opens, it asks the free service api.ipify.org for your public IP address and shows it back to you in the address bar (for example /ip=203.0.113.9) and in the footer. This site does not store or log that address. It is kept only for the current browser session and is gone when you close the tab. If you would rather not use it, block api.ipify.org (for example with an ad blocker) and the site works the same without it.
 
-## What is the ?ip= part of the URL?
-Your own public IP address, as reported by api.ipify.org when you opened the page. It is added to the address bar without reloading the page. Be aware that it is then part of the URL, so it appears in your browser history and in screenshots, and anyone you send that exact link to will see it. If someone opens a link that contains another person's address, the site removes it at once and shows their own instead.
+## What is the ip= part of the URL?
+Your own public IP address, as reported by api.ipify.org when you opened the page. It is added to the address bar without reloading the page. Be aware that it is then part of the URL, so it appears in your browser history and in screenshots, and anyone you send that exact link to will see it. If someone opens a link that contains another person's address, the site replaces it at once with their own.
 
 ## What is the loading screen at the start?
 A short boot sequence that looks like a model loading its weights. Its progress bar follows real loading (fonts, the main script and the data files), it shows once per visit, and you can click or press any key to skip it.

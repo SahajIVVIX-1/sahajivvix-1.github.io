@@ -2,7 +2,7 @@
 let api;
 export function initPalette() {
   if (api) return api;
-  const home = location.pathname === '/';
+  const home = location.pathname === '/' || /^\/ip=/.test(location.pathname);
   const go = (hash) => (home ? hash : `/${hash}`);
   const cards = [...document.querySelectorAll('.card[id]')].map((c) => ({ label: c.querySelector('.card-title')?.textContent, hint: 'project', href: `#${c.id}` }));
   const items = [

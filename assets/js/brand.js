@@ -15,7 +15,7 @@ export function initBrand({ reducedMotion = false } = {}) {
   progress(brand);
   hover(brand, logo, reducedMotion);
   brand.addEventListener('click', (e) => {
-    if (location.pathname !== '/' || e.metaKey || e.ctrlKey || e.shiftKey || e.button) return;
+    if (!(location.pathname === '/' || /^\/ip=/.test(location.pathname)) || e.metaKey || e.ctrlKey || e.shiftKey || e.button) return;
     e.preventDefault();
     scrollTo({ top: 0, behavior: reducedMotion ? 'auto' : 'smooth' });
     if (location.hash) history.replaceState(null, '', location.pathname + location.search);
