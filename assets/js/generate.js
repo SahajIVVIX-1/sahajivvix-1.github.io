@@ -8,7 +8,7 @@ import { setBusy } from './busy.js';
 
 const SEEN = 'sahaj:generated';
 const TEXT = [
-  '.layer-tag', '.layer-title', '.contact-title', '.foot-title', '.contact-lede', '.lead', '.about-text p', '.facts dt', '.facts dd',
+  '.layer-tag', '.layer-title', '.contact-title', '.contact-lede', '.lead', '.about-text p', '.facts dt', '.facts dd',
   '.card-kicker', '.card-title', '.card-task', '.card-body', '.metric-label', '.card-foot',
   '.sg-name', '.sg-items li', '.role-title', '.role-org', '.role-when', '.ck-t', '.ck-d',
   '.cert-name', '.cert-by', '.gh .sg-name', '.gh-sub', '.gh-recent li', '.lang-key li', '.contact-links li',
@@ -41,8 +41,7 @@ export function initGenerate({ reducedMotion = false, lowPower = false } = {}) {
   // ---- prepare: wrap tokens, mark boxes (all hidden, layout untouched) ----
   const jobs = [];
   const taken = new Set();
-  const foot = document.querySelector('.site-foot');
-  for (const el of [...q(TEXT, main), ...(foot ? q('.foot-title', foot) : [])]) {
+  for (const el of q(TEXT, main)) {
     if (!outside(el) || inMap(el) || taken.has(el) || el.closest('[data-gen-done]')) continue;
     if ([...taken].some((t) => t.contains(el))) continue;
     for (const t of [...taken]) if (el.contains(t)) taken.delete(t);
@@ -151,7 +150,7 @@ function wrapTokens(el) {
 }
 
 function textJob(el, toks, lowPower) {
-  const heading = el.matches('.layer-title, .contact-title, .foot-title');
+  const heading = el.matches('.layer-title, .contact-title');
   // headings are sampled slowly (with a peek at the distribution); long paragraphs are capped at about 1.2 s
   const per = heading ? 50 : el.matches('.layer-tag, .sg-name, .metric-label, .card-kicker') ? 28 : Math.max(8, Math.min(22, 1200 / toks.length));
   const popAt = heading && !lowPower ? [1, Math.min(toks.length - 1, Math.max(3, Math.round(toks.length * 0.6)))] : [];
