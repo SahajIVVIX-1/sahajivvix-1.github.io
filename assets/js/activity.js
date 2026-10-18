@@ -60,6 +60,7 @@
   function mount(root, words) {
     const verbs = root.querySelector(".act-verbs");
     const time = root.querySelector(".act-time");
+    const dot = root.querySelector(".act-dot");
     const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
     const next = createBag(words);
     const timers = new Set();
@@ -132,19 +133,40 @@
       return i;
     }
 
-    // turn tile `slot` over so `to` shows; an empty `to` retires the tile.
-    // Every tile in a change resizes along one shared curve (`span`), so the line glides
-    // in one direction instead of nudging back and forth as staggered tiles resize.
+    // Moves on screen are done with transforms (FLIP): the layout jumps to its final state at once,
+    // then every piece slides from where it was. Sliding a whole letter as one picture keeps it
+    // steady; re-laying text out at fractional positions every frame makes glyphs snap and shiver.
+    const glides = new Map();
+    function positions(els) {
+      const m = new Map();
+      // centres, not left edges: a tile's letter is centred in it, so matching centres keeps the
+      // old letter exactly where it was on the first frame even though the tile already has its new width
+      els.forEach(el => { const r = el.getBoundingClientRect(); m.set(el, r.left + r.width / 2); });
+      return m;
+    }
+    function glide(before, span, enterFrom) {
+      const els = [dot, ...slotsEl.children, ellEl, time];
+      const after = positions(els);
+      els.forEach(el => {
+        const from = before.has(el) ? before.get(el) : enterFrom;
+        const dx = from - after.get(el);
+        const prev = glides.get(el);
+        if (prev) { prev.cancel(); glides.delete(el); }
+        if (Math.abs(dx) < 0.1) return;
+        const anim = el.animate([{ transform: "translateX(" + dx + "px)" }, { transform: "none" }], { duration: span, easing: EASE });
+        glides.set(el, anim);
+        anim.onfinish = () => { if (glides.get(el) === anim) glides.delete(el); };
+      });
+    }
+
+    // turn tile `slot` over so `to` shows; an empty `to` retires the tile
     function flip(slot, to, from, dir, delay, span) {
       const card = slot.firstChild, front = card.firstChild, back = card.lastChild;
       const { axis, deg } = TURN[dir];
       const rot = a => "rotate" + axis + "(" + a + "deg)";
       back.textContent = to;
       back.style.transform = rot(180);
-      slot.style.transition = "width " + span + "ms " + EASE;
-      slot.style.width = em(to) + "em";
-      // tiles that open up or close down turn across the whole change and scale with their
-      // width, so the letter always fits the space it is given
+      // tiles that open up or close down turn across the whole change and grow from / shrink to nothing
       const edge = !from || !to;
       const frames = edge
         ? [{ transform: rot(0) + " scale(" + (from ? 1 : 0) + ")" }, { transform: rot(deg) + " scale(" + (to ? 1 : 0) + ")" }]
@@ -176,26 +198,34 @@
         return;
       }
 
-      // new tiles start blank and zero-width, then open up as they turn
+      const before = positions([dot, ...slots, ellEl, time]);
+      const enterFrom = before.get(ellEl);
+      const base = slotsEl.getBoundingClientRect().left;
+      // surplus tiles leave the flow where they stand, so the rest settles at once
+      const lefts = slots.map(sl => sl.getBoundingClientRect().left - base);
+      for (let i = nextChars.length; i < slots.length; i++) {
+        slots[i].style.left = lefts[i] + "px";
+        slots[i].classList.add("leaving");
+      }
+      for (let i = 0; i < Math.min(slots.length, nextChars.length); i++) slots[i].style.width = em(nextChars[i]) + "em";
       for (let i = slots.length; i < nextChars.length; i++) {
         const s = makeSlot("");
+        s.style.width = em(nextChars[i]) + "em";
         slotsEl.appendChild(s);
         slots.push(s);
       }
-      void slotsEl.offsetWidth; // commit the zero widths so the growth transitions
+      layout();
 
       const p = PATTERNS[pattern++ % PATTERNS.length];
       let last = 0;
       for (let i = 0; i < n; i++) if ((prev[i] || "") !== (nextChars[i] || "")) last = Math.max(last, rank(p.order, i, n));
       const span = last * STEP_MS + FLIP_MS;
+      glide(before, span, enterFrom);
       for (let i = 0; i < n; i++) {
         const from = prev[i] || "", to = nextChars[i] || "";
         if (from === to) continue; // same letter in the same place stays put
         flip(slots[i], to, from, p.dir(i, n), rank(p.order, i, n) * STEP_MS, span);
       }
-      // the timer slot follows the same curve as the tiles
-      time.style.transition = "width " + span + "ms " + EASE;
-      layout();
     }
 
     function scheduleVerb() {
@@ -210,7 +240,12 @@
         const grew = t.length !== timeText.length;
         timeText = t;
         time.textContent = t;
-        if (grew) { timeW = measurePx(t, time); layout(); }
+        if (grew) {
+          const before = positions([dot, ...slotsEl.children, ellEl, time]);
+          timeW = measurePx(t, time);
+          layout();
+          if (!reduce) glide(before, 600);
+        }
       }
       // aim for the next whole second after `start`, so timeouts never accumulate drift
       later(tick, 1000 - ((performance.now() - start) % 1000) + 5);
@@ -240,6 +275,8 @@
       timers.clear();
       running.forEach(a => a.cancel());
       running.clear();
+      glides.forEach(a => a.cancel());
+      glides.clear();
       removeEventListener("resize", onResize);
       probe.remove();
     }
