@@ -2,8 +2,12 @@
 import { createEngine, uniqSources } from './engine.js';
 import { webgpuSupport, loadLLM } from './llm.js';
 import { checkOrigin } from '../origin.js';
+import { setBusy } from '../busy.js';
+import { createTools } from './tools.js';
+import { ACTION, NEAR, planRules, planLLM } from './planner.js';
 
 const STARTERS = [
+  'Show me your best CV project',
   'What does Sahaj work on?',
   'Tell me about CrohnSight',
   'What did he do at HNNOIX?',
@@ -50,6 +54,20 @@ export function initAsk() {
   const send = root.querySelector('.ask-send');
   let opener = null, llm = null, llmLoading = false, history = [];
 
+  // Agent: the bot can act on the page. On phones the panel covers the page, so it steps aside after the first
+  // visible action of a plan; actions are announced in a live region outside the panel so that still works.
+  const live = document.createElement('p');
+  live.className = 'sr';
+  live.setAttribute('role', 'status');
+  live.setAttribute('aria-live', 'polite');
+  document.body.append(live);
+  let stepAside = false;
+  const agent = createTools({
+    projects: [...document.querySelectorAll('article.card[id^="p-"]')].map((el) => ({ id: el.id.slice(2), name: el.querySelector('.card-title')?.textContent || el.id }))
+      .concat(document.querySelector('article.card[id^="p-"]') ? [] : ['crohnsight', 'agentic-rag', 'openenv', 'student-xai', 'dcgan'].map((id) => ({ id, name: id }))),
+    onPhoneAction: () => { if (stepAside && matchMedia('(max-width: 699px)').matches) { stepAside = false; setTimeout(close, 450); } },
+  });
+
   const enginePromise = createEngine().then((eng) => {
     status.textContent = `retrieval ready · ${eng.qaCount} answers · ${eng.chunks.length} passages`;
     eng.loadEmbedder().then((ok) => { if (ok) status.textContent = `semantic search on · MiniLM-L6 · ${eng.chunks.length} passages`; });
@@ -91,7 +109,7 @@ export function initAsk() {
     panel.classList.remove('is-open');
     clearTimeout(closeTimer);
     closeTimer = setTimeout(() => { panel.hidden = true; }, 250);
-    opener?.focus?.();
+    opener?.focus?.({ preventScroll: true }); // a focus scroll would cut short an agent's smooth scroll
   }
 
   root.querySelector('[data-close]').addEventListener('click', close);
@@ -108,6 +126,16 @@ export function initAsk() {
     setBusy('chat', true);
     const eng = await enginePromise;
     if (!eng) { finish(bubble, 'The index failed to load. Please email sahajs7959@gmail.com.', []); return; }
+
+    if (ACTION.test(q)) {
+      const plan = (llm && await planLLM(q, eng, llm, agent.check, agent.docs)) || await planRules(q, eng);
+      if (plan.steps.length) {
+        const out = await act(bubble, plan);
+        history.push({ role: 'user', content: q }, { role: 'assistant', content: out.text });
+        finish(bubble, out.text, out.sources, plan.by === 'llm' ? 'agent · Qwen2.5-1.5B plan' : 'agent · rule-based plan');
+        return;
+      }
+    }
     const res = await eng.answer(q);
     let text = res.text, sources = res.sources, by = res.kind === 'bank' ? 'answer bank' : res.kind === 'retrieval' ? 'retrieved passage' : '';
 
@@ -125,6 +153,65 @@ export function initAsk() {
     }
     history.push({ role: 'user', content: q }, { role: 'assistant', content: text });
     finish(bubble, text, sources, by);
+  }
+
+  // Runs a plan step by step and shows it as an agent trace: tool(args) → result. Stops at the first failure.
+  async function act(bubble, plan) {
+    const eng = await enginePromise;
+    bubble.classList.remove('is-thinking');
+    bubble.querySelector('p').textContent = '';
+    const trace = document.createElement('ol');
+    trace.className = 'trace mono';
+    trace.setAttribute('aria-hidden', 'true'); // announced step by step in the live region instead
+    bubble.prepend(trace);
+    const pace = matchMedia('(prefers-reduced-motion: reduce)').matches ? 0 : 260;
+    stepAside = true;
+    const done = [];
+    for (const step of plan.steps) {
+      const li = document.createElement('li');
+      const args = Object.values(step.args).filter((v) => v !== '').map((v) => JSON.stringify(v)).join(', ');
+      li.innerHTML = `<span class="tr-call">${esc(step.name)}(${esc(args)})</span><span class="tr-out"></span>`;
+      li.className = 'is-run';
+      trace.append(li);
+      log.scrollTop = log.scrollHeight;
+      await new Promise((r) => setTimeout(r, pace));
+      const outEl = li.querySelector('.tr-out');
+      try {
+        let result;
+        if (step.name === 'search_projects') result = (step.ranked || []).slice(0, 3).map((p) => `${p.id} ${p.score.toFixed(2)}`).join(' · ');
+        else result = await agent.tools[step.name].run(step.args, { from: li });
+        li.className = 'is-ok';
+        outEl.textContent = ` → ${result}`;
+        done.push({ step, result });
+        if (step.name !== 'search_projects') live.textContent = `${step.name.replace('_', ' ')}: ${result}`;
+      } catch (e) {
+        li.className = 'is-err';
+        outEl.textContent = ` ✗ ${e.message}`;
+        live.textContent = `Could not ${step.name.replace('_', ' ')}: ${e.message}`;
+        return { text: `I couldn't do that on this page (${e.message}).`, sources: [] };
+      }
+    }
+    stepAside = false;
+
+    if (plan.focus) {
+      const r = plan.ranked || [];
+      const top = r.find((p) => p.id === plan.focus) || { name: plan.focus };
+      const res = await eng.answer(`What is ${top.name}?`);
+      const near = r.filter((p) => p.score >= (r[0]?.score ?? 0) - NEAR);
+      const fmt = (list) => list.map((p) => `${p.name} ${p.score.toFixed(2)}`).join(', ');
+      const why = plan.best && near.length > 1 ? ` Several projects match your request about equally (retrieval: ${fmt(near)}); this is the one he lists first in his work.`
+        : r[0]?.id === plan.focus && r[1] ? ` It is the closest match to your request among his projects (retrieval ${r[0].score.toFixed(2)}, next ${fmt([r[1]])}).` : '';
+      return { text: `Here is ${top.name}, model card open.${why} ${res.text}`, sources: res.sources };
+    }
+    const say = {
+      switch_theme: (s) => `Switched the theme to ${s.args.mode}.`,
+      open_certificate: () => 'Opened his Guinness World Records Certificate of Participation.',
+      filter_map: (s, r) => `Searched the embedding map for “${s.args.query}”: ${r}.`,
+      copy_link: (s, r) => `${r[0].toUpperCase()}${r.slice(1)} to your clipboard.`,
+      scroll_to: (s, r) => `Here you are: ${r.replace(/^at /, '')}.`,
+    };
+    const last = done.filter((d) => say[d.step.name]).pop();
+    return { text: last ? say[last.step.name](last.step, last.result) : 'Done.', sources: [] };
   }
 
   function finish(bubble, text, sources, by = '') {

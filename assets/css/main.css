@@ -933,3 +933,18 @@ html.is-copy .site-head { top: var(--copy-h, 44px); }
    The animation shows it anyway after 3 s if a script fails. */
 .js:not(.hero-laid) .hero-grid { visibility: hidden; animation: heroShow 0s 3s forwards; }
 @keyframes heroShow { to { visibility: visible; } }
+
+/* ---------- agent (assets/js/ask/tools.js): trace, attention line, highlights ---------- */
+.trace { display: grid; gap: 3px; margin: 0 0 8px; padding: 8px 10px; border-radius: 10px; background: var(--paper); border: 1px solid var(--rule); font-size: 11px; line-height: 1.45; color: var(--ink-2); overflow-wrap: anywhere; }
+.trace li { position: relative; padding-left: 14px; }
+.trace li::before { content: "▸"; position: absolute; left: 0; color: var(--ink-3); }
+.trace li.is-run::before { content: "◌"; color: var(--accent); }
+.trace li.is-ok::before { content: "✓"; color: var(--ok); }
+.trace li.is-err::before { content: "✗"; color: var(--accent); }
+.trace .tr-call { color: var(--ink); }
+.trace .tr-out { color: var(--ink-3); }
+.agent-layer { z-index: 91; }
+.agent-hl { outline: 2px solid var(--accent); outline-offset: 6px; border-radius: 12px; animation: agentPulse 1.2s var(--ease-out) 2; }
+.card.is-spot { outline: 2px solid var(--accent); outline-offset: 4px; box-shadow: 0 0 0 10px var(--accent-soft); transition: box-shadow .4s var(--ease-out); }
+@keyframes agentPulse { 50% { outline-offset: 12px; outline-color: var(--accent-line); } }
+@media (prefers-reduced-motion: reduce) { .agent-hl { animation: none; } }

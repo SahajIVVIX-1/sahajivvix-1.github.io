@@ -18,6 +18,11 @@ export async function loadLLM(kind, onProgress) {
     initProgressCallback: (p) => onProgress?.(p.progress ?? 0, p.text || ''),
   });
   return {
+    // One deterministic completion (used by the agent planner for its JSON tool plan).
+    async complete(messages, { max_tokens = 160 } = {}) {
+      const r = await engine.chat.completions.create({ messages, temperature: 0, max_tokens });
+      return r.choices[0]?.message?.content || '';
+    },
     async *stream(question, passages, history = []) {
       const context = passages.map((p, i) => `[${i + 1}] (${p.source || p.title}) ${p.title}: ${p.text}`).join('\n');
       const messages = [

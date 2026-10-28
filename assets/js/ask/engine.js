@@ -67,7 +67,25 @@ export async function createEngine() {
     return { kind: 'unknown', text: "I don't have that in Sahaj's data, so I won't guess. Email him at sahajs7959@gmail.com and he'll answer directly.", sources: [{ label: 'Contact', url: '/#contact' }], hits: r };
   }
 
-  return { answer, search, loadEmbedder, get semantic() { return !!extractor; }, chunks, qaCount: qaItems.length };
+  // Projects ranked for a query, from their model-card chunks (same scoring as search). Used by the agent planner.
+  // `order` is Sahaj's own order of the projects (content/projects.json, which the chunks follow).
+  const projectChunks = chunks.map((c, i) => [c, i]).filter(([c]) => c.url.startsWith('/#p-'));
+  const order = [...new Set(projectChunks.map(([c]) => c.url.slice(4)))];
+  async function rankProjects(query) {
+    const qt = tok(query);
+    const qv = await embedQuery(query);
+    const bm = kbBM(qt);
+    const maxBm = Math.max(1e-6, ...projectChunks.map(([, i]) => bm[i]));
+    const best = new Map();
+    for (const [c, i] of projectChunks) {
+      const score = qv ? 0.75 * cos(qv, c.vec) + 0.25 * bm[i] / maxBm : bm[i] / maxBm;
+      const id = c.url.slice(4);
+      if (!best.has(id) || best.get(id).score < score) best.set(id, { id, name: c.source, score, order: order.indexOf(id) });
+    }
+    return [...best.values()].sort((a, b) => b.score - a.score);
+  }
+
+  return { answer, search, rankProjects, loadEmbedder, get semantic() { return !!extractor; }, chunks, qaCount: qaItems.length };
 }
 
 export function uniqSources(list) {
