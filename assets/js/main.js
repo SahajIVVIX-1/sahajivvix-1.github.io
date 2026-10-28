@@ -29,6 +29,8 @@ initThink();
 initGenerate({ reducedMotion, lowPower });
 initGwr({ reducedMotion });
 initBadge({ reducedMotion });
+// The persona line and badge are placed: the hero can show (see "hero layout settles" in main.css).
+document.documentElement.classList.add('hero-laid');
 initFooter({ reducedMotion, lowPower });
 initBrand({ reducedMotion });
 initCnn({ reducedMotion });

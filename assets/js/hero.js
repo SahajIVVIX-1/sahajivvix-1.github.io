@@ -28,6 +28,9 @@ export function initHero() {
     for (const g of gens) {
       const rows = JSON.parse(g.dataset.gen);
       const label = g.textContent;
+      // Keep the line's height while it is empty and refilling, so nothing below it moves (layout shift).
+      const host = g.parentElement;
+      host.style.minHeight = `${host.offsetHeight}px`;
       g.textContent = '';
       g.append(srText(label));
       g.classList.add('is-live');
@@ -38,6 +41,7 @@ export function initHero() {
       }
       g.classList.remove('is-live');
       g.classList.add('is-done');
+      host.style.minHeight = '';
       document.dispatchEvent(new CustomEvent('hero:part', { detail: { index: gens.indexOf(g) } }));
     }
     heroReady(total);

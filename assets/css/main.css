@@ -213,6 +213,8 @@ main { position: relative; z-index: 1; }
 .hero-name { font: italic 400 clamp(4.1rem, min(17vw, 27vh), 14.5rem)/.86 var(--serif); letter-spacing: -.035em; margin: 14px 0 4px -.04em; }
 .hero-title { font: 450 clamp(1.45rem, 4.6vw, 3.6rem)/1.08 var(--sans); letter-spacing: -.03em; max-width: 19ch; min-height: 1.2em; }
 /* The tagline is one line from 320px up; below that it may wrap, so only the narrowest phones reserve two lines. */
+/* Generated tokens do not wrap, so the static text (before generation) stays on one line too: same height before and after. */
+@media (min-width: 341px) { .hero-title { white-space: nowrap; } }
 @media (max-width: 340px) { .hero-title { min-height: 2.3em; } .hero-title .tk { white-space: pre-wrap; } }
 .hero-title .k { font-family: var(--serif); font-style: italic; font-weight: 400; letter-spacing: -.01em; color: var(--accent); }
 .hero-trace { margin-top: 10px; min-height: 1.5em; color: var(--ink-3); font-size: 12px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
@@ -924,3 +926,10 @@ html.is-copy .site-head { top: var(--copy-h, 44px); }
 :root[data-theme="dark"] { --ok: #6FD0A0; }
 .foot-build[data-state="ok"] [data-build-state] { color: var(--ok); }
 .foot-build[data-state="bad"] [data-build-state], .foot-build[data-state="stale"] [data-build-state] { color: var(--accent); }
+
+/* ---------- hero layout settles before it is shown ----------
+   persona.js unhides the persona line and badge.js may move the badge into the right column; both change the hero's
+   height, and the hero is vertically centred, so it stays invisible (no layout shift) until main.js has placed them.
+   The animation shows it anyway after 3 s if a script fails. */
+.js:not(.hero-laid) .hero-grid { visibility: hidden; animation: heroShow 0s 3s forwards; }
+@keyframes heroShow { to { visibility: visible; } }
