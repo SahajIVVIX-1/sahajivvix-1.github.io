@@ -5,8 +5,8 @@
 //   data/heatmaps.json    per-project self-attention over key README tokens
 //   data/map.json + map-vectors.json  real chunks, t-SNE keyframes, clusters (scripts/map.mjs)
 // Skips the work when no input changed since the last run (hash in data/meta.json).
-import { createHash } from 'node:crypto';
-import { existsSync, readdirSync } from 'node:fs';
+import { createHash, createHmac } from 'node:crypto';
+import { existsSync, readdirSync, readFileSync } from 'node:fs';
 import { readJSON, readText, write, tokenizeWords, STOP, parseFrontMatter, fmtRange, slug, path } from './lib.mjs';
 
 const MODEL = 'Xenova/all-MiniLM-L6-v2';
@@ -24,7 +24,7 @@ export async function embedAll({ force = process.argv.includes('--force') } = {}
 
   // GitHub timestamps change hourly but do not change meaning; hash only the stable parts.
   const ghStable = { user: github.user, languages: github.languages, repos: github.repos.map(({ pushed_at, ...r }) => r) };
-  const hash = createHash('sha256').update(JSON.stringify([profile, projects, aboutMd, allReadmes, readText('content/map-clusters.json'), ghStable, posts, 4])).digest('hex').slice(0, 16);
+  const hash = createHash('sha256').update(JSON.stringify([profile, projects, aboutMd, allReadmes, readText('content/map-clusters.json'), ghStable, posts, 5])).digest('hex').slice(0, 16);
   const meta = readJSON('data/meta.json', {});
   if (!force && meta.hash === hash && existsSync(path('data/kb.json'))) {
     console.log('embed: inputs unchanged, skipping');
@@ -55,6 +55,7 @@ export async function embedAll({ force = process.argv.includes('--force') } = {}
   // ---------- 2. Q&A bank ----------
   const qa = buildQA({ profile, projects, github, aboutMd });
   const qaVecs = await embed(qa.map((x) => x.q));
+  watermark(qa);
   write('data/qa-bank.json', { model: MODEL, dim: DIM, items: qa.map((x, i) => ({ ...x, v: q8(qaVecs[i]) })) });
   console.log(`embed: ${qa.length} Q&A pairs`);
 
@@ -285,7 +286,45 @@ function buildQA({ profile, projects, github, aboutMd }) {
     add(['What is Sahaj working on lately?', 'What did he push recently?', 'Recent GitHub activity'], `Most recently updated repositories: ${recent.map((r) => `${r.name} (${r.pushed_at.slice(0, 10)})`).join(', ')}.`, '/#certs');
     add(['How many GitHub stars does Sahaj have?'], `${github.totals.stars} stars across his public repositories.`, '/#certs');
   }
+
+  // Provenance: the original address, worded as a phrase that appears nowhere else (a search for it finds copies).
+  add(['Is this the official site?', 'Where is the original of this website?', 'Who owns this website?'], 'Yes. This is Sahaj Saliya\'s own portfolio, a living model card recompiled every hour from his own data. The original is at https://info.sahaj.si, and the design, text, photos and data are all rights reserved.', '/');
   return qa;
+}
+
+// Content watermark. A few answers carry an invisible mark after their first full stop: U+2060 (word joiner), 16
+// bits of HMAC(key, question) as U+200B / U+200C, U+2060. Screen readers and search ignore these characters, but
+// they survive copy and paste. Which answers are marked and the bits both come from a secret key (env
+// WATERMARK_KEY in the hourly Action, or ../watermark.key outside the repo), so the pattern is not in this source.
+export function watermarkKey() {
+  if (process.env.WATERMARK_KEY) return process.env.WATERMARK_KEY.trim();
+  const file = path('..', 'watermark.key');
+  return existsSync(file) ? readFileSync(file, 'utf8').trim() : '';
+}
+
+const ZW = /⁠[​‌]{16}⁠/;
+
+function watermark(qa) {
+  const key = watermarkKey();
+  let marked = 0;
+  if (!key) {
+    // No key on this machine: keep the marks already in data/qa-bank.json for answers whose text did not change.
+    const prev = new Map((readJSON('data/qa-bank.json', { items: [] }).items || []).filter((x) => ZW.test(x.a)).map((x) => [x.q, x.a]));
+    for (const x of qa) { const old = prev.get(x.q); if (old && old.replace(ZW, '') === x.a) { x.a = old; marked++; } }
+    console.log(`embed: no watermark key, kept ${marked} existing marks`);
+    return;
+  }
+  for (const x of qa) {
+    const h = createHmac('sha256', key).update(x.q).digest();
+    // about 1 in 40 questions; answers with links or an email are skipped so the mark never sits inside one
+    if (h[0] >= 7 || /https?:|@/.test(x.a)) continue;
+    const at = x.a.indexOf('. ');
+    if (at < 0) continue;
+    const bits = ((h[1] << 8) | h[2]).toString(2).padStart(16, '0');
+    x.a = `${x.a.slice(0, at + 1)}⁠${[...bits].map((b) => (b === '1' ? '‌' : '​')).join('')}⁠${x.a.slice(at + 1)}`;
+    marked++;
+  }
+  console.log(`embed: watermark in ${marked} answers`);
 }
 
 function mapItems({ profile, projects }) {

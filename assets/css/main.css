@@ -906,3 +906,21 @@ html[data-thinking] .brand-logo .ring-prog { stroke-dasharray: 26 74; animation:
 .hero-badge.is-wide .hb-text { text-align: center; }
 @media (max-width: 480px) { .hero-badge { margin-top: 10px; } }
 @media print { .hero-badge { display: none; } }
+
+/* ---------- copy banner (assets/js/origin.js): only on a host that is not the original ---------- */
+.copy-banner { position: fixed; inset: 0 0 auto 0; z-index: 80; display: flex; justify-content: center; padding: 10px var(--gutter); background: var(--paper-2); border-bottom: 1px solid var(--rule-2); color: var(--ink-2); font: 400 14px/1.45 var(--sans); text-align: center; }
+.copy-banner p { margin: 0; max-width: 72ch; }
+.copy-banner a { color: var(--accent); font-weight: 500; text-decoration: underline; text-underline-offset: 3px; }
+.copy-banner a:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; border-radius: 4px; }
+.copy-dot { display: inline-block; width: 7px; height: 7px; margin-right: 9px; border-radius: 50%; background: var(--accent); vertical-align: 1px; }
+html.is-copy { scroll-padding-top: calc(84px + var(--copy-h, 44px)); }
+html.is-copy body { padding-top: var(--copy-h, 44px); }
+html.is-copy .site-head { top: var(--copy-h, 44px); }
+
+/* ---------- footer build badge (assets/js/footer.js) ---------- */
+.foot-build a.foot-link { font: inherit; }
+:root { --ok: #1F6B4A; }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { --ok: #6FD0A0; } }
+:root[data-theme="dark"] { --ok: #6FD0A0; }
+.foot-build[data-state="ok"] [data-build-state] { color: var(--ok); }
+.foot-build[data-state="bad"] [data-build-state], .foot-build[data-state="stale"] [data-build-state] { color: var(--accent); }

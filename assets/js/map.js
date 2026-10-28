@@ -3,6 +3,7 @@
 // Data: /data/map.json (points, 30 layout keyframes, KL loss per epoch, clusters, keyword index, 5 projects)
 //       /data/map-vectors.json (int8 vectors, loaded lazily for semantic search).
 import { decodeVec, cosineInt8, placeLabels, stem } from './map-core.js';
+import { checkOrigin } from './origin.js';
 
 const TRANSFORMERS = 'https://cdn.jsdelivr.net/npm/@huggingface/transformers@4.3.0';
 const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
@@ -11,6 +12,7 @@ const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&l
 
 export async function initMap(root, { lowPower = false, reducedMotion = false } = {}) {
   if (!root) return null;
+  checkOrigin();
   const stage = root.querySelector('.map-stage');
   const canvas = stage.querySelector('.map-canvas');
   const labelsEl = stage.querySelector('.map-labels');

@@ -1,0 +1,40 @@
+Copyright © 2026 Sahaj Saliya. All rights reserved.
+
+This repository holds the source of https://info.sahaj.si, the personal portfolio of Sahaj Saliya.
+It is published so the site can be hosted and its work can be inspected, not so it can be reused.
+
+1. Content: all rights reserved
+
+   The design and visual identity (layout, styles, logo and brand assets, animations and their look),
+   all text, photographs and images, the Guinness World Records certificate scan, and all data
+   (everything under content/, data/ and assets/ other than the code named in section 2, plus the
+   generated pages index.html, 404.html and blogs/) are © 2026 Sahaj Saliya, all rights reserved.
+   You may not copy, republish, mirror, host, modify or create derivative works from them, in whole or
+   in part, without written permission. Fonts in assets/fonts/ remain under their own licenses.
+
+2. Code: MIT
+
+   The JavaScript in assets/js/ and the build scripts in scripts/ are licensed under the MIT License
+   below. This grant covers the code only. It does not give any right to the content in section 1,
+   including data, text or images that the code loads or embeds.
+
+   MIT License
+
+   Copyright (c) 2026 Sahaj Saliya
+
+   Permission is hereby granted, free of charge, to any person obtaining a copy of this software and
+   associated documentation files (the "Software"), to deal in the Software without restriction,
+   including without limitation the rights to use, copy, modify, merge, publish, distribute,
+   sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is
+   furnished to do so, subject to the following conditions:
+
+   The above copyright notice and this permission notice shall be included in all copies or
+   substantial portions of the Software.
+
+   THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT
+   NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+   NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES
+   OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
+   CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+
+Contact for permission: sahajs7959@gmail.com

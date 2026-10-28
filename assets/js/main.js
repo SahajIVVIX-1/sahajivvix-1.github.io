@@ -11,6 +11,7 @@ import { initBadge } from './badge.js';
 import { initFooter } from './footer.js';
 import { initBrand } from './brand.js';
 import { initCnn } from './cnn.js';
+import { checkOrigin } from './origin.js';
 
 export const reducedMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
 // Phones, low core counts and data-saver get lighter versions of the effects.
@@ -18,6 +19,7 @@ export const lowPower = matchMedia('(max-width: 700px), (pointer: coarse)').matc
   || (navigator.hardwareConcurrency || 8) <= 4
   || navigator.connection?.saveData === true;
 
+checkOrigin();
 initTheme();
 // Persona first: it reorders and renumbers the layers that the rail and hero then read.
 initPersona();

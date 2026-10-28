@@ -48,7 +48,10 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: node scripts/fetch-github.mjs
 
-      - name: Build knowledge base, embeddings, Q&A bank and pages
+      # WATERMARK_KEY marks a few chatbot answers invisibly; without it the existing marks are kept as they are.
+      - name: Build knowledge base, embeddings, Q&A bank, pages and build manifest
+        env:
+          WATERMARK_KEY: ${{ secrets.WATERMARK_KEY }}
         run: node scripts/build.mjs --embed
 
       - name: Commit if changed

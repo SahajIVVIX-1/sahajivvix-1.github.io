@@ -2,6 +2,7 @@
 // Usage: node scripts/build.mjs [--embed]   (--embed also recomputes the ML data first)
 import { readdirSync, readFileSync, existsSync } from 'node:fs';
 import { createHash } from 'node:crypto';
+import { execSync } from 'node:child_process';
 import { marked } from 'marked';
 import { build as buildLogo, strokePath } from './logo-geometry.mjs';
 import { readJSON, readText, write, esc, fmtMonth, fmtRange, parseFrontMatter, slug, path } from './lib.mjs';
@@ -12,6 +13,14 @@ if (process.argv.includes('--embed')) {
 }
 
 const SITE = 'https://info.sahaj.si';
+const REPO = 'https://github.com/SahajIVVIX-1/sahajivvix-1.github.io';
+
+// Source commit this build is made from: GITHUB_SHA in the hourly Action, HEAD locally. A commit cannot hold its own
+// hash, so data/build.json names the commit the build started from (the parent of the commit that stores it).
+const BUILD_SHA = (() => {
+  if (/^[0-9a-f]{40}$/.test(process.env.GITHUB_SHA || '')) return process.env.GITHUB_SHA;
+  try { return execSync('git rev-parse HEAD', { cwd: path('.'), stdio: ['ignore', 'pipe', 'ignore'] }).toString().trim(); } catch { return ''; }
+})();
 
 // Boot screen and visitor tag are inlined (see scripts/boot/): they must run before anything else loads.
 // Minifier is deliberately simple: the sources use explicit semicolons and no '//' inside strings.
@@ -137,7 +146,7 @@ function footer() {
   return `<footer class="site-foot" data-foot>
   <p class="foot-copy-line">© ${new Date().getFullYear()} Sahaj Saliya</p>
   <nav class="foot-links" aria-label="Elsewhere">${profile.links.map(ext).join('')}<a class="foot-link" href="mailto:${profile.email}" aria-label="Email Sahaj Saliya">Email</a></nav>
-  <p class="foot-card mono">${synced ? `last forward pass <time datetime="${synced.toISOString()}" title="${utc}" data-foot-time>${utc}</time> <span data-foot-ago></span>` : ''}<span data-session hidden> · ip <b></b> <button class="foot-i" type="button" aria-label="About the IP lookup" aria-describedby="ip-tip">i</button><span class="foot-tip" id="ip-tip" role="tooltip">${privacy}</span></span></p>
+  <p class="foot-card mono">${synced ? `last forward pass <time datetime="${synced.toISOString()}" title="${utc}" data-foot-time>${utc}</time> <span data-foot-ago></span>` : ''}${BUILD_SHA ? `<span class="foot-build" data-build="${BUILD_SHA}"> · build <a class="foot-link" href="${REPO}/commit/${BUILD_SHA}" target="_blank" rel="noopener" aria-label="build ${BUILD_SHA.slice(0, 7)}: source commit on GitHub (opens in a new tab)">${BUILD_SHA.slice(0, 7)}</a><span data-build-state aria-live="polite"></span></span>` : ''}<span data-session hidden> · ip <b></b> <button class="foot-i" type="button" aria-label="About the IP lookup" aria-describedby="ip-tip">i</button><span class="foot-tip" id="ip-tip" role="tooltip">${privacy}</span></span></p>
   <button class="foot-top" type="button" data-to-top>↑ top</button>
 </footer>`;
 }
@@ -682,4 +691,30 @@ if (BLOG_LIVE) for (const p of posts) outputs[`blogs/${p.slug}/index.html`] = re
 
 let changed = 0;
 for (const [file, content] of Object.entries(outputs)) if (write(file, content)) { changed++; console.log('wrote', file); }
+if (write('data/build.json', manifest())) { changed++; console.log('wrote data/build.json'); }
+noSourceMaps();
 console.log(`build done, ${changed} file(s) changed`);
+
+// Build manifest: the source commit plus a SHA-256 of every data file, so the footer can check that the data it is
+// served matches this build. The time only moves when the commit or a hash changes, so a quiet rebuild writes nothing.
+function manifest() {
+  const files = Object.fromEntries(readdirSync(path('data')).filter((f) => f.endsWith('.json') && f !== 'build.json').sort().map((f) => {
+    const buf = readFileSync(path(`data/${f}`));
+    return [`/data/${f}`, { sha256: createHash('sha256').update(buf).digest('hex'), bytes: buf.length }];
+  }));
+  const prev = readJSON('data/build.json', {});
+  const same = prev.sha === BUILD_SHA && JSON.stringify(prev.files) === JSON.stringify(files);
+  return { sha: BUILD_SHA, repo: REPO, built_at: same ? prev.built_at : new Date().toISOString(), files };
+}
+
+// Production ships readable sources and no source maps; refuse to build if one ever appears.
+function noSourceMaps() {
+  const bad = [];
+  const walk = (dir) => readdirSync(path(dir), { withFileTypes: true }).forEach((e) => {
+    const rel = `${dir}/${e.name}`;
+    if (e.isDirectory()) return walk(rel);
+    if (e.name.endsWith('.map') || (/\.(js|css)$/.test(e.name) && /sourceMappingURL=/.test(readFileSync(path(rel), 'utf8')))) bad.push(rel);
+  });
+  walk('assets');
+  if (bad.length) throw new Error(`source maps must not ship: ${bad.join(', ')}`);
+}

@@ -1,6 +1,7 @@
 // "Ask my portfolio" panel. Loaded only when first opened.
 import { createEngine, uniqSources } from './engine.js';
 import { webgpuSupport, loadLLM } from './llm.js';
+import { checkOrigin } from '../origin.js';
 
 const STARTERS = [
   'What does Sahaj work on?',
@@ -14,6 +15,7 @@ const STARTERS = [
 let api;
 export function initAsk() {
   if (api) return api;
+  checkOrigin();
   const root = document.getElementById('ask-root');
   root.innerHTML = `
   <div class="ask" role="dialog" aria-modal="false" aria-labelledby="ask-h" hidden>
