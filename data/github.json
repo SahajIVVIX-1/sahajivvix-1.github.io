@@ -1,5 +1,5 @@
 {
- "fetched_at": "2026-10-29T06:35:08.210Z",
+ "fetched_at": "2026-10-30T01:04:24.019Z",
  "user": {
   "login": "SahajIVVIX-1",
   "public_repos": 16,
@@ -26,6 +26,18 @@
  },
  "repos": [
   {
+   "name": "SahajIVVIX-1",
+   "description": "AI Engineer | Deep Learning • RL • Computer Vision Turning data into intelligent systems.",
+   "url": "https://github.com/SahajIVVIX-1/SahajIVVIX-1",
+   "language": "Python",
+   "stars": 1,
+   "forks": 0,
+   "topics": [],
+   "fork": false,
+   "created_at": "2024-01-24T19:11:08Z",
+   "pushed_at": "2026-10-29T23:08:34Z"
+  },
+  {
    "name": "Crohn-Disease-Early-Prediction",
    "description": "",
    "url": "https://github.com/SahajIVVIX-1/Crohn-Disease-Early-Prediction",
@@ -36,18 +48,6 @@
    "fork": true,
    "created_at": "2026-10-12T16:29:09Z",
    "pushed_at": "2026-10-29T17:26:57Z"
-  },
-  {
-   "name": "SahajIVVIX-1",
-   "description": "AI Engineer | Deep Learning • RL • Computer Vision Turning data into intelligent systems.",
-   "url": "https://github.com/SahajIVVIX-1/SahajIVVIX-1",
-   "language": "Python",
-   "stars": 1,
-   "forks": 0,
-   "topics": [],
-   "fork": false,
-   "created_at": "2024-01-24T19:11:08Z",
-   "pushed_at": "2026-10-29T13:09:11Z"
   },
   {
    "name": "open-env-nuclei",
@@ -1077,7 +1077,7 @@
   ],
   [
    "2026-04-25",
-   8
+   9
   ],
   [
    "2026-04-26",
@@ -1685,11 +1685,11 @@
   ],
   [
    "2026-09-24",
-   0
+   16
   ],
   [
    "2026-09-25",
-   0
+   20
   ],
   [
    "2026-09-26",
@@ -1733,7 +1733,7 @@
   ],
   [
    "2026-10-06",
-   0
+   2
   ],
   [
    "2026-10-07",
@@ -1773,19 +1773,19 @@
   ],
   [
    "2026-10-16",
-   9
+   11
   ],
   [
    "2026-10-17",
-   0
+   70
   ],
   [
    "2026-10-18",
-   0
+   106
   ],
   [
    "2026-10-19",
-   0
+   32
   ],
   [
    "2026-10-20",
@@ -1825,6 +1825,10 @@
   ],
   [
    "2026-10-29",
+   24
+  ],
+  [
+   "2026-10-30",
    0
   ]
  ],
