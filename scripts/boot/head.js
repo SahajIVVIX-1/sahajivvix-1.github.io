@@ -4,16 +4,14 @@
         calm  same, but the visitor prefers reduced motion: static network + greeting
         mini  anything else (same-session return, other pages): greeting only, ~400 ms
    2. Looks up the visitor's public IP address (api.ipify.org, the only network call this site makes to a third
-      party) and writes it into the address bar as /ip=<address> (home page), /blogs/ip=<address> (blog), on every page with history.replaceState: no reload and no extra
-      back-button entry. Other query parameters and the #hash stay exactly as they were. A foreign IP (from a
-      shared link) is removed at once and replaced by the visitor's own.
+      party) for the "context window" (assets/js/context.js writes ?context=you@<address>&layer=NN into the address
+      bar). A context or IP that came with a shared link is removed at once, before anything is shown. Old
+      /ip=<address> links still open the right page.
    3. Keeps a random id in this browser (never shown, never sent) that only seeds the loading animation. */
 (function () {
   var d = document.documentElement;
-  // The address bar shows the visitor's IP as the last path segment: /ip=<address> on the home page, /blogs/ip=<address>
-  // on the blog, and so on (also on the 404 page). A static host answers such an unknown path with 404.html, so when a
-  // page is opened on an /ip= path, it is replaced by the real page for the path without that segment (no extra
-  // history entry). If there is no such page, the 404 page stays (it is the right page).
+  // Old links put the IP in the path (/ip=<address>). A static host answers such a path with 404.html, so a page
+  // opened on an /ip= path is replaced by the real page for the path without that segment (no extra history entry).
   var SEG = /\/?ip=[0-9a-fA-F:.]{2,45}\/?$/;
   var basePath = function (p) {
     p = p.replace(SEG, '/');
@@ -58,36 +56,31 @@
   var okIp = function (v) {
     return typeof v === 'string' && v.length <= 45 && (/^\d{1,3}(\.\d{1,3}){3}$/.test(v) || (v.indexOf(':') > -1 && /^[0-9a-fA-F:.]{2,45}$/.test(v)));
   };
-  // Puts the IP into the address as /ip=<address> (home page) or /blogs/ip=<address> (blog); other pages keep their own path and removes any
-  // ?ip= / ?visitor= query. Other query parameters and the #hash stay as they were. With ip === null it removes it.
-  var write = function (ip) {
+  // Removes any context, layer, ip or visitor parameter and any /ip= path segment; other parameters and the #hash stay.
+  var write = function () {
     try {
       var parts = location.search.replace(/^\?/, '');
       parts = parts ? parts.split('&') : [];
-      var out = parts.filter(function (p) { var k = p.split('=')[0]; return k !== 'visitor' && k !== 'ip'; });
+      var out = parts.filter(function (p) { var k = p.split('=')[0]; return k !== 'visitor' && k !== 'ip' && k !== 'context' && k !== 'layer'; });
       var search = out.length ? '?' + out.join('&') : '';
-      var base = basePath(location.pathname);
-      var path = ip ? base + 'ip=' + ip : base;
-      var next = path + search + location.hash;
+      var next = basePath(location.pathname) + search + location.hash;
       if (next !== location.pathname + location.search + location.hash) history.replaceState(history.state, '', next);
     } catch (e) { }
   };
   // never show an IP that came from a shared link, not even for a moment
-  write(null);
+  write();
 
   var cached = null;
   try { cached = sessionStorage.getItem('visitorIp'); } catch (e) { }
   if (okIp(cached)) {
     window.__ip = cached;
     window.__ipPromise = Promise.resolve(cached);
-    write(cached);
   } else {
     window.__ipPromise = new Promise(function (resolve) {
       var done = function (ip) {
         if (okIp(ip)) {
           window.__ip = ip;
           try { sessionStorage.setItem('visitorIp', ip); } catch (e) { }
-          write(ip);
           resolve(ip);
         } else resolve(null);
       };
@@ -106,7 +99,7 @@
     window.__ipSwap = true;
     d.style.visibility = 'hidden';
     try { sessionStorage.setItem('ipBounce', '1'); } catch (e) { }
-    // Load the real page for the path without the /ip= segment; its own script puts the IP back in the address.
+    // Load the real page for the path without the /ip= segment.
     location.replace(basePath(location.pathname) + location.search + location.hash);
     setTimeout(function () { d.style.visibility = ''; run(); }, 5000);
   } else run();

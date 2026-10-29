@@ -13,6 +13,7 @@ import { initBrand } from './brand.js';
 import { initTiles } from './tiles.js';
 import { checkOrigin } from './origin.js';
 import { initResume } from './resume.js';
+import { initContext } from './context.js';
 
 export const reducedMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
 // Phones, low core counts and data-saver get lighter versions of the effects.
@@ -38,6 +39,7 @@ initTiles({ reducedMotion, lowPower });
 initLoss();
 initHeader();
 initResume();
+initContext({ reducedMotion });
 initAnchors();
 initTransitions();
 initLazy();

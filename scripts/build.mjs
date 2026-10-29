@@ -107,6 +107,8 @@ ${extra}
 </head>`;
 }
 
+const PRIVACY = 'Your IP is looked up from api.ipify.org when the page opens, shown only to you, and never stored.';
+
 function header({ home = false } = {}) {
   const base = home ? '' : '/';
   const nav = [
@@ -131,6 +133,10 @@ function header({ home = false } = {}) {
     ${nav.map(([l, h]) => `<a class="tok-link" href="${h}">${l}</a>`).join('\n    ')}
   </nav>
   <div class="head-tools">
+    <span class="ctx-wrap">
+      <button class="ctx-chip mono" type="button" data-ctx hidden aria-expanded="false" aria-controls="ctx-tip" aria-label="Context window: your address and the layer in view. Show the privacy note."><span class="ctx-k">ctx</span><span class="ctx-who" data-ctx-who>…</span><span class="ctx-layer" data-ctx-layer></span></button>
+      <span class="ctx-tip" id="ctx-tip" role="note" hidden>${PRIVACY}</span>
+    </span>
     <button class="kbd-btn" type="button" data-palette-open>
       <span class="mono">Search or ask</span><kbd>Ctrl K</kbd>
     </button>
@@ -146,7 +152,7 @@ function header({ home = false } = {}) {
 function footer() {
   const synced = github.fetched_at ? new Date(github.fetched_at) : null;
   const utc = synced ? `${synced.toISOString().slice(0, 16).replace('T', ' ')} UTC` : '';
-  const privacy = 'Your IP is looked up from api.ipify.org when the page opens, shown only to you, and never stored.';
+  const privacy = PRIVACY;
   const ext = (l) => `<a class="foot-link" href="${l.url}" target="_blank" rel="me noopener" aria-label="${esc(l.label)} (opens in a new tab)">${esc(l.label)}</a>`;
   return `<footer class="site-foot" data-foot>
   <p class="foot-copy-line">© ${new Date().getFullYear()} Sahaj Saliya</p>
