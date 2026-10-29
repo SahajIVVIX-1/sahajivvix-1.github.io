@@ -4,7 +4,6 @@ import { readdirSync, readFileSync, existsSync } from 'node:fs';
 import { createHash } from 'node:crypto';
 import { execSync } from 'node:child_process';
 import { marked } from 'marked';
-import { build as buildLogo, strokePath } from './logo-geometry.mjs';
 import { readJSON, readText, write, esc, fmtMonth, fmtRange, parseFrontMatter, slug, path } from './lib.mjs';
 import { renderResume, RESUME_PDF } from './resume.mjs';
 
@@ -39,13 +38,9 @@ for (const [name, code] of [['fresh.js', BOOT_FRESH], ['head.js', BOOT_HEAD], ['
 const bootHtml = () => `<div id="boot-live" class="bs" role="status" aria-live="polite"></div><div id="boot" aria-hidden="true"><div class="boot-box"><p class="boot-cap" id="boot-cap"><span>forward pass · layer 1/5 · 0%</span><span>τ 0.7 · weights seeded per visitor</span></p><p class="boot-feat" id="boot-feat"></p><div class="boot-stage"><canvas id="boot-cv"></canvas></div><p class="boot-greet" id="boot-greet"></p><p class="boot-clock" id="boot-clock"></p><div class="boot-bottom"><ul id="boot-log"></ul><div class="boot-mat"><canvas id="boot-mat"></canvas><p>attention · head 3</p></div></div><p class="boot-hint"><span>heuristic guess · computed in your browser; only your public IP is looked up</span><span>click or press any key to skip</span></p></div></div><script>${BOOT_JS.replace('__V__', ASSET_VERSION)}</script>`;
 const profile = readJSON('content/profile.json');
 const gwr = readJSON('content/guinness.json');
-// the live header logo: the S as one stroke (so it can be styled), two end nodes, and the cursor dot
-const LOGO_MARK = (() => {
-  const m = buildLogo('full');
-  const k = 17 / 244; // disc radius in the 40 px header box
-  const n = (v) => Math.round(v * 10) / 10;
-  return `<g transform="translate(20 20) scale(${k.toFixed(5)}) translate(-256 -256)"><circle class="disc" cx="256" cy="256" r="244"/><path class="s-stroke" d="${strokePath(m)}" stroke-width="${n(m.width)}"/>${m.nodes.map(([x, y, r]) => `<circle class="s-node" cx="${n(x)}" cy="${n(y)}" r="${n(r)}"/>`).join('')}<circle class="cursor" cx="${n(m.dot[0])}" cy="${n(m.dot[1])}" r="${n(m.dot[2])}"/></g>`;
-})();
+// the header logo: Sahaj's own artwork (scripts/brand.mjs), the light and dark versions stacked so the theme
+// toggle can cross-fade them; the scroll-progress ring and the ticks are drawn around it
+const LOGO_MARK = '<image class="logo-img logo-l" href="/assets/brand/logo-light.webp?v=4" x="3" y="3" width="34" height="34"/><image class="logo-img logo-d" href="/assets/brand/logo-dark.webp?v=4" x="3" y="3" width="34" height="34"/>';
 const projects = readJSON('content/projects.json');
 const mapData = readJSON('data/map.json', null);
 const github = readJSON('data/github.json', { repos: [], languages: {}, events: [], user: {} });
@@ -89,12 +84,11 @@ function head({ title, description, url, image = '/assets/img/og.png', type = 'w
 <meta property="og:image:height" content="630">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:creator" content="@SahajS59">
-<link rel="icon" type="image/svg+xml" href="/assets/brand/logo-small.svg?v=3">
-<link rel="icon" href="/favicon.ico?v=3" sizes="any">
-<link rel="icon" type="image/png" sizes="32x32" href="/assets/brand/icon-32.png?v=3">
-<link rel="icon" type="image/png" sizes="192x192" href="/assets/brand/icon-192.png?v=3">
-<link rel="apple-touch-icon" href="/assets/brand/apple-touch-icon.png?v=3">
-<link rel="manifest" href="/site.webmanifest?v=3">
+<link rel="icon" type="image/svg+xml" href="/assets/brand/logo-small.svg?v=4">
+<link rel="icon" href="/favicon.ico?v=4" sizes="any">
+<link rel="icon" type="image/png" sizes="32x32" href="/assets/brand/icon-32.png?v=4">
+<link rel="apple-touch-icon" href="/assets/brand/apple-touch-icon.png?v=4">
+<link rel="manifest" href="/site.webmanifest?v=4">
 <link rel="preload" href="/assets/fonts/instrument-serif-latin-400-italic.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="/assets/fonts/anthropic-serif/anthropic-serif-text-500-italic.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="/assets/fonts/inter-tight-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin>
@@ -696,7 +690,7 @@ const outputs = {
   'blogs/index.html': renderBlogIndex(),
   'sitemap.xml': sitemap(),
   'robots.txt': `User-agent: *\nAllow: /\nSitemap: ${SITE}/sitemap.xml\n`,
-  'site.webmanifest': JSON.stringify({ name: 'Sahaj Saliya', short_name: 'Sahaj', start_url: '/', display: 'standalone', background_color: '#F3EEE3', theme_color: '#0B1020', icons: [{ src: '/assets/brand/icon-192.png?v=3', sizes: '192x192', type: 'image/png', purpose: 'any' }, { src: '/assets/brand/icon-512.png?v=3', sizes: '512x512', type: 'image/png', purpose: 'any' }, { src: '/assets/brand/icon-maskable-512.png?v=3', sizes: '512x512', type: 'image/png', purpose: 'maskable' }] }, null, 2) + '\n',
+  'site.webmanifest': JSON.stringify({ name: 'Sahaj Saliya', short_name: 'Sahaj', start_url: '/', display: 'standalone', background_color: '#171715', theme_color: '#171715', icons: [{ src: '/assets/brand/icon-192.png?v=4', sizes: '192x192', type: 'image/png', purpose: 'any' }, { src: '/assets/brand/icon-512.png?v=4', sizes: '512x512', type: 'image/png', purpose: 'any' }, { src: '/assets/brand/icon-maskable-512.png?v=4', sizes: '512x512', type: 'image/png', purpose: 'maskable' }] }, null, 2) + '\n',
   'resume/index.html': renderResume({ profile, projects, gwr, site: SITE }),
   'data/site.json': { blogLive: BLOG_LIVE, posts: BLOG_LIVE ? posts.map(({ slug: s, title, date, summary, tags }) => ({ slug: s, title, date, summary, tags })) : [] },
 };

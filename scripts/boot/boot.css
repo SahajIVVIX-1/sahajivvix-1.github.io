@@ -28,8 +28,7 @@ html[data-theme="dark"] #boot { --bg: #0B1020; --fg: #ECE8DE; --dim: #8F8C84; --
 .boot-greet .tk { white-space: pre-wrap; }
 .boot-greet .dist { width: 118px; }
 .boot-clock { margin: -4px 0 0; min-height: 1.5em; text-align: center; color: var(--dim); font-size: 11px; }
-/* during the handoff the logo's own cursor dot waits until the output neuron lands on it */
-.boot-fly .brand-logo .cursor { opacity: 0; }
+
 .boot-bottom { display: flex; justify-content: space-between; align-items: flex-end; gap: 16px; }
 #boot-log { margin: 0; padding: 0; list-style: none; height: 6em; min-width: 0; display: flex; flex-direction: column; justify-content: flex-end; overflow: hidden; color: var(--dim); font-size: 11px; -webkit-mask-image: linear-gradient(to top, #000 40%, transparent); mask-image: linear-gradient(to top, #000 40%, transparent); }
 #boot-log li { flex: none; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }

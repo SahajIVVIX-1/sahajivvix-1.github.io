@@ -26,7 +26,8 @@ export function renderResume({ profile, projects, gwr, site }) {
 <title>Sahaj Saliya · Resume</title>
 <meta name="description" content="Resume of Sahaj Saliya, AI engineer: education, experience, projects, skills and achievements.">
 <link rel="canonical" href="${site}/resume/">
-<link rel="icon" type="image/svg+xml" href="../assets/brand/logo-small.svg?v=3">
+<link rel="icon" type="image/svg+xml" href="../assets/brand/logo-small.svg?v=4">
+<link rel="icon" href="../favicon.ico?v=4" sizes="any">
 <style>
 @font-face { font-family: "Inter Tight"; font-weight: 100 900; src: url("../assets/fonts/inter-tight-latin-wght-normal.woff2") format("woff2"); }
 @font-face { font-family: "Instrument Serif"; font-style: italic; src: url("../assets/fonts/instrument-serif-latin-400-italic.woff2") format("woff2"); }
