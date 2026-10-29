@@ -1,6 +1,7 @@
 # Hourly data refresh for info.sahaj.si.
 # Fetches GitHub data, rebuilds the chatbot knowledge base, embeddings and Q&A bank, and commits
-# to info.sahaj.si only when something changed. It never touches gh-pages or deploys anything.
+# to info.sahaj.si only when something changed. Then it runs the smoke test and publishes to gh-pages (what
+# info.sahaj.si serves), so the live site is never more than an hour behind. deploy.yml publishes on every push.
 name: hourly-data
 
 on:
@@ -71,3 +72,14 @@ jobs:
             git commit -m "chore(data): hourly refresh"
             git push origin HEAD:info.sahaj.si
           fi
+
+      # Headless Chrome on a desktop and a phone: script errors, overflow, broken pages or data stop the deploy.
+      - name: Smoke test
+        env:
+          CHROME: /usr/bin/google-chrome
+        run: node scripts/smoke.mjs
+
+      - name: Publish to gh-pages
+        env:
+          DEPLOY_DEPTH: "1"
+        run: bash scripts/deploy-pages.sh "hourly refresh"
