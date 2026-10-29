@@ -1,5 +1,5 @@
 {
- "fetched_at": "2026-10-29T13:17:45.883Z",
+ "fetched_at": "2026-10-29T17:29:19.189Z",
  "user": {
   "login": "SahajIVVIX-1",
   "public_repos": 16,
@@ -12,19 +12,31 @@
   "repos": 12
  },
  "languages": {
-  "Python": 12167979,
-  "Dockerfile": 10639,
-  "JavaScript": 793493,
-  "CSS": 58592,
-  "Shell": 7063,
-  "PowerShell": 11451,
+  "Python": 12191113,
   "HTML": 1679038,
   "TypeScript": 203607,
+  "PowerShell": 11451,
+  "CSS": 58592,
+  "JavaScript": 793493,
+  "Dockerfile": 10639,
   "Batchfile": 3632,
+  "Shell": 7063,
   "Makefile": 827,
   "TeX": 535408
  },
  "repos": [
+  {
+   "name": "Crohn-Disease-Early-Prediction",
+   "description": "",
+   "url": "https://github.com/SahajIVVIX-1/Crohn-Disease-Early-Prediction",
+   "language": "Python",
+   "stars": 0,
+   "forks": 0,
+   "topics": [],
+   "fork": true,
+   "created_at": "2026-10-12T16:29:09Z",
+   "pushed_at": "2026-10-29T17:26:57Z"
+  },
   {
    "name": "SahajIVVIX-1",
    "description": "AI Engineer | Deep Learning • RL • Computer Vision Turning data into intelligent systems.",
@@ -68,18 +80,6 @@
    "fork": false,
    "created_at": "2026-10-08T09:56:06Z",
    "pushed_at": "2026-10-16T15:16:05Z"
-  },
-  {
-   "name": "Crohn-Disease-Early-Prediction",
-   "description": "",
-   "url": "https://github.com/SahajIVVIX-1/Crohn-Disease-Early-Prediction",
-   "language": null,
-   "stars": 0,
-   "forks": 0,
-   "topics": [],
-   "fork": true,
-   "created_at": "2026-10-12T16:29:09Z",
-   "pushed_at": "2026-10-12T16:26:38Z"
   },
   {
    "name": "NLP-Based-Search",
