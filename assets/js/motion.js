@@ -7,7 +7,8 @@ export const reduced = () => matchMedia('(prefers-reduced-motion: reduce)').matc
 const EASE = 'cubic-bezier(.16, 1, .3, 1)';
 let running = null;
 
-export function smoothChange(update, { move = [], ms = 400 } = {}) {
+// vt: false skips the View Transition (which blocks input while it runs) and always uses FLIP.
+export function smoothChange(update, { move = [], ms = 400, vt = true } = {}) {
   const els = move.filter(Boolean);
   const keep = anchor();
   const done = () => { keep?.(); };
@@ -15,7 +16,7 @@ export function smoothChange(update, { move = [], ms = 400 } = {}) {
   const root = document.documentElement;
   root.style.setProperty('--vt-ms', `${reduced() ? 150 : ms}ms`);
 
-  if (document.startViewTransition) {
+  if (vt && document.startViewTransition) {
     if (!reduced()) els.forEach((el, i) => { el.style.viewTransitionName = `vt-${i}`; });
     const vt = document.startViewTransition(() => { update(); done(); });
     running = vt;

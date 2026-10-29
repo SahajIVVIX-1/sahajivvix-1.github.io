@@ -132,6 +132,14 @@ function initLazy() {
     idle(() => afterBoot(() => import('./attention.js').then((m) => m.initAttention({ lowPower }))));
   }
 
+  // Live agents: once the loading screen has gone and the page is idle (never on first paint).
+  if (!reducedMotion && document.getElementById('top')) {
+    const afterBootAgents = (fn) => (document.documentElement.classList.contains('booting')
+      ? document.addEventListener('boot:done', () => setTimeout(fn, 2500), { once: true })
+      : setTimeout(fn, 2500));
+    afterBootAgents(() => idle(() => import('./agents.js').then((m) => m.initAgents())));
+  }
+
   // Latent map: when it is about to scroll into view.
   const stage = document.querySelector('[data-map]');
   if (stage) {
