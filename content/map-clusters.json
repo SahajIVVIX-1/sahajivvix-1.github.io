@@ -5,6 +5,8 @@
     { "match": ["agent", "bedrock", "aws", "agentforge"], "name": "LLM agents & experience" },
     { "match": ["mongodb", "shard", "bigdata"], "name": "Data platforms & MLOps" },
     { "match": ["vmix", "video", "pdf"], "name": "Vision & media tools" },
-    { "match": ["fernet", "proxy", "enterprise", "dns"], "name": "Systems & security" }
+    { "match": ["fernet", "proxy", "enterprise", "dns"], "name": "Systems & security" },
+    { "match": ["benchmark", "reward", "trained"], "name": "ML research & benchmarks" },
+    { "match": ["lexical", "tf-idf", "retrieval"], "name": "Search & retrieval" }
   ]
 }

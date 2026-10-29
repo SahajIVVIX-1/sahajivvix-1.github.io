@@ -189,7 +189,8 @@ function stripMd(md) {
 }
 
 function splitWords(text, max = 110) {
-  const sentences = text.match(/[^.!?]+[.!?]*(\s|$)/g) || [text];
+  // Split only where a stop is followed by a space, so "B.Tech", "8.5" and "0.992" stay whole.
+  const sentences = text.split(/(?<=[.!?])\s+/).map((s) => s + ' ');
   const out = [];
   let cur = '';
   for (const s of sentences) {

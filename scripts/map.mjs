@@ -27,7 +27,8 @@ const trunc = (s, n) => (s.length <= n ? s : s.slice(0, s.lastIndexOf(' ', n - 1
 
 // Sentences, regrouped into pieces of at most `max` words.
 function pieces(text, max = 55) {
-  const sents = text.match(/[^.!?]+[.!?]+(\s|$)|[^.!?]+$/g) || [text];
+  // a stop counts only before a space, so "8.5" and "B.Tech" stay whole
+  const sents = text.split(/(?<=[.!?])\s+/);
   const out = [];
   let cur = '';
   for (const s of sents) {
