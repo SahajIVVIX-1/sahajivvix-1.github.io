@@ -155,7 +155,7 @@ function footer() {
   <p class="foot-copy-line">© ${new Date().getFullYear()} Sahaj Saliya</p>
   <nav class="foot-links" aria-label="Elsewhere">${profile.links.map(ext).join('')}<a class="foot-link" href="mailto:${profile.email}" aria-label="Email Sahaj Saliya">Email</a></nav>
   <p class="foot-card mono">${synced ? `last forward pass <time datetime="${synced.toISOString()}" title="${utc}" data-foot-time>${utc}</time> <span data-foot-ago></span>` : ''}${BUILD_SHA ? `<span class="foot-build" data-build="${BUILD_SHA}"> · build <a class="foot-link" href="${REPO}/commit/${BUILD_SHA}" target="_blank" rel="noopener" aria-label="build ${BUILD_SHA.slice(0, 7)}: source commit on GitHub (opens in a new tab)">${BUILD_SHA.slice(0, 7)}</a><span data-build-state aria-live="polite"></span></span>` : ''}<span data-session hidden> · ip <b></b> <button class="foot-i" type="button" aria-label="About the IP lookup" aria-describedby="ip-tip">i</button><span class="foot-tip" id="ip-tip" role="tooltip">${privacy}</span></span></p>
-  <span class="foot-btns"><button class="foot-top" type="button" data-plain-toggle aria-pressed="false" title="No loading screen, no agents, no animation">plain view</button>
+  <span class="foot-btns"><button class="foot-top" type="button" data-plain-toggle aria-pressed="false" title="No loading screen, no animation">plain view</button>
   <button class="foot-top" type="button" data-to-top>↑ top</button></span>
 </footer>`;
 }
@@ -222,7 +222,7 @@ function heroSection() {
         <a class="seg-resume" href="${RESUME_PDF}" download="Sahaj-Saliya-Resume.pdf" data-resume><span data-resume-label>Download resume (PDF)</span></a>
       </span>
       <span aria-hidden="true">·</span>
-      <button type="button" class="tok-link persona-switch" data-plain-toggle aria-pressed="false" title="No loading screen, no agents, no animation">plain view</button>
+      <button type="button" class="tok-link persona-switch" data-plain-toggle aria-pressed="false" title="No loading screen, no animation">plain view</button>
     </p>
     <ul class="focus-chips mono" aria-label="Focus areas">
       ${profile.focus.map((f, i) => `<li><span class="tid">${String(1000 + i * 137).padStart(5, '0')}</span>${esc(f)}</li>`).join('')}

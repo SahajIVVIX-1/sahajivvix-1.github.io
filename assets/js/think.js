@@ -50,7 +50,7 @@ export function initThink() {
   const gate = () => (paused() ? new Promise((r) => waiters.push(r)) : Promise.resolve());
   // Sleeps for `ms` of ACTIVE time: the clock stops while paused. It counts real elapsed time, so timer
   // drift never makes a verb stay longer than asked.
-  // A 'think:swap' event (the designer agent, agents.js) ends the current verb's hold early.
+  // A 'think:swap' event ends the current verb's hold early.
   let swap = false;
   document.addEventListener('think:swap', () => { swap = true; });
   async function sleep(ms, skippable = false) {

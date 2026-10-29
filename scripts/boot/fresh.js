@@ -10,7 +10,7 @@
   var bm = location.pathname.match(/^\/blogs?(\/.*)?$/i);
   if (bm) { location.replace('https://blog.sahaj.si' + (bm[1] || '/') + location.search + location.hash); return; }
   var params = new URLSearchParams(location.search);
-  // Plain view: no loading screen, no agents, no animation. ?plain=1 (or ?for=recruiter) turns it on, ?plain=0 off.
+  // Plain view: no loading screen, no animation. ?plain=1 (or ?for=recruiter) turns it on, ?plain=0 off.
   // It is the visitor's own choice, so it survives the fresh start below. While it is on, every script and the
   // stylesheet see "prefers reduced motion", so each effect falls back to its still version.
   var plain = null;
