@@ -465,7 +465,53 @@ function experienceSection() {
       <ul>${profile.community.map((c) => `<li><span class="c-role">${esc(c.role)}</span><span class="muted"> · ${esc(c.org)}</span><span class="mono c-when">${c.end === null ? `${fmtMonth(c.start).split(' ')[1]} – now` : fmtRange(c.start, c.end)}</span></li>`).join('')}</ul>
     </aside>
   </div>
+  ${trainingLog()}
 </section>`;
+}
+
+// The live training log: his real public GitHub activity, refreshed by the hourly Action, drawn like a training
+// run. step = public contributions in the last 12 months (GitHub's own count); loss = open ÷ all issues and pull
+// requests (it falls as they are closed); streak = days in a row with public work (calendar, push events or a repo's last push, since
+// the calendar leaves out forks); the chart is work per day over the last 12 weeks.
+function trainingLog() {
+  const cal = github.calendar || [];
+  if (!github.fetched_at || !cal.length) return '';
+  const byDay = new Map(cal.map(([d, n]) => [d, n]));
+  for (const e of github.events || []) if (e.type === 'PushEvent') { const d = e.at.slice(0, 10); if (!byDay.get(d)) byDay.set(d, Math.max(byDay.get(d) || 0, e.commits || 1)); }
+  // each repo's last push is public too (it catches work on forks that the calendar and recent events miss)
+  for (const r of github.repos || []) { const d = (r.pushed_at || '').slice(0, 10); if (d && !byDay.get(d)) byDay.set(d, 1); }
+  const last = cal[cal.length - 1][0];
+  const day = (k) => { const t = new Date(`${last}T00:00:00Z`); t.setUTCDate(t.getUTCDate() - k); return t.toISOString().slice(0, 10); };
+  const days = Array.from({ length: 84 }, (_, i) => day(83 - i)).map((d) => [d, byDay.get(d) || 0]);
+  let streak = 0; for (let k = byDay.get(last) ? 0 : 1; byDay.get(day(k)); k++) streak++;
+  const step = cal.reduce((a, [, n]) => a + n, 0);
+  const w = github.work || { issuesOpen: 0, issuesClosed: 0, prsOpen: 0, prsMerged: 0 };
+  const open = w.issuesOpen + w.prsOpen, all = open + w.issuesClosed + w.prsMerged;
+  const loss = all ? open / all : 0;
+  const since = new Date(Date.parse(`${last}T00:00:00Z`) - 30 * 864e5).toISOString();
+  const updated = (github.repos || []).filter((r) => r.pushed_at >= since).length;
+  const max = Math.max(1, ...days.map(([, n]) => n));
+  const ema = []; days.forEach(([, n], i) => ema.push(i ? ema[i - 1] * 0.8 + n * 0.2 : n));
+  const W = 840, H = 74, bw = W / days.length;
+  const bars = days.map(([d, n], i) => `<rect x="${(i * bw + 1).toFixed(1)}" y="${(H - 4 - (n / max) * (H - 12)).toFixed(1)}" width="${(bw - 2).toFixed(1)}" height="${Math.max(n ? 2 : 1, (n / max) * (H - 12)).toFixed(1)}" class="${n ? 'on' : ''}"><title>${d}: ${n} contribution${n === 1 ? '' : 's'}</title></rect>`).join('');
+  const line = ema.map((v, i) => `${(i * bw + bw / 2).toFixed(1)},${(H - 4 - (v / max) * (H - 12)).toFixed(1)}`).join(' ');
+  // latest pushes, one line per repo and day (several pushes on one day are added up)
+  const pushes = [];
+  for (const e of (github.events || []).filter((x) => x.type === 'PushEvent')) {
+    const d = e.at.slice(0, 10), same = pushes.find((p) => p.repo === e.repo && p.at.slice(0, 10) === d);
+    // a push whose count is unknown makes the total a lower bound (shown as N+)
+    if (same) { same.n += e.commits || 0; same.more ||= e.commits == null; } else pushes.push({ ...e, n: e.commits || 0, more: e.commits == null });
+  }
+  pushes.splice(5);
+  const langs = Object.entries(github.languages || {}).sort((a, b) => b[1] - a[1]).slice(0, 3);
+  const lt = langs.reduce((a, [, v]) => a + v, 0) || 1;
+  const fmt = (n) => n.toLocaleString('en-US');
+  return `<div class="trainlog" aria-labelledby="tl-h">
+    <header class="tl-head mono"><h3 id="tl-h"><span class="tl-dot" aria-hidden="true"></span>training log · live from GitHub</h3><span>updated <time datetime="${github.fetched_at}" data-live-ago>${github.fetched_at.slice(0, 16).replace('T', ' ')} UTC</time> · refreshed hourly</span></header>
+    <p class="tl-run mono"><span>step <b>${fmt(step)}</b><small>public contributions, last 12 months</small></span><span>loss <b>${loss.toFixed(2)}</b><small>open ÷ all issues and PRs (${open} of ${all}) · falls as they close</small></span><span>streak <b>${streak} day${streak === 1 ? '' : 's'}</b><small>in a row with public work</small></span><span>repos <b>${updated}</b><small>pushed in the last 30 days</small></span></p>
+    <figure class="tl-chart"><svg viewBox="0 0 ${W} ${H}" preserveAspectRatio="none" role="img" aria-label="Public work per day over the last 12 weeks, with a moving average"><g class="tl-bars">${bars}</g><polyline class="tl-ema" points="${line}"/></svg><figcaption class="mono"><span>${days[0][0]}</span><span>work per day · moving average</span><span>${last}</span></figcaption></figure>
+    <div class="tl-foot"><ol class="tl-pushes mono" aria-label="Latest pushes">${pushes.map((e) => `<li><span class="tl-repo">${esc(e.repo)}</span><span>${e.n ? `${e.n}${e.more ? '+' : ''} commit${e.n === 1 && !e.more ? '' : 's'}` : 'push'}</span><time datetime="${e.at}">${e.at.slice(0, 10)}</time></li>`).join('')}</ol><p class="tl-langs mono">${langs.map(([l, v]) => `${esc(l)} <b>${Math.round((v / lt) * 100)}%</b>`).join(' · ')}</p></div>
+  </div>`;
 }
 
 // The Guinness World Records participation, shown as a benchmark entry whose values are "read" from the certificate.

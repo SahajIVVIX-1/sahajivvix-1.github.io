@@ -55,6 +55,30 @@ try {
     }
   } catch { events = previous?.events || []; }
 
+  // The contribution calendar (last 12 months): GraphQL with a token (the hourly Action), otherwise the public
+  // calendar page. Kept from the previous run if both fail.
+  let calendar = previous?.calendar || [];
+  try {
+    if (process.env.GITHUB_TOKEN) {
+      const q = `query { user(login: "${USER}") { contributionsCollection { contributionCalendar { weeks { contributionDays { date contributionCount } } } } } }`;
+      const res = await fetch(`${API}/graphql`, { method: 'POST', headers: { ...headers, 'Content-Type': 'application/json' }, body: JSON.stringify({ query: q }) });
+      const j = await res.json();
+      calendar = j.data.user.contributionsCollection.contributionCalendar.weeks.flatMap((w) => w.contributionDays.map((d) => [d.date, d.contributionCount]));
+    } else {
+      const html = await (await fetch(`https://github.com/users/${USER}/contributions`, { headers: { 'User-Agent': headers['User-Agent'] } })).text();
+      const tips = Object.fromEntries([...html.matchAll(/<tool-tip[^>]*for="(contribution-day-component-[\d-]+)"[^>]*>([^<]*)</g)].map((m) => [m[1], m[2]]));
+      const days = [...html.matchAll(/data-date="(\d{4}-\d\d-\d\d)"[^>]*id="(contribution-day-component-[\d-]+)"/g)]
+        .map(([, d, id]) => { const t = tips[id] || ''; const n = /^No /.test(t) ? 0 : parseInt(t, 10); return [d, Number.isFinite(n) ? n : 0]; });
+      if (days.length > 300) calendar = days.sort((a, b) => a[0].localeCompare(b[0]));
+    }
+  } catch { /* keep the previous calendar */ }
+  // Issues and pull requests across his public repos (search API), for the training log's "loss".
+  let work = previous?.work || null;
+  try {
+    const count = async (q) => (await gh(`/search/issues?per_page=1&q=${encodeURIComponent(`user:${USER} ${q}`)}`)).total_count;
+    work = { issuesOpen: await count('is:issue is:open'), issuesClosed: await count('is:issue is:closed'), prsOpen: await count('is:pr is:open'), prsMerged: await count('is:pr is:merged') };
+  } catch { /* keep the previous counts */ }
+
   const slim = repos.map((r) => ({
     name: r.name,
     description: r.description || '',
@@ -75,6 +99,8 @@ try {
     languages: Object.fromEntries(Object.entries(languages).map(([k, v]) => [k, Math.round(v)])),
     repos: slim,
     events,
+    calendar,
+    work,
   };
 
   // Keep fetched_at stable when nothing else changed, so quiet hours produce no commit.
