@@ -1,10 +1,9 @@
-// Renders the static site (index, 404, blogs, sitemap) from content/ and data/.
+// Renders the static site (index, 404, resume, the blog redirects, sitemap) from content/ and data/.
 // Usage: node scripts/build.mjs [--embed]   (--embed also recomputes the ML data first)
-import { readdirSync, readFileSync, existsSync } from 'node:fs';
+import { readdirSync, readFileSync } from 'node:fs';
 import { createHash } from 'node:crypto';
 import { execSync } from 'node:child_process';
-import { marked } from 'marked';
-import { readJSON, readText, write, esc, fmtMonth, fmtRange, parseFrontMatter, slug, path } from './lib.mjs';
+import { readJSON, readText, write, esc, fmtMonth, fmtRange, slug, path } from './lib.mjs';
 import { renderResume, RESUME_PDF } from './resume.mjs';
 
 if (process.argv.includes('--embed')) {
@@ -45,8 +44,9 @@ const projects = readJSON('content/projects.json');
 const mapData = readJSON('data/map.json', null);
 const github = readJSON('data/github.json', { repos: [], languages: {}, events: [], user: {} });
 const heatmaps = readJSON('data/heatmaps.json', {});
-const posts = loadPosts();
-const BLOG_LIVE = posts.length > 0;
+// The blog is its own site (another repo, published at blog.sahaj.si). Every link to it, and /blog and /blogs on
+// this site, go there.
+const BLOG = 'https://blog.sahaj.si';
 const BUILD_VERSION = (github.fetched_at || new Date().toISOString()).slice(0, 16);
 // Cache-busting token for CSS/JS URLs: a hash of the files themselves, so a changed asset is never served stale.
 const ASSET_VERSION = (() => {
@@ -110,7 +110,7 @@ function header({ home = false } = {}) {
     ['Map', `${base}#map`],
     ['Training', `${base}#experience`],
     ['Contact', `${base}#contact`],
-    ['Blog', '/blogs/'],
+    ['Blog', `${BLOG}/`],
   ];
   return `<a class="skip" href="#main">Skip to content</a>
 <header class="site-head" data-head>
@@ -696,59 +696,31 @@ function render404() {
     heading: `<span class="unk mono">&lt;unk&gt;</span><br><em>Token not in vocabulary.</em>`,
     noindex: true,
     body: `<p class="solo-lede">The model has never seen this address, so it cannot predict anything useful here.</p>
-    <p class="solo-dist mono" aria-hidden="true"><span style="--p:.31">/</span><span style="--p:.24">/#work</span><span style="--p:.19">/#contact</span><span style="--p:.14">/#map</span><span style="--p:.12">/blogs/</span></p>
+    <p class="solo-dist mono" aria-hidden="true"><span style="--p:.31">/</span><span style="--p:.24">/#work</span><span style="--p:.19">/#contact</span><span style="--p:.14">/#map</span><span style="--p:.12">/resume/</span></p>
     <p class="solo-actions"><a class="btn shimmer" href="/">Back to the home page</a> <button class="btn btn-ghost" type="button" data-ask-open>Ask my portfolio</button></p>`,
   });
 }
 
-function loadPosts() {
-  const dir = path('content/blog');
-  if (!existsSync(dir)) return [];
-  return readdirSync(dir).filter((f) => f.endsWith('.md') && !f.startsWith('_')).map((f) => {
-    const { meta, body } = parseFrontMatter(readText(`content/blog/${f}`));
-    if (meta.draft === 'true') return null;
-    return { slug: meta.slug || slug(f.replace(/\.md$/, '')), title: meta.title || f, date: meta.date || '', summary: meta.summary || '', tags: (meta.tags || '').split(',').map((s) => s.trim()).filter(Boolean), html: marked.parse(body), body };
-  }).filter(Boolean).sort((a, b) => b.date.localeCompare(a.date));
-}
-
-function renderBlogIndex() {
-  if (!BLOG_LIVE) {
-    return simplePage({
-      title: 'Blog · Writing in progress · Sahaj Saliya',
-      description: 'Sahaj Saliya’s blog on applied AI is being written.',
-      url: '/blogs/',
-      layer: 0,
-      kicker: 'Blog · under maintenance',
-      heading: `Writing in progress<span class="ellipsis" aria-hidden="true"><span>.</span><span>.</span><span>.</span></span>`,
-      body: `<p class="solo-lede">Notes on retrieval, agents, vision and honest evaluation are still being generated. Check back soon.</p>
-    <p class="solo-actions"><a class="btn shimmer" href="/">Back to the home page</a></p>`,
-    });
-  }
-  return simplePage({
-    title: 'Blog · Sahaj Saliya',
-    description: 'Writing on applied AI: retrieval, agents, computer vision and evaluation.',
-    url: '/blogs/',
-    layer: 0,
-    kicker: 'Blog',
-    heading: 'Notes from the <em>forward pass</em>.',
-    body: `<ol class="post-list">${posts.map((p) => `<li><a class="post-link" href="/blogs/${p.slug}/"><span class="mono post-date">${esc(p.date)}</span><span class="post-title">${esc(p.title)}</span><span class="post-sum muted">${esc(p.summary)}</span></a></li>`).join('')}</ol>`,
-  });
-}
-
-function renderPost(p) {
-  return simplePage({
-    title: `${p.title} · Sahaj Saliya`,
-    description: p.summary || p.title,
-    url: `/blogs/${p.slug}/`,
-    layer: 0,
-    kicker: `Blog · ${p.date}`,
-    heading: esc(p.title),
-    body: `<article class="prose" data-attend>${p.html}</article><p class="solo-actions"><a class="tok-link mono" href="/blogs/">← All posts</a></p>`,
-  });
+// /blog/ and /blogs/ are real pages (a static host needs one) that forward to the blog at once, keeping the query
+// and #hash. Deeper paths (/blogs/some-post/) reach 404.html, where fresh.js forwards them the same way.
+function blogRedirect() {
+  return `<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Blog · Sahaj Saliya</title>
+<meta name="robots" content="noindex">
+<link rel="canonical" href="${BLOG}/">
+<meta http-equiv="refresh" content="0; url=${BLOG}/">
+<script>location.replace('${BLOG}/' + location.search + location.hash);</script>
+</head>
+<body><p><a href="${BLOG}/">Go to the blog at blog.sahaj.si</a></p></body>
+</html>
+`;
 }
 
 function sitemap() {
-  const urls = ['/', '/resume/', '/blogs/', ...(BLOG_LIVE ? posts.map((p) => `/blogs/${p.slug}/`) : [])];
+  const urls = ['/', '/resume/'];
   const today = new Date().toISOString().slice(0, 10);
   return `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
@@ -762,29 +734,15 @@ ${urls.map((u) => `  <url><loc>${SITE}${u}</loc><lastmod>${today}</lastmod></url
 const outputs = {
   'index.html': renderHome(),
   '404.html': render404(),
-  'blogs/index.html': renderBlogIndex(),
+  'blogs/index.html': blogRedirect(),
   'sitemap.xml': sitemap(),
   'robots.txt': `User-agent: *\nAllow: /\nSitemap: ${SITE}/sitemap.xml\n`,
   'site.webmanifest': JSON.stringify({ name: 'Sahaj Saliya', short_name: 'Sahaj', start_url: '/', display: 'standalone', background_color: '#171715', theme_color: '#171715', icons: [{ src: '/assets/brand/icon-192.png?v=4', sizes: '192x192', type: 'image/png', purpose: 'any' }, { src: '/assets/brand/icon-512.png?v=4', sizes: '512x512', type: 'image/png', purpose: 'any' }, { src: '/assets/brand/icon-maskable-512.png?v=4', sizes: '512x512', type: 'image/png', purpose: 'maskable' }] }, null, 2) + '\n',
   'resume/index.html': renderResume({ profile, projects, gwr, site: SITE }),
-  // /blog is the blog too: a static host needs a real page there, which forwards to /blogs/ at once
-  'blog/index.html': `<!doctype html>
-<html lang="en">
-<head>
-<meta charset="utf-8">
-<title>Blog · Sahaj Saliya</title>
-<meta name="robots" content="noindex">
-<link rel="canonical" href="${SITE}/blogs/">
-<meta http-equiv="refresh" content="0; url=/blogs/">
-<script>location.replace('/blogs/' + location.search + location.hash);</script>
-</head>
-<body><p><a href="/blogs/">Go to the blog</a></p></body>
-</html>
-`,
+  'blog/index.html': blogRedirect(),
   'data/fit.json': fitData(),
-  'data/site.json': { blogLive: BLOG_LIVE, posts: BLOG_LIVE ? posts.map(({ slug: s, title, date, summary, tags }) => ({ slug: s, title, date, summary, tags })) : [] },
+  'data/site.json': { blog: `${BLOG}/` },
 };
-if (BLOG_LIVE) for (const p of posts) outputs[`blogs/${p.slug}/index.html`] = renderPost(p);
 
 let changed = 0;
 for (const [file, content] of Object.entries(outputs)) if (write(file, content)) { changed++; console.log('wrote', file); }

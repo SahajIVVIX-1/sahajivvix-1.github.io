@@ -5,9 +5,10 @@
    kept, so the restart stays fast.
    Kept as they are: back/forward, links followed inside the site, and ?noreplay (for testing). */
 (function () {
-  // /blog and anything under it (any capitalisation) is the blog at /blogs/: go there at once, keeping the rest.
-  var bm = location.pathname.match(/^\/blog(\/.*)?$/i);
-  if (bm) { location.replace('/blogs' + (bm[1] && bm[1] !== '/' ? bm[1] : '/') + location.search + location.hash); return; }
+  // /blog, /blogs and anything under them (any capitalisation) are the blog, now its own site at blog.sahaj.si:
+  // go there at once, keeping the rest of the path, the query and the #hash.
+  var bm = location.pathname.match(/^\/blogs?(\/.*)?$/i);
+  if (bm) { location.replace('https://blog.sahaj.si' + (bm[1] || '/') + location.search + location.hash); return; }
   var params = new URLSearchParams(location.search);
   // Plain view: no loading screen, no agents, no animation. ?plain=1 (or ?for=recruiter) turns it on, ?plain=0 off.
   // It is the visitor's own choice, so it survives the fresh start below. While it is on, every script and the

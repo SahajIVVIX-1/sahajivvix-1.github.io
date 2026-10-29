@@ -26,7 +26,7 @@ const browser = await puppeteer.launch({ executablePath: CHROME, headless: 'new'
 try {
   for (let i = 0; i < 40; i++) { try { await fetch(BASE); break; } catch { await wait(150); } }
 
-  for (const [label, url] of [['blog list', '/blogs/'], ['resume', '/resume/'], ['resume PDF', '/assets/resume/Sahaj-Saliya-Resume.pdf'], ['404 page', '/404.html']]) {
+  for (const [label, url] of [['resume', '/resume/'], ['resume PDF', '/assets/resume/Sahaj-Saliya-Resume.pdf'], ['404 page', '/404.html']]) {
     const res = await fetch(BASE + url);
     check(res.ok, `${label} ${url} answers ${res.status}`);
   }
@@ -74,11 +74,18 @@ try {
     await ctx.close();
   }
 
-  // /blog is an alias of /blogs.
+  // /blog, /blogs and anything under them go to the blog's own site; the request there is answered locally, so this
+  // works offline and before that site exists.
   const p = await browser.newPage();
-  await p.goto(`${BASE}/blog`, { waitUntil: 'domcontentloaded' });
-  await wait(500);
-  check(new URL(p.url()).pathname.startsWith('/blogs'), '/blog redirects to /blogs/');
+  await p.setRequestInterception(true);
+  p.on('request', (r) => (r.url().startsWith('https://blog.sahaj.si') ? r.respond({ status: 200, contentType: 'text/html', body: 'blog' }) : r.continue()));
+  for (const [from, to] of [['/blog', 'https://blog.sahaj.si/'], ['/blogs/', 'https://blog.sahaj.si/'], ['/BLOG/', 'https://blog.sahaj.si/'], ['/blogs/some-post/?x=1', 'https://blog.sahaj.si/some-post/?x=1']]) {
+    await p.goto(BASE + from, { waitUntil: 'networkidle0' }).catch(() => {});
+    await wait(300);
+    check(p.url() === to, `${from} goes to ${to} (got ${p.url()})`);
+  }
+  const home = await (await fetch(BASE + '/')).text();
+  check(home.includes('href="https://blog.sahaj.si/"') && !/href="\/blogs?\//.test(home), 'the Blog link points to blog.sahaj.si');
 } finally {
   await browser.close();
   server.kill();
