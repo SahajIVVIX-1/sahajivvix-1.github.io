@@ -1,5 +1,7 @@
 // Theme as a temperature dial: auto (follow the system), 0.2 (light paper), 0.9 (latent night).
-// The choice is applied before first paint by an inline script in <head>; this module only handles changes.
+// The choice is applied before first paint by an inline script in <head>; this module only handles changes, which
+// cross-fade (motion.js) instead of switching at once.
+import { smoothChange } from './motion.js';
 const ORDER = ['auto', 'light', 'dark'];
 const LABEL = { auto: 'auto', light: 'τ 0.2', dark: 'τ 0.9' };
 const NAME = { auto: 'follow system', light: 'light', dark: 'dark' };
@@ -28,7 +30,7 @@ export function initTheme() {
   btn?.addEventListener('click', () => {
     mode = ORDER[(ORDER.indexOf(mode) + 1) % ORDER.length];
     try { mode === 'auto' ? localStorage.removeItem('theme') : localStorage.setItem('theme', mode); } catch { /* ignore */ }
-    apply();
+    smoothChange(apply, { ms: 320 });
   });
   sys.addEventListener('change', () => { if (mode === 'auto') apply(); });
   apply();

@@ -6,6 +6,7 @@ import { execSync } from 'node:child_process';
 import { marked } from 'marked';
 import { build as buildLogo, strokePath } from './logo-geometry.mjs';
 import { readJSON, readText, write, esc, fmtMonth, fmtRange, parseFrontMatter, slug, path } from './lib.mjs';
+import { renderResume, RESUME_PDF } from './resume.mjs';
 
 if (process.argv.includes('--embed')) {
   const { embedAll } = await import('./embed.mjs');
@@ -213,10 +214,8 @@ function heroSection() {
       <span aria-hidden="true">·</span>
       <button type="button" class="tok-link persona-switch" data-persona-switch aria-expanded="false" aria-controls="persona-menu">not you? switch</button>
       <span id="persona-menu" class="persona-menu" data-persona-menu hidden role="group" aria-label="Choose a view">
-        <button type="button" data-persona="recruiter" aria-pressed="false">recruiter</button>
-        <button type="button" data-persona="developer" aria-pressed="false">developer</button>
-        <button type="button" data-persona="researcher" aria-pressed="false">researcher</button>
-        <button type="button" data-persona="curious" aria-pressed="false">curious</button>
+        <span class="seg" data-seg><span class="seg-pill" aria-hidden="true"></span><button type="button" data-persona="recruiter" aria-pressed="false">Recruiter</button><button type="button" data-persona="developer" aria-pressed="false">Developer</button><button type="button" data-persona="researcher" aria-pressed="false">Researcher</button><button type="button" data-persona="curious" aria-pressed="false">Curious</button></span>
+        <a class="seg-resume" href="${RESUME_PDF}" download="Sahaj-Saliya-Resume.pdf" data-resume><span data-resume-label>Download resume (PDF)</span></a>
       </span>
     </p>
     <ul class="focus-chips mono" aria-label="Focus areas">
@@ -676,7 +675,7 @@ function renderPost(p) {
 }
 
 function sitemap() {
-  const urls = ['/', '/blogs/', ...(BLOG_LIVE ? posts.map((p) => `/blogs/${p.slug}/`) : [])];
+  const urls = ['/', '/resume/', '/blogs/', ...(BLOG_LIVE ? posts.map((p) => `/blogs/${p.slug}/`) : [])];
   const today = new Date().toISOString().slice(0, 10);
   return `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
@@ -694,6 +693,7 @@ const outputs = {
   'sitemap.xml': sitemap(),
   'robots.txt': `User-agent: *\nAllow: /\nSitemap: ${SITE}/sitemap.xml\n`,
   'site.webmanifest': JSON.stringify({ name: 'Sahaj Saliya', short_name: 'Sahaj', start_url: '/', display: 'standalone', background_color: '#F3EEE3', theme_color: '#0B1020', icons: [{ src: '/assets/brand/icon-192.png?v=3', sizes: '192x192', type: 'image/png', purpose: 'any' }, { src: '/assets/brand/icon-512.png?v=3', sizes: '512x512', type: 'image/png', purpose: 'any' }, { src: '/assets/brand/icon-maskable-512.png?v=3', sizes: '512x512', type: 'image/png', purpose: 'maskable' }] }, null, 2) + '\n',
+  'resume/index.html': renderResume({ profile, projects, gwr, site: SITE }),
   'data/site.json': { blogLive: BLOG_LIVE, posts: BLOG_LIVE ? posts.map(({ slug: s, title, date, summary, tags }) => ({ slug: s, title, date, summary, tags })) : [] },
 };
 if (BLOG_LIVE) for (const p of posts) outputs[`blogs/${p.slug}/index.html`] = renderPost(p);

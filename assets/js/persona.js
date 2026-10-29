@@ -1,10 +1,12 @@
 // Personalises the page for the visitor "intent" guessed by the boot screen (a heuristic, see scripts/boot/boot.js).
 // The static HTML stays in the default order for crawlers and no-JS visitors; this only reorders in the browser.
-// The visitor can always correct the guess with "not you? switch".
+// The visitor can always correct the guess with "not you? switch": a segmented control slides in, and picking a
+// view animates the change (sections glide to their new order, changed text is sampled again; see motion.js).
+import { smoothChange, retoken, reduced } from './motion.js';
 
 const NAMES = ['recruiter', 'developer', 'researcher', 'curious'];
 const LABEL = { recruiter: 'a recruiter', developer: 'a developer', researcher: 'a researcher', curious: 'a curious visitor' };
-const MAIL = 'mailto:sahajs7959@gmail.com?subject=Resume%20request';
+const RESUME = '/assets/resume/Sahaj-Saliya-Resume.pdf';
 
 // Section order below the hero, per persona. Ids are the section ids in index.html.
 const ORDER = {
@@ -18,7 +20,7 @@ const CARD_ORDER = { researcher: ['crohnsight', 'openenv', 'dcgan', 'agentic-rag
 
 // The hero's second button.
 const CTA = {
-  recruiter: { text: 'Request resume', href: MAIL },
+  recruiter: { text: 'Download resume (PDF)', href: RESUME, resume: true },
   developer: { text: 'Browse code', href: 'https://github.com/SahajIVVIX-1', external: true },
   researcher: { text: 'Read the model cards', href: '#work' },
   curious: null,
@@ -45,7 +47,7 @@ export function initPersona() {
   const start = () => {
     if (started) return;
     started = true;
-    apply(currentPersona() || 'curious');
+    apply(currentPersona() || 'curious', { first: true });
     wireSwitch();
   };
   if (currentPersona()) start();
@@ -56,7 +58,7 @@ export function initPersona() {
   }
 }
 
-function apply(p) {
+function apply(p, { first = false } = {}) {
   const root = document.documentElement;
   root.dataset.persona = p;
   const main = document.querySelector('main');
@@ -106,16 +108,19 @@ function apply(p) {
     const c = CTA[p];
     cta.hidden = !c;
     if (c) {
-      cta.textContent = c.text;
+      if (first) cta.textContent = c.text; else retoken(cta, c.text);
       cta.href = c.href;
       if (c.external) { cta.target = '_blank'; cta.rel = 'noopener'; } else { cta.removeAttribute('target'); cta.removeAttribute('rel'); }
+      if (c.resume) { cta.dataset.resume = ''; cta.setAttribute('download', 'Sahaj-Saliya-Resume.pdf'); } else { delete cta.dataset.resume; cta.removeAttribute('download'); }
     }
   }
   const line = document.querySelector('[data-persona-line]');
   if (line) {
     line.hidden = false;
-    line.querySelector('[data-persona-name]').textContent = LABEL[p];
+    const name = line.querySelector('[data-persona-name]');
+    if (first) name.textContent = LABEL[p]; else retoken(name, LABEL[p]);
     line.querySelectorAll('[data-persona]').forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.persona === p)));
+    line.querySelector('.seg-resume')?.classList.toggle('is-primary', p === 'recruiter');
   }
   document.dispatchEvent(new CustomEvent('persona:change', { detail: { persona: p } }));
 }
@@ -125,17 +130,39 @@ function wireSwitch() {
   if (!line) return;
   const toggle = line.querySelector('[data-persona-switch]');
   const menu = line.querySelector('[data-persona-menu]');
-  toggle.addEventListener('click', () => {
-    menu.hidden = !menu.hidden;
-    toggle.setAttribute('aria-expanded', String(!menu.hidden));
-  });
-  menu.addEventListener('click', (e) => {
-    const b = e.target.closest('[data-persona]');
-    if (!b) return;
-    try { sessionStorage.setItem('personaPick', b.dataset.persona); } catch { /* storage blocked */ }
-    apply(b.dataset.persona);
-    menu.hidden = true;
+  const seg = menu.querySelector('[data-seg]');
+  const pill = menu.querySelector('.seg-pill');
+  // the highlight pill slides under the active option
+  const place = (b, instant = false) => {
+    if (!b || !pill) return;
+    pill.style.transition = instant ? 'none' : '';
+    pill.style.width = `${b.offsetWidth}px`;
+    pill.style.transform = `translateX(${b.offsetLeft}px)`;
+  };
+  const active = () => seg.querySelector('[aria-pressed="true"]');
+  let closing = 0;
+  const open = () => {
+    clearTimeout(closing);
+    menu.hidden = false;
+    place(active(), true);
+    requestAnimationFrame(() => menu.classList.add('is-open'));
+    toggle.setAttribute('aria-expanded', 'true');
+  };
+  const close = () => {
+    menu.classList.remove('is-open');
     toggle.setAttribute('aria-expanded', 'false');
-    scrollTo({ top: 0, behavior: 'auto' });
+    closing = setTimeout(() => { menu.hidden = true; }, reduced() ? 0 : 240);
+  };
+  toggle.addEventListener('click', () => (menu.hidden || !menu.classList.contains('is-open') ? open() : close()));
+  menu.addEventListener('keydown', (e) => { if (e.key === 'Escape') { close(); toggle.focus(); } });
+  document.addEventListener('click', (e) => { if (!menu.hidden && !line.contains(e.target)) close(); });
+  seg.addEventListener('click', (e) => {
+    const b = e.target.closest('[data-persona]');
+    if (!b || b.getAttribute('aria-pressed') === 'true') return;
+    try { sessionStorage.setItem('personaPick', b.dataset.persona); } catch { /* storage blocked */ }
+    place(b);
+    const main = document.querySelector('main');
+    const move = [...main.querySelectorAll(':scope > section:not(#top), #work > .card')];
+    smoothChange(() => apply(b.dataset.persona), { move, ms: 420 }).then(() => setTimeout(close, 180));
   });
 }

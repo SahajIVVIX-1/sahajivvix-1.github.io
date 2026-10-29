@@ -47,7 +47,7 @@ He is open to conversations about AI/ML internships, research collaborations and
 Roles where he can build applied AI: LLM and RAG systems, AI agents, computer vision or ML engineering, ideally where models are evaluated honestly and shipped to real users.
 
 ## Can I see Sahaj's resume?
-His resume is not posted publicly. Email sahajs7959@gmail.com and he will share it. Everything on it (experience, projects, skills, certifications) is also on this site.
+Yes. His resume is a PDF built from the same data as this site: download it at https://info.sahaj.si/assets/resume/Sahaj-Saliya-Resume.pdf, or with "Download resume (PDF)" under "not you? switch" on the home page. For anything else, email sahajs7959@gmail.com.
 
 ## What experience does Sahaj have? {#experience}
 Research & Innovation Intern at HNNOIX India Private Limited (May to Jul 2026), and Freelance Financial AI Engineer for quantitative investment analysis (Dec 2024 to Jun 2025). He has also served on the AI/ML committees of Encode PDEU and was Lead Convener of IEEE AIMV 2025.

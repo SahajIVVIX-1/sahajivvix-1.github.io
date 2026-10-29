@@ -54,11 +54,17 @@ jobs:
           WATERMARK_KEY: ${{ secrets.WATERMARK_KEY }}
         run: node scripts/build.mjs --embed
 
+      # Prints /resume/ to assets/resume/Sahaj-Saliya-Resume.pdf with the runner's Chrome, only when it changed.
+      - name: Resume PDF
+        env:
+          CHROME: /usr/bin/google-chrome
+        run: node scripts/resume-pdf.mjs
+
       - name: Commit if changed
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add data index.html 404.html blogs sitemap.xml robots.txt site.webmanifest
+          git add data index.html 404.html blogs resume assets/resume sitemap.xml robots.txt site.webmanifest
           if git diff --cached --quiet; then
             echo "No changes."
           else

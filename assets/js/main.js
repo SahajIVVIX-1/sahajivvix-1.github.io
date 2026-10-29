@@ -12,6 +12,7 @@ import { initFooter } from './footer.js';
 import { initBrand } from './brand.js';
 import { initCnn } from './cnn.js';
 import { checkOrigin } from './origin.js';
+import { initResume } from './resume.js';
 
 export const reducedMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
 // Phones, low core counts and data-saver get lighter versions of the effects.
@@ -36,6 +37,7 @@ initBrand({ reducedMotion });
 initCnn({ reducedMotion });
 initLoss();
 initHeader();
+initResume();
 initAnchors();
 initTransitions();
 initLazy();
