@@ -29,6 +29,8 @@ initRail();
 initHero();
 initThink();
 initGenerate({ reducedMotion, lowPower });
+// generate.js has hidden what it will animate (or decided not to): the early "hold everything" class can go
+document.documentElement.classList.remove('gen-pending');
 initGwr({ reducedMotion });
 initBadge({ reducedMotion });
 // The persona line and badge are placed: the hero can show (see "hero layout settles" in main.css).

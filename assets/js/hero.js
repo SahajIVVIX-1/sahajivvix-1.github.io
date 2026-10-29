@@ -62,7 +62,7 @@ function bootGate() {
   return new Promise((resolve) => {
     if (!document.documentElement.classList.contains('booting')) return resolve();
     document.addEventListener('boot:done', resolve, { once: true });
-    setTimeout(resolve, 4000);
+    setTimeout(resolve, 9000); // after the longest boot (6.5 s) plus the handoff
   });
 }
 

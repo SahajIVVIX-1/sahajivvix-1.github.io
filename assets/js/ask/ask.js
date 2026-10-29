@@ -23,6 +23,7 @@ export function initAsk() {
   const root = document.getElementById('ask-root');
   root.innerHTML = `
   <div class="ask" role="dialog" aria-modal="false" aria-labelledby="ask-h" hidden>
+    <div class="ask-tx mono" data-tx aria-hidden="true" title="The parts of a transformer: retrieval lights attention, writing lights the feed-forward block"><span data-b="embed">embed</span><i></i><span data-b="attn">attention · 4 heads</span><i></i><span data-b="ffn">ffn</span><i></i><span data-b="softmax">softmax</span></div>
     <header class="ask-head">
       <div>
         <h2 id="ask-h" class="ask-title">Ask my <em>portfolio</em></h2>
@@ -117,6 +118,12 @@ export function initAsk() {
   root.querySelector('[data-chips]').addEventListener('click', (e) => { const b = e.target.closest('.chip'); if (b) ask(b.textContent); });
   form.addEventListener('submit', (e) => { e.preventDefault(); const q = input.value.trim(); if (q) { input.value = ''; ask(q); } });
 
+  // The small transformer diagram follows what the bot is doing: attention while it retrieves, the feed-forward block
+  // while it writes or acts, softmax as the answer lands.
+  const tx = root.querySelector('[data-tx]');
+  let txTimer = 0;
+  const stageTo = (s) => { clearTimeout(txTimer); tx.dataset.stage = s; if (s === 'softmax') txTimer = setTimeout(() => { delete tx.dataset.stage; }, 900); };
+
   async function ask(q) {
     addMsg('user', q);
     const bubble = addMsg('bot', '');
@@ -124,6 +131,7 @@ export function initAsk() {
     bubble.querySelector('p').innerHTML = '<span class="dots mono">attending<span>.</span><span>.</span><span>.</span></span>';
     send.classList.add('is-busy');
     setBusy('chat', true);
+    stageTo('attn');
     const eng = await enginePromise;
     if (!eng) { finish(bubble, 'The index failed to load. Please email sahajs7959@gmail.com.', []); return; }
 
@@ -147,6 +155,7 @@ export function initAsk() {
       p.textContent = '';
       let out = '';
       try {
+        stageTo('ffn');
         for await (const piece of llm.stream(q, passages, history)) { out += piece; p.textContent = out; }
         if (out.trim()) { text = out.trim(); by = 'Qwen2.5-1.5B + retrieval'; sources = uniqSources(passages.slice(0, 2)); }
       } catch { /* keep the retrieval answer */ }
@@ -165,6 +174,7 @@ export function initAsk() {
     trace.setAttribute('aria-hidden', 'true'); // announced step by step in the live region instead
     bubble.prepend(trace);
     const pace = matchMedia('(prefers-reduced-motion: reduce)').matches ? 0 : 260;
+    stageTo('ffn');
     stepAside = true;
     const done = [];
     for (const step of plan.steps) {
@@ -215,6 +225,7 @@ export function initAsk() {
   }
 
   function finish(bubble, text, sources, by = '') {
+    stageTo('softmax');
     send.classList.remove('is-busy');
     setBusy('chat', false);
     bubble.classList.remove('is-thinking');

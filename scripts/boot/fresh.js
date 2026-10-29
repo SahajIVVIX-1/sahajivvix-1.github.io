@@ -15,11 +15,22 @@
   try { bounce = !!sessionStorage.getItem('ipBounce'); sessionStorage.removeItem('ipBounce'); } catch (e) { }
   var fresh = !params.has('noreplay') && (type === 'reload' || (type === 'navigate' && !inside));
   window.__fresh = fresh;
+  // A generation will run on this load (generate.js): hold back what it animates in, from the very first paint, so
+  // nothing shows for a moment before its animation. main.css shows it all anyway after a few seconds.
+  try {
+    var motion = !(window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches);
+    var willGen = motion && !params.has('noreplay') && (params.has('replay') || fresh || !localStorage.getItem('sahaj:generated'));
+    if (willGen) document.documentElement.classList.add('gen-pending');
+  } catch (e) { }
   if (!fresh && !bounce) return;
   try { history.scrollRestoration = 'manual'; } catch (e) { }
   if (fresh) {
+    // the one key that survives: the last greeting line, so a reload never shows the same one twice
+    var keep = null;
+    try { keep = sessionStorage.getItem('greetLast'); } catch (e) { }
     try { localStorage.clear(); } catch (e) { }
     try { sessionStorage.clear(); } catch (e) { }
+    try { if (keep) sessionStorage.setItem('greetLast', keep); } catch (e) { }
   }
   try { if (location.hash) history.replaceState(history.state, '', location.pathname + location.search); } catch (e) { }
   scrollTo(0, 0);

@@ -111,8 +111,9 @@
     if (done) return;
     var t = performance.now() - t0;
     var r = real();
-    // The display never runs ahead of real progress, nor fills faster than ~4.3 s (the first-visit boot is meant to be seen).
-    var cap = Math.min(r, t / (rich ? 4300 : 1100), 1);
+    // The display never runs ahead of real progress, nor fills faster than ~3.6 s: the network is built from it,
+    // one connection at a time, so the last connection lands as loading completes and the build stays readable.
+    var cap = Math.min(r, t / (rich ? 3600 : 1100), 1);
     shown += (cap - shown) * 0.2;
     if (cap - shown < 0.002) shown = cap;
     B.p = shown;
@@ -142,7 +143,8 @@
     cl.add('boot-reveal');
     cl.remove('booting');
     if (fly) ms = B.fx.handoff() || 0;
-    document.dispatchEvent(new Event('boot:done'));
+    // the hero starts once the network has collapsed into it (the output neuron is the logo's cursor dot by then)
+    setTimeout(function () { document.dispatchEvent(new Event('boot:done')); }, ms);
     setTimeout(function () {
       if (el.parentNode) el.parentNode.removeChild(el);
       cl.remove('boot-full', 'boot-calm', 'boot-mini');

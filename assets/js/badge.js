@@ -19,8 +19,9 @@ export function initBadge({ reducedMotion = false } = {}) {
   badge.addEventListener('click', (e) => { e.preventDefault(); goToRow(reducedMotion); });
 
   const first = document.documentElement.classList.contains('gen') && !reducedMotion;
-  if (!first) return;
-  badge.classList.add('is-pending');
+  // The badge is hidden by CSS until this point (no flash before its animation); from here this code shows it.
+  if (!first) { badge.classList.add('is-ready'); return; }
+  badge.classList.add('is-pending', 'is-ready');
   const name = wrapTokens(badge.querySelector('.hb-name'));
   const sub = wrapTokens(badge.querySelector('.hb-sub'));
   const done = () => { badge.classList.remove('is-pending', 'is-decoding'); for (const s of [...name, ...sub]) s.classList.add('gt-on'); badge.querySelector('.hb-ph')?.remove(); };
