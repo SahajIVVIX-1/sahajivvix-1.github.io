@@ -28,7 +28,8 @@
     var seen = sessionStorage.getItem('booted');
     var home = basePath(location.pathname) === '/';
     var calm = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
-    if (home) { sessionStorage.setItem('booted', '1'); if (!seen) mode = calm ? 'calm' : 'full'; }
+    var noreplay = /[?&]noreplay(=|&|$)/.test(location.search);
+    if (home) { sessionStorage.setItem('booted', '1'); if (!seen && !noreplay) mode = calm ? 'calm' : 'full'; }
   } catch (e) { }
   d.className += ' booting boot-' + mode;
 

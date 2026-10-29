@@ -36,7 +36,6 @@ initBrand({ reducedMotion });
 initCnn({ reducedMotion });
 initLoss();
 initHeader();
-initScrollKeep();
 initAnchors();
 initTransitions();
 initLazy();
@@ -61,21 +60,6 @@ function initHeader() {
   const onScroll = () => head.classList.toggle('is-scrolled', scrollY > 24);
   addEventListener('scroll', onScroll, { passive: true });
   onScroll();
-}
-
-// A reload on /ip=<address> goes through the real page (see head.js), which would start at the top. The scroll
-// position is saved when the page is left and put back once after such a bounce.
-function initScrollKeep() {
-  addEventListener('pagehide', () => { try { sessionStorage.setItem('scrollKeep', JSON.stringify({ y: Math.round(scrollY), t: Date.now() })); } catch { /* storage blocked */ } });
-  try {
-    if (!sessionStorage.getItem('ipBounce')) return;
-    sessionStorage.removeItem('ipBounce');
-    const k = JSON.parse(sessionStorage.getItem('scrollKeep') || 'null');
-    if (!k || Date.now() - k.t > 20000 || location.hash || !k.y) return;
-    const put = () => scrollTo({ top: k.y, behavior: 'instant' });
-    put();
-    addEventListener('load', put, { once: true });
-  } catch { /* ignore */ }
 }
 
 // In-page links (#contact, /#work and so on): scroll to the section without reloading, also when the address is

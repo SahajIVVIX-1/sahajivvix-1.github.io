@@ -28,10 +28,11 @@ const BUILD_SHA = (() => {
 // Minifier is deliberately simple: the sources use explicit semicolons and no '//' inside strings.
 const minify = (s) => s.replace(/\/\*[\s\S]*?\*\//g, '').replace(/^\s*\/\/.*$/gm, '').replace(/\s*\n\s*/g, ' ').replace(/ {2,}/g, ' ').trim();
 const BOOT_CSS = minify(readText('scripts/boot/boot.css'));
+const BOOT_FRESH = minify(readText('scripts/boot/fresh.js'));
 const BOOT_HEAD = minify(readText('scripts/boot/head.js'));
 const BOOT_JS = minify(readText('scripts/boot/boot.js'));
 // The minifier is deliberately simple (it only strips whole-line // comments). Refuse to build if it ever breaks a script.
-for (const [name, code] of [['head.js', BOOT_HEAD], ['boot.js', BOOT_JS]]) {
+for (const [name, code] of [['fresh.js', BOOT_FRESH], ['head.js', BOOT_HEAD], ['boot.js', BOOT_JS]]) {
   try { new Function(code); } catch (e) { throw new Error(`scripts/boot/${name} is not valid JavaScript after minifying (${e.message}). Put comments on their own line.`); }
 }
 const bootHtml = () => `<div id="boot-live" class="bs" role="status" aria-live="polite"></div><div id="boot" aria-hidden="true"><div class="boot-box"><p class="boot-cap" id="boot-cap"><span>forward pass · layer 1/5 · 0%</span><span>τ 0.7 · weights seeded per visitor</span></p><p class="boot-feat" id="boot-feat"></p><div class="boot-stage"><canvas id="boot-cv"></canvas></div><p class="boot-greet" id="boot-greet"></p><div class="boot-bottom"><ul id="boot-log"></ul><div class="boot-mat"><canvas id="boot-mat"></canvas><p>attention · head 3</p></div></div><p class="boot-hint"><span>heuristic guess · computed in your browser; only your public IP is looked up</span><span>click or press any key to skip</span></p></div></div><script>${BOOT_JS.replace('__V__', ASSET_VERSION)}</script>`;
@@ -96,6 +97,7 @@ function head({ title, description, url, image = '/assets/img/og.png', type = 'w
 <link rel="preload" href="/assets/fonts/instrument-serif-latin-400-italic.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="/assets/fonts/anthropic-serif/anthropic-serif-text-500-italic.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="/assets/fonts/inter-tight-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin>
+<script>${BOOT_FRESH}</script>
 <script>${THEME_BOOT}</script>
 <style>${BOOT_CSS}</style>
 <script>${BOOT_HEAD}</script>

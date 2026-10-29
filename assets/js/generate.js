@@ -23,6 +23,7 @@ const rand = (a, b) => a + Math.random() * (b - a);
 export function shouldGenerate({ reducedMotion } = {}) {
   if (reducedMotion) return false;
   const params = new URLSearchParams(location.search);
+  if (params.has('noreplay')) return false;
   if (params.has('replay')) return true;
   try { return !localStorage.getItem(SEEN); } catch { return false; }
 }
