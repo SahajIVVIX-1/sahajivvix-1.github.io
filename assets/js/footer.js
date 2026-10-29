@@ -10,8 +10,24 @@ export function initFooter({ reducedMotion = false } = {}) {
   const foot = document.querySelector('[data-foot]');
   if (!foot) return;
   clock(foot);
+  liveAgo();
   build(foot);
   foot.querySelector('[data-to-top]')?.addEventListener('click', () => scrollTo({ top: 0, behavior: reducedMotion ? 'auto' : 'smooth' }));
+}
+
+// Any [data-live-ago] time (the training log) reads "N min ago" and keeps ticking, like the footer clock.
+function liveAgo() {
+  const els = [...document.querySelectorAll('[data-live-ago]')];
+  if (!els.length) return;
+  const tick = () => els.forEach((el) => {
+    const at = Date.parse(el.getAttribute('datetime'));
+    if (isNaN(at)) return;
+    const m = Math.max(0, Math.floor((Date.now() - at) / 60000));
+    el.textContent = m < 1 ? 'just now' : m < 60 ? `${m} min ago` : m < 1440 ? `${Math.floor(m / 60)} h ago` : `${Math.floor(m / 1440)} d ago`;
+    el.title = new Date(at).toLocaleString();
+  });
+  tick();
+  setInterval(() => { if (!document.hidden) tick(); }, 30000);
 }
 
 function clock(foot) {
