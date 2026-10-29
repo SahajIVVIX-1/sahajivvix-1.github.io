@@ -97,7 +97,8 @@ const coverage = (q, d) => { if (!q.length) return 0; const s = new Set(d); retu
 
 // Keep the 2–3 sentences of a passage that share the most words with the question.
 function extract(text, qt) {
-  const sents = text.match(/[^.!?]+[.!?]+(\s|$)/g) || [text];
+  // a stop counts only before a space, so "8.5" and "B.Tech" stay whole
+  const sents = text.split(/(?<=[.!?])\s+/);
   if (sents.length <= 3) return text.trim();
   const q = new Set(qt);
   const scored = sents.map((s, i) => ({ s, i, k: tok(s).filter((w) => q.has(w)).length }));
