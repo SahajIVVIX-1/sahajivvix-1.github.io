@@ -1054,3 +1054,20 @@ html.is-copy .site-head { top: var(--copy-h, 44px); }
 .critic-bubble { position: fixed; z-index: 84; max-width: min(240px, calc(100vw - 32px)); padding: 6px 10px; border-radius: 10px 10px 10px 2px; background: var(--m0); color: var(--paper); font-size: 11px; line-height: 1.35; pointer-events: none; opacity: 0; transform: translateY(6px); transition: opacity .35s, transform .35s var(--ease-out); }
 .critic-bubble.is-in { opacity: 1; transform: none; }
 @media print { .agent-cursor, .agents-chip, .agents-panel, .critic-bubble { display: none !important; } }
+
+/* ---------- nothing animates in before its animation (fresh.js sets gen-pending before first paint) ---------- */
+.gen-pending main > section:not(#top), .gen-pending .site-foot { visibility: hidden; animation: genFallback 0s 6s forwards; }
+@keyframes genFallback { to { visibility: visible; } }
+/* the Guinness badge: hidden (space kept) until badge.js starts it; shown anyway if the script fails */
+.js .hero-badge:not(.is-ready) { visibility: hidden; animation: genFallback 0s 9s forwards; }
+@media (prefers-reduced-motion: reduce) { .js .hero-badge:not(.is-ready) { animation-delay: 1.5s; } .gen-pending main > section:not(#top), .gen-pending .site-foot { visibility: visible; } }
+
+/* ---------- chat: a tiny transformer that lights the block the bot is using (ask.js) ---------- */
+.ask-tx { display: flex; align-items: center; gap: 4px; padding: 8px 18px 0; color: var(--ink-3); font-size: 10.5px; white-space: nowrap; overflow: hidden; }
+.ask-tx span { padding: 2px 7px; border-radius: 6px; border: 1px solid var(--rule); transition: background .25s, color .25s, border-color .25s; }
+.ask-tx i { flex: 0 0 10px; height: 1px; background: var(--rule-2); }
+.ask-tx[data-stage="attn"] [data-b="attn"], .ask-tx[data-stage="ffn"] [data-b="ffn"], .ask-tx[data-stage="softmax"] [data-b="softmax"] { background: var(--accent-soft); border-color: var(--accent); color: var(--accent); }
+.ask-tx[data-stage="attn"] [data-b="attn"] { animation: txPulse 1s ease-in-out infinite; }
+@keyframes txPulse { 50% { background: transparent; } }
+@media (max-width: 380px) { .ask-tx { font-size: 10px; padding-inline: 12px; } }
+@media (prefers-reduced-motion: reduce) { .ask-tx span { animation: none !important; } }
