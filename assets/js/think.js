@@ -46,9 +46,14 @@ export function initThink() {
   const gate = () => (paused() ? new Promise((r) => waiters.push(r)) : Promise.resolve());
   // Sleeps for `ms` of ACTIVE time: the clock stops while paused. It counts real elapsed time, so timer
   // drift never makes a verb stay longer than asked.
-  async function sleep(ms) {
+  // A 'think:swap' event (the designer agent, agents.js) ends the current verb's hold early.
+  let swap = false;
+  document.addEventListener('think:swap', () => { swap = true; });
+  async function sleep(ms, skippable = false) {
     let left = ms;
+    if (skippable) swap = false;
     while (left > 0) {
+      if (skippable && swap) { swap = false; return; }
       await gate();
       const t = performance.now();
       await new Promise((r) => setTimeout(r, Math.min(left, 100)));
@@ -149,7 +154,7 @@ export function initThink() {
       await stream(verb);
       caret.classList.add('is-waiting');
       const hold = rnd(...HOLD_MS);
-      await sleep(Math.max(500, hold - 700));
+      await sleep(Math.max(500, hold - 700), true);
       renderNext(true);                 // the sampled winner lights up shortly before the switch
       await sleep(700);
       await fadeOut();

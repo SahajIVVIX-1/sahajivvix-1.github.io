@@ -83,24 +83,8 @@ function apply(p, { first = false } = {}) {
     : cards.slice().sort((a, b) => Number(a.dataset.defaultIndex) - Number(b.dataset.defaultIndex));
   for (const c of sorted) work.append(c);
 
-  // 3. Renumber layers so the rail and tags always read 1..12 in page order.
-  const layers = [...main.querySelectorAll('.layer[data-layer]')];
-  let k = 0;
-  layers.forEach((layer, i) => {
-    const n = i + 1;
-    layer.dataset.layer = String(n);
-    const tag = layer.querySelector('.layer-tag[data-lt]');
-    if (tag) tag.textContent = `Layer ${pad(n)} · ${tag.dataset.lt}`;
-    if (layer.classList.contains('card')) {
-      k++;
-      layer.dataset.layerName = `Head ${k} · ${layer.querySelector('.card-title').textContent}`;
-      const ci = layer.querySelector('[data-ci]');
-      if (ci) ci.textContent = pad(k);
-    }
-  });
-  const nums = sorted.map((c) => Number(c.dataset.layer));
-  const rangeTag = work.querySelector('.layer-tag[data-lt-range]');
-  if (rangeTag && nums.length) rangeTag.textContent = `Layers ${pad(Math.min(...nums))}–${pad(Math.max(...nums))} · ${rangeTag.dataset.ltRange}`;
+  renumberLayers();
+
 
   // 4. Hero button and the "personalised for" line.
   const cta = document.querySelector('[data-persona-cta]');
@@ -123,6 +107,30 @@ function apply(p, { first = false } = {}) {
     line.querySelector('.seg-resume')?.classList.toggle('is-primary', p === 'recruiter');
   }
   document.dispatchEvent(new CustomEvent('persona:change', { detail: { persona: p } }));
+}
+
+// Renumbers layers so the rail and tags always read 1..12 in page order (also after an agent swaps two cards).
+export function renumberLayers() {
+  const main = document.querySelector('main');
+  const work = document.getElementById('work');
+  if (!main || !work) return;
+  const layers = [...main.querySelectorAll('.layer[data-layer]')];
+  let k = 0;
+  layers.forEach((layer, i) => {
+    const n = i + 1;
+    layer.dataset.layer = String(n);
+    const tag = layer.querySelector('.layer-tag[data-lt]');
+    if (tag) tag.textContent = `Layer ${pad(n)} · ${tag.dataset.lt}`;
+    if (layer.classList.contains('card')) {
+      k++;
+      layer.dataset.layerName = `Head ${k} · ${layer.querySelector('.card-title').textContent}`;
+      const ci = layer.querySelector('[data-ci]');
+      if (ci) ci.textContent = pad(k);
+    }
+  });
+  const nums = [...work.querySelectorAll(':scope > .card')].map((c) => Number(c.dataset.layer));
+  const rangeTag = work.querySelector('.layer-tag[data-lt-range]');
+  if (rangeTag && nums.length) rangeTag.textContent = `Layers ${pad(Math.min(...nums))}–${pad(Math.max(...nums))} · ${rangeTag.dataset.ltRange}`;
 }
 
 function wireSwitch() {
