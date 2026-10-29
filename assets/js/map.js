@@ -51,7 +51,7 @@ export async function initMap(root, { lowPower = false, reducedMotion = false } 
   let tp = 0;                 // training progress 0..1
   let tpForced = null;        // used by tests to freeze a state
   let trainedOnce = false;
-  let hoverI = -1, selI = -1, focusC = -1;
+  let hoverI = -1, selI = -1, focusC = -1, focusPrev = -1, focusMix = 1;
   let Q = null;               // { text, pos:[x,y], hits:[{i, sim}], mode }
   let dim = 0, dimTarget = 0;
   let running = false, visible = false, viewVersion = 0, labelVersion = -1, labelsPlaced = false;
@@ -131,6 +131,9 @@ export async function initMap(root, { lowPower = false, reducedMotion = false } 
   function frame(now) {
     if (!running) return;
     driveTraining(now);
+    viewAnim?.(now);
+    focusMix += (1 - focusMix) * (reducedMotion ? 1 : 0.16);
+    if (focusMix > 0.995) focusMix = 1;
     const epoch = layoutAt(clamp(tp, 0, 1));
     // screen positions (with a little idle "breathing" once trained)
     const br = tp >= 0.999 && !reducedMotion ? 1 : 0;
@@ -177,7 +180,8 @@ export async function initMap(root, { lowPower = false, reducedMotion = false } 
         if (x < -10 || y < -10 || x > W + 10 || y > H + 10) continue;
         let a = 0.88;
         if (hitSet) a = hitSet.has(i) ? 1 : 1 - dim * 0.85;
-        if (focusC >= 0 && P[i].c !== focusC) a *= 0.22;
+        const fNow = focusC >= 0 && P[i].c !== focusC ? 0.22 : 1, fWas = focusPrev >= 0 && P[i].c !== focusPrev ? 0.22 : 1;
+        a *= fWas + (fNow - fWas) * focusMix;
         const col = colors.m[P[i].c % 5];
         if (isProj.has(i)) {
           g.globalAlpha = a;
@@ -213,7 +217,7 @@ export async function initMap(root, { lowPower = false, reducedMotion = false } 
     updateLabels();
     updateNodes();
     if (cardFor >= 0) positionCard();
-    if (visible && (tp < 1 || timeAnim || !reducedMotion || Math.abs(dimTarget - dim) > 0.005 || tpForced !== null)) requestAnimationFrame(frame); else running = false;
+    if (visible && (tp < 1 || timeAnim || viewAnim || focusMix < 1 || !reducedMotion || Math.abs(dimTarget - dim) > 0.005 || tpForced !== null)) requestAnimationFrame(frame); else running = false;
   }
   // Draws a frame soon. While the map is on screen the loop keeps running; off screen it draws once and stops.
   function kick() { if (running) return; running = true; requestAnimationFrame(frame); }
@@ -244,6 +248,7 @@ export async function initMap(root, { lowPower = false, reducedMotion = false } 
   legendEl.addEventListener('click', (e) => {
     const b = e.target.closest('button'); if (!b) return;
     const c = Number(b.dataset.c);
+    focusPrev = focusC; focusMix = 0;
     focusC = focusC === c ? -1 : c;
     legendEl.querySelectorAll('button').forEach((x) => x.classList.toggle('is-on', Number(x.dataset.c) === focusC));
     kick();
@@ -392,12 +397,23 @@ export async function initMap(root, { lowPower = false, reducedMotion = false } 
   stage.addEventListener('dblclick', () => resetView());
 
   // zoom: Ctrl/Cmd + wheel (and trackpad pinch), touch pinch, and buttons. A plain wheel always scrolls the page.
-  function zoomAt(mx, my, factor) {
-    const nz = clamp(zoom * factor, 0.6, 4), k = nz / zoom;
-    panX = (mx - W / 2) - ((mx - W / 2) - panX) * k; panY = (my - H / 2) - ((my - H / 2) - panY) * k;
-    zoom = nz; viewVersion++; kick(); relayoutSoon();
+  // Button zoom and reset ease over 300 ms; wheel and pinch stay direct (they are already continuous).
+  let viewAnim = null;
+  function viewTo(z, px, py, ms) {
+    if (reducedMotion || !ms) { viewAnim = null; zoom = z; panX = px; panY = py; viewVersion++; kick(); relayoutSoon(); return; }
+    const z0 = zoom, x0 = panX, y0 = panY, t0 = performance.now();
+    viewAnim = (now) => {
+      const u = clamp((now - t0) / ms, 0, 1), e = 1 - (1 - u) ** 3;
+      zoom = z0 + (z - z0) * e; panX = x0 + (px - x0) * e; panY = y0 + (py - y0) * e; viewVersion++;
+      if (u >= 1) { viewAnim = null; relayoutSoon(); }
+    };
+    kick();
   }
-  function resetView() { zoom = 1; panX = 0; panY = 0; viewVersion++; kick(); relayoutSoon(); }
+  function zoomAt(mx, my, factor, ms = 0) {
+    const nz = clamp(zoom * factor, 0.6, 4), k = nz / zoom;
+    viewTo(nz, (mx - W / 2) - ((mx - W / 2) - panX) * k, (my - H / 2) - ((my - H / 2) - panY) * k, ms);
+  }
+  function resetView() { viewTo(1, 0, 0, 300); }
   stage.addEventListener('wheel', (e) => {
     if (!(e.ctrlKey || e.metaKey)) return;
     e.preventDefault();
@@ -406,7 +422,7 @@ export async function initMap(root, { lowPower = false, reducedMotion = false } 
   }, { passive: false });
   stage.querySelector('.map-zoom').addEventListener('click', (e) => {
     const b = e.target.closest('button'); if (!b) return;
-    if (b.dataset.z === 'in') zoomAt(W / 2, H / 2, 1.35); else if (b.dataset.z === 'out') zoomAt(W / 2, H / 2, 1 / 1.35); else resetView();
+    if (b.dataset.z === 'in') zoomAt(W / 2, H / 2, 1.35, 300); else if (b.dataset.z === 'out') zoomAt(W / 2, H / 2, 1 / 1.35, 300); else resetView();
   });
 
   /* ---------- ask the map: semantic search you can see ---------- */

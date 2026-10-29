@@ -13,7 +13,8 @@ export function initHero() {
   const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
   const total = gens.reduce((n, g) => n + JSON.parse(g.dataset.gen).length, 0);
 
-  if (reduced) {
+  // ?noreplay (testing) shows the finished hero at once, like reduced motion.
+  if (reduced || new URLSearchParams(location.search).has('noreplay')) {
     for (const g of gens) renderStatic(g);
     heroReady(total);
     return;

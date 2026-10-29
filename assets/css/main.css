@@ -661,11 +661,30 @@ body.is-leaving main, body.is-leaving .site-foot { animation: softmaxOut .35s va
 .persona-line { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 10px; margin-top: 18px; color: var(--ink-3); font-size: 11.5px; }
 .persona-line b { font-weight: 500; color: var(--ink-2); }
 .persona-switch { border: 0; background-color: transparent; padding: 10px 2px; margin: -10px 0; cursor: pointer; color: var(--ink-2); font: inherit; }
-.persona-menu { display: inline-flex; flex-wrap: wrap; gap: 6px; }
+/* The switch panel floats under the line (opening it never moves the hero) and slides/fades in. */
+.persona-line { position: relative; }
+.persona-menu { position: absolute; left: 0; top: calc(100% + 10px); z-index: 30; display: grid; gap: 10px; justify-items: start; padding: 10px; border-radius: 16px; border: 1px solid var(--rule-2); background: color-mix(in srgb, var(--paper) 94%, transparent); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); box-shadow: 0 18px 40px -22px rgba(0,0,0,.45); opacity: 0; transform: translateY(-6px) scale(.98); transform-origin: 0 0; transition: opacity .22s var(--ease-out), transform .22s var(--ease-out); max-width: calc(100vw - 2 * var(--gutter)); }
+.persona-menu.is-open { opacity: 1; transform: none; }
 .persona-menu[hidden] { display: none; }
-.persona-menu button { min-height: 32px; padding: 0 12px; border-radius: 999px; border: 1px solid var(--rule-2); background: transparent; color: var(--ink-2); cursor: pointer; font: inherit; }
-.persona-menu button:hover { border-color: var(--accent); color: var(--accent); }
-.persona-menu button[aria-pressed="true"] { border-color: var(--accent); background: var(--accent-soft); color: var(--ink); }
+.seg { position: relative; display: inline-flex; flex-wrap: wrap; padding: 3px; border-radius: 999px; background: var(--paper-2); border: 1px solid var(--rule); }
+.seg-pill { position: absolute; left: 0; top: 3px; bottom: 3px; width: 0; border-radius: 999px; background: var(--ink); transition: transform .25s var(--ease-out), width .25s var(--ease-out); pointer-events: none; }
+.seg button { position: relative; z-index: 1; min-height: 34px; padding: 0 13px; border: 0; border-radius: 999px; background: transparent; color: var(--ink-2); cursor: pointer; font: inherit; transition: color .2s; }
+.seg button:hover { color: var(--ink); }
+.seg button[aria-pressed="true"] { color: var(--paper); }
+.seg button:focus-visible, .seg-resume:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.seg-resume { display: inline-flex; align-items: center; min-height: 36px; padding: 0 14px; border-radius: 999px; border: 1px solid var(--rule-2); color: var(--ink); text-decoration: none; transition: background .2s, color .2s, border-color .2s; }
+.seg-resume:hover { border-color: var(--accent); color: var(--accent); }
+.seg-resume.is-primary { background: var(--accent); border-color: var(--accent); color: var(--accent-ink); }
+.seg-resume.is-primary:hover { color: var(--accent-ink); filter: brightness(1.06); }
+[data-resume].is-compiling { cursor: progress; }
+[data-resume-label], .cta2 { white-space: nowrap; }
+@media (max-width: 420px) { .seg button { padding: 0 10px; } }
+/* regenerated text (motion.js retoken) and view transitions */
+.rt-tok { display: inline; opacity: 0; animation: rtIn .28s var(--ease-out) forwards; }
+@keyframes rtIn { from { opacity: 0; filter: blur(3px); } to { opacity: 1; filter: none; } }
+::view-transition-group(*) { animation-duration: var(--vt-ms, 400ms); animation-timing-function: cubic-bezier(.16, 1, .3, 1); }
+::view-transition-old(*), ::view-transition-new(*) { animation-duration: var(--vt-ms, 400ms); }
+@media (prefers-reduced-motion: reduce) { .persona-menu, .seg-pill { transition-duration: .15s; } .rt-tok { animation: none; opacity: 1; } }
 
 /* Off-screen sections are not rendered until they are near the viewport: this cuts the first layout of the
    page (the boot screen needs it early) a lot. The map section is left out because its canvas needs a real size. */
