@@ -134,6 +134,9 @@ function header({ home = false } = {}) {
     <button class="kbd-btn" type="button" data-palette-open>
       <span class="mono">Search or ask</span><kbd>Ctrl K</kbd>
     </button>
+    ${home ? `<button class="lens-btn mono" type="button" data-lens aria-pressed="false" title="Lens: point at any word to see which parts of the page it attends to">
+      <svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true" focusable="false"><circle cx="6.8" cy="6.8" r="4.6"/><path d="M10.2 10.2 14 14"/><circle class="lens-pupil" cx="6.8" cy="6.8" r="1.6"/></svg><span>lens</span>
+    </button>` : ''}
     <button class="temp" type="button" data-theme-toggle aria-label="temp auto, theme follow system. Click to change.">
       <span class="temp-label mono">temp</span>
       <span class="temp-track" aria-hidden="true"><span class="temp-knob"></span></span>
@@ -379,7 +382,7 @@ function skillsSection() {
     <h2 id="skills-h" class="layer-title">The weights I <em>reach for</em>.</h2>
   </header>
   <div class="skill-groups" data-attend>
-    ${profile.skills.map((g) => `<div class="skill-group">
+    ${profile.skills.map((g) => `<div class="skill-group" id="s-${slug(g.group)}">
       <h3 class="mono sg-name">${esc(g.group)}</h3>
       <ul class="sg-items">${g.items.map((s) => `<li><span class="w mono" aria-hidden="true">w${String(n++).padStart(2, '0')}</span><span class="sk">${esc(s)}</span></li>`).join('')}</ul>
     </div>`).join('\n    ')}

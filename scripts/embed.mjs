@@ -2,6 +2,7 @@
 //   data/kb.json          chatbot knowledge base (chunks + int8 vectors)
 //   data/qa-bank.json     200+ grounded question/answer pairs (+ int8 question vectors)
 //   data/attention.json   word -> most related words on the page (cosine similarity)
+//   data/lens.json        word -> the parts of the page it relates to most, and part -> part (the Lens)
 //   data/heatmaps.json    per-project self-attention over key README tokens
 //   data/map.json + map-vectors.json  real chunks, t-SNE keyframes, clusters (scripts/map.mjs)
 // Skips the work when no input changed since the last run (hash in data/meta.json).
@@ -24,9 +25,9 @@ export async function embedAll({ force = process.argv.includes('--force') } = {}
 
   // GitHub timestamps change hourly but do not change meaning; hash only the stable parts.
   const ghStable = { user: github.user, languages: github.languages, repos: github.repos.map(({ pushed_at, ...r }) => r) };
-  const hash = createHash('sha256').update(JSON.stringify([profile, projects, aboutMd, allReadmes, readText('content/map-clusters.json'), ghStable, posts, 5])).digest('hex').slice(0, 16);
+  const hash = createHash('sha256').update(JSON.stringify([profile, projects, aboutMd, allReadmes, readText('content/map-clusters.json'), ghStable, posts, 6])).digest('hex').slice(0, 16);
   const meta = readJSON('data/meta.json', {});
-  if (!force && meta.hash === hash && existsSync(path('data/kb.json'))) {
+  if (!force && meta.hash === hash && existsSync(path('data/kb.json')) && existsSync(path('data/lens.json'))) {
     console.log('embed: inputs unchanged, skipping');
     return;
   }
@@ -88,6 +89,41 @@ export async function embedAll({ force = process.argv.includes('--force') } = {}
   }
   write('data/attention.json', attention);
   console.log(`embed: attention over ${vocab.length} words, ${Object.keys(attention).length} with links`);
+
+  // ---------- 3b. the Lens: which parts of the page each word attends to ----------
+  // A part is a block on the page with an id (about, each project, role, skill group, ...). Its vector is the mean of
+  // its sentences' vectors. word -> part = 0.75 cosine + 0.25 if the part uses the word itself; part -> part = cosine.
+  const parts = [
+    { id: 'about', label: 'About', text: profile.about.join(' ') },
+    ...projects.map((p) => ({ id: `p-${p.id}`, label: p.name, text: [p.name, p.problem, p.approach, p.limits, p.stack.join(', ')].join('. ') })),
+    ...profile.skills.map((g) => ({ id: `s-${slug(g.group)}`, label: `${g.group} skills`, text: `${g.group}: ${g.items.join(', ')}` })),
+    ...profile.experience.map((r) => ({ id: `x-${r.id}`, label: r.role, text: [`${r.role} at ${r.org}`, ...r.points, (r.tags || []).join(', ')].join('. ') })),
+    { id: 'community', label: 'Community', text: profile.community.map((c) => `${c.role}, ${c.org}`).join('. ') },
+    { id: 'certs', label: 'Certifications', text: profile.certifications.map((c) => `${c.name} (${c.issuer})`).join('. ') },
+  ].map((p) => ({ ...p, text: p.text.replace(/\*/g, '') }));
+  const partVecs = [];
+  for (const p of parts) {
+    const sv = await embed(p.text.split(/(?<=[.!?;:])\s+/).filter((s) => s.trim().length > 3));
+    const m = new Array(DIM).fill(0);
+    for (const v of sv) for (let i = 0; i < DIM; i++) m[i] += v[i];
+    const n = Math.hypot(...m) || 1;
+    partVecs.push(m.map((x) => x / n));
+  }
+  const partWords = parts.map((p) => new Set(tokenizeWords(p.text)));
+  // Every content word of the parts, not only the attention vocabulary (which drops rare words).
+  const extra = [...new Set(partWords.flatMap((s) => [...s]))].filter((w) => w.length > 2 && !STOP.has(w) && !/^\d/.test(w) && !vocab.includes(w));
+  const lensVocab = [...vocab, ...extra];
+  const lensVecs = [...vocabVecs, ...(await embed(extra))];
+  const lensWords = {};
+  lensVocab.forEach((w, i) => {
+    const s = parts.map((p, j) => [j, 0.75 * dot(lensVecs[i], partVecs[j]) + (partWords[j].has(w) ? 0.25 : 0)])
+      .filter(([, x]) => x > 0.3).sort((a, b) => b[1] - a[1]).slice(0, 4);
+    if (s.length) lensWords[w] = s.map(([j, x]) => [j, +x.toFixed(2)]);
+  });
+  const near = parts.map((_, i) => parts.map((__, j) => [j, dot(partVecs[i], partVecs[j])]).filter(([j]) => j !== i)
+    .sort((a, b) => b[1] - a[1]).slice(0, 3).map(([j, x]) => [j, +x.toFixed(2)]));
+  write('data/lens.json', { parts: parts.map(({ id, label }) => ({ id, label })), near, words: lensWords });
+  console.log(`embed: lens over ${parts.length} parts, ${Object.keys(lensWords).length} words`);
 
   // ---------- 4. README self-attention heatmaps ----------
   const docs = projects.map((p) => readmeWords(readmes[p.repo] || p.approach));

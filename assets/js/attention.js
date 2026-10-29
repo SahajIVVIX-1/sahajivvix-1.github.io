@@ -51,7 +51,8 @@ export async function initAttention({ lowPower = false } = {}) {
 
   document.addEventListener('pointerover', (e) => {
     const tok = e.target.closest?.('.w-tok.has-attn');
-    if (!tok || tok === active) return;
+    // the Lens draws its own lines while it is on
+    if (!tok || tok === active || document.documentElement.classList.contains('lens-on')) return;
     clearTimeout(timer);
     timer = setTimeout(() => show(tok), 110); // a short dwell so a passing cursor does not spray lines
   });
