@@ -10,7 +10,7 @@ import { initGwr } from './gwr.js';
 import { initBadge } from './badge.js';
 import { initFooter } from './footer.js';
 import { initBrand } from './brand.js';
-import { initCnn } from './cnn.js';
+import { initTiles } from './tiles.js';
 import { checkOrigin } from './origin.js';
 import { initResume } from './resume.js';
 
@@ -34,7 +34,7 @@ initBadge({ reducedMotion });
 document.documentElement.classList.add('hero-laid');
 initFooter({ reducedMotion, lowPower });
 initBrand({ reducedMotion });
-initCnn({ reducedMotion });
+initTiles({ reducedMotion, lowPower });
 initLoss();
 initHeader();
 initResume();

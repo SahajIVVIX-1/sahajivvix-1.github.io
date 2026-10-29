@@ -54,8 +54,7 @@ export function initGenerate({ reducedMotion = false, lowPower = false } = {}) {
     if (toks.length) jobs.push(textJob(el, toks, lowPower));
   }
   for (const el of q(NUMBERS, main)) if (outside(el) && !inMap(el)) jobs.push(numberJob(el));
-  const portrait = main.querySelector('.portrait-frame img');
-  if (portrait) jobs.push(imageJob(portrait));
+  // the portrait builds itself from flip tiles (tiles.js), so it is not denoised here
   for (const el of q('.lang-bar', main)) jobs.push(barJob(el));
   for (const el of q(BOXES, main)) if (outside(el) && !inMap(el)) jobs.push(boxJob(el));
   if (!jobs.length) return;

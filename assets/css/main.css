@@ -273,8 +273,11 @@ main { position: relative; z-index: 1; }
 .portrait-frame { position: relative; aspect-ratio: 4 / 5; border-radius: 20px; overflow: hidden; border: 1px solid var(--rule-2); background: var(--paper-2); isolation: isolate; }
 .portrait-frame picture { display: block; width: 100%; height: 100%; }
 .portrait-frame img { display: block; width: 100%; height: 100%; object-fit: cover; object-position: 50% 38%; filter: grayscale(.12) contrast(1.02); }
-.cnn-cv { position: absolute; inset: 0; width: 100%; height: 100%; opacity: 0; pointer-events: none; transition: opacity .3s; }
-.portrait figcaption { margin-top: 14px; color: var(--ink-3); font-size: 11px; line-height: 1.4; min-height: 1.4em; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+/* flip tiles (tiles.js): the canvas covers the real <img>, which keeps its alt text; before the canvas is ready the
+   photo is held back (no flash of the finished picture), and shown anyway after 3 s if the script fails */
+.tiles-cv { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; }
+.js .portrait-frame[data-tiles]:not(.tiles-on):not(.tiles-off) img { opacity: 0; animation: tilesFallback 0s 3s forwards; }
+@keyframes tilesFallback { to { opacity: 1; } }
 .about-text { display: grid; gap: 18px; max-width: 60ch; }
 .about-text .lead { font-size: clamp(1.25rem, 2.2vw, 1.6rem); line-height: 1.38; letter-spacing: -.015em; }
 .about-text p:not(.lead) { color: var(--ink-2); }
