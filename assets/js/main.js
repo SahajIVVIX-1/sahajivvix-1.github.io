@@ -118,6 +118,7 @@ function initLazy() {
   document.addEventListener('click', (e) => {
     if (e.target.closest('[data-ask-open]')) { e.preventDefault(); window.__ask(); }
     if (e.target.closest('[data-palette-open]')) { e.preventDefault(); window.__palette(); }
+    if (e.target.closest('[data-lens]')) import('./lens.js').then((m) => m.toggleLens());
   });
   addEventListener('keydown', (e) => {
     if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'k') { e.preventDefault(); window.__palette(); }

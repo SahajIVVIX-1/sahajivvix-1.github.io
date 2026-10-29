@@ -1152,3 +1152,60 @@ html.is-copy .site-head { top: var(--copy-h, 44px); }
 .tl-langs b { color: var(--ink-2); font-weight: 500; }
 @media (max-width: 560px) { .tl-chart figcaption span:nth-child(2) { display: none; } .tl-pushes li { grid-template-columns: minmax(0, 1fr) auto; } .tl-pushes time { display: none; } }
 @media (prefers-reduced-motion: reduce) { .tl-dot { animation: none; } }
+
+/* ---------- the Lens (assets/js/lens.js) ---------- */
+.lens-btn {
+  display: inline-flex; align-items: center; gap: 6px; min-height: 36px; min-width: 44px; padding: 0 11px;
+  border: 1px solid var(--rule-2); border-radius: 999px; background: transparent; cursor: pointer; color: var(--ink-2); font-size: 11px;
+  transition: color .2s, border-color .2s, background .3s var(--ease-out);
+}
+.lens-btn:hover { color: var(--ink); border-color: var(--ink-3); }
+.lens-btn svg { fill: none; stroke: currentColor; stroke-width: 1.5; stroke-linecap: round; transition: transform .45s var(--ease-out); }
+.lens-btn .lens-pupil { fill: currentColor; stroke: none; transform-origin: 6.8px 6.8px; transform: scale(0); transition: transform .35s var(--ease-out); }
+.lens-btn[aria-pressed="true"] { color: var(--accent); border-color: var(--accent-line); background: var(--accent-soft); }
+.lens-btn[aria-pressed="true"] svg { transform: rotate(-20deg); }
+.lens-btn[aria-pressed="true"] .lens-pupil { transform: scale(1); }
+.lens-btn.is-loading .lens-pupil { transform: scale(.6); animation: lensPulse .8s ease-in-out infinite alternate; }
+@keyframes lensPulse { from { opacity: .3; } to { opacity: 1; } }
+@media (max-width: 420px) { .lens-btn span { display: none; } .lens-btn { padding: 0 10px; } }
+
+.lens-layer { position: fixed; inset: 0; z-index: 46; pointer-events: none; opacity: 0; transition: opacity .3s var(--ease-out); }
+.lens-on .lens-layer { opacity: 1; }
+.lens-layer svg { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; }
+.lens-layer path { fill: none; stroke: var(--accent); stroke-linecap: round; filter: drop-shadow(var(--glow)); }
+.lens-layer path.draw { stroke-dasharray: var(--len); stroke-dashoffset: var(--len); animation: drawLine .55s var(--ease-out) forwards; }
+.lens-q { fill: var(--accent-soft); stroke: var(--accent-line); stroke-width: 1; }
+.lens-dot, .lens-end { fill: var(--accent); }
+.lens-label { font: 500 10.5px var(--mono); fill: var(--accent); paint-order: stroke; stroke: var(--paper); stroke-width: 3px; stroke-linejoin: round; }
+.lens-tags { position: absolute; inset: 0; }
+.lens-tag {
+  position: absolute; left: 0; top: 0; display: inline-flex; align-items: center; gap: 5px; min-height: 30px; padding: 0 11px;
+  border-radius: 999px; border: 1px solid var(--accent-line); background: color-mix(in srgb, var(--paper) 92%, transparent);
+  backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); color: var(--ink-2); font-size: 11px; white-space: nowrap; cursor: pointer;
+  pointer-events: auto; opacity: calc(.55 + .45 * var(--la, 1)); animation: lensIn .3s var(--ease-out);
+}
+.lens-tag:hover { color: var(--ink); opacity: 1; }
+.lens-tag b { color: var(--accent); font-weight: 500; }
+@keyframes lensIn { from { opacity: 0; } }
+.lens-hint {
+  position: absolute; left: 50%; bottom: max(70px, calc(env(safe-area-inset-bottom) + 70px)); transform: translateX(-50%); margin: 0; padding: 8px 14px;
+  border-radius: 999px; border: 1px solid var(--rule-2); background: color-mix(in srgb, var(--paper) 92%, transparent); color: var(--ink-2);
+  font-size: 11.5px; white-space: nowrap; animation: lensIn .4s var(--ease-out);
+}
+.lens-hint[hidden] { display: none; }
+.lens-layer .sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+
+/* the page while the lens is on: parts that take no part in the current word fade back; the attended ones get a faint outline */
+.lens-on main :is(#about, .card, .skill-group, .role, #community, #certs) { transition: opacity .35s var(--ease-out), box-shadow .35s var(--ease-out); }
+.lens-on main .lens-dim { opacity: .4; }
+.lens-on main .lens-hit { box-shadow: 0 0 0 1px color-mix(in srgb, var(--accent) calc(var(--la, 1) * 60%), transparent), 0 0 24px -8px color-mix(in srgb, var(--accent) calc(var(--la, 1) * 50%), transparent); border-radius: var(--radius); }
+.lens-on main { cursor: crosshair; }
+.lens-on main :is(a, button) { cursor: pointer; }
+@media (prefers-reduced-motion: reduce) {
+  .lens-layer, .lens-on main :is(#about, .card, .skill-group, .role, #community, #certs) { transition: none; }
+  .lens-tag, .lens-hint { animation: none; }
+}
+@media print { .lens-layer { display: none !important; } }
+.lens-tag { overflow: hidden; text-overflow: ellipsis; }
+/* the live agents step aside while the lens is on, so their cursors do not cross its lines */
+.lens-on :is(.agent-cursor, .agent-layer) { opacity: 0 !important; transition: opacity .3s; }
