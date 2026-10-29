@@ -48,12 +48,14 @@ export function initGenerate({ reducedMotion = false, lowPower = false } = {}) {
     for (const t of [...taken]) if (el.contains(t)) taken.delete(t);
     taken.add(el);
   }
-  for (const el of taken) {
-    if (el.matches(NUMBERS)) continue;
-    const toks = wrapTokens(el);
+  // all reads first, then all writes (see scanTokens)
+  const scans = [...taken].filter((el) => !el.matches(NUMBERS)).map((el) => [el, scanTokens(el)]);
+  const nums = q(NUMBERS, main).filter((el) => outside(el) && !inMap(el)).map((el) => [el, getComputedStyle(el).color]);
+  for (const [el, scanned] of scans) {
+    const toks = wrapTokens(el, scanned);
     if (toks.length) jobs.push(textJob(el, toks, lowPower));
   }
-  for (const el of q(NUMBERS, main)) if (outside(el) && !inMap(el)) jobs.push(numberJob(el));
+  for (const [el, color] of nums) jobs.push(numberJob(el, color));
   // the portrait builds itself from flip tiles (tiles.js), so it is not denoised here
   for (const el of q('.lang-bar', main)) jobs.push(barJob(el));
   for (const el of q(BOXES, main)) if (outside(el) && !inMap(el)) jobs.push(boxJob(el));
@@ -127,14 +129,21 @@ export function initGenerate({ reducedMotion = false, lowPower = false } = {}) {
 }
 
 // ---------- text ----------
-export function wrapTokens(el) {
-  const out = [];
+// Reads only: the text nodes of a block and whether each sits in a flex or grid parent. Kept apart from the writes
+// in wrapTokens so a whole page can be scanned first and wrapped after, with one style calculation instead of one
+// per text node.
+export function scanTokens(el) {
   const walker = document.createTreeWalker(el, NodeFilter.SHOW_TEXT, {
     acceptNode: (n) => (n.nodeValue.trim() && !n.parentElement.closest('.dist, script, style, svg') ? NodeFilter.FILTER_ACCEPT : NodeFilter.FILTER_REJECT),
   });
   const nodes = [];
   while (walker.nextNode()) nodes.push(walker.currentNode);
-  for (const n of nodes) {
+  return nodes.map((n) => ({ n, flex: /flex|grid/.test(getComputedStyle(n.parentElement).display) }));
+}
+
+export function wrapTokens(el, scanned = scanTokens(el)) {
+  const out = [];
+  for (const { n, flex } of scanned) {
     const frag = document.createDocumentFragment();
     for (const piece of n.nodeValue.match(/\s+|[A-Za-z0-9]{1,5}|[^\sA-Za-z0-9]/g) || []) {
       if (/^\s+$/.test(piece)) { frag.append(piece); continue; }
@@ -146,7 +155,7 @@ export function wrapTokens(el) {
     }
     // In a flex or grid parent every span would be its own item and get the gap between items ("Machi ne"):
     // the tokens of one text node go into a single inline run instead.
-    if (/flex|grid/.test(getComputedStyle(n.parentElement).display)) {
+    if (flex) {
       const run = document.createElement('span');
       run.className = 'gt-run';
       run.append(frag);
@@ -215,12 +224,12 @@ function peek(tok) {
 }
 
 // ---------- numbers ----------
-function numberJob(el) {
+function numberJob(el, color = getComputedStyle(el).color) {
   const final = el.textContent;
   const over = document.createElement('span');
   over.className = 'gn';
   over.setAttribute('aria-hidden', 'true');
-  over.style.color = getComputedStyle(el).color;
+  over.style.color = color;
   over.textContent = final.replace(/\d/g, '0');
   el.classList.add('gn-host');
   el.append(over);

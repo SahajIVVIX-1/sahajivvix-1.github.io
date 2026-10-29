@@ -1221,3 +1221,9 @@ html.plain .gen-pending main > section, html.plain .gen-pending .site-foot { vis
 .ctx-ip { display: block; margin-bottom: 4px; color: var(--ink); font-weight: 500; font-size: 12px; }
 .foot-show { padding: 0; border: 0; background: none; color: var(--ink-2); font: inherit; text-decoration: underline dotted; text-underline-offset: .2em; cursor: pointer; }
 .foot-show:hover { color: var(--accent); }
+
+/* Sections below the first screen are laid out and painted only when they come near the viewport (the page is
+   long; on a phone its first full layout took ~0.2 s). The browser remembers each one's real size once seen. */
+main > section:not(#top) { content-visibility: auto; contain-intrinsic-size: auto 1000px; }
+html.cv-off main > section:not(#top) { content-visibility: visible; }
+@media print { main > section { content-visibility: visible; } }

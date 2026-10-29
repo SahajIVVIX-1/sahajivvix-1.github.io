@@ -114,7 +114,7 @@ function header({ home = false } = {}) {
   ];
   return `<a class="skip" href="#main">Skip to content</a>
 <header class="site-head" data-head>
-  <a class="brand" href="/" aria-label="Sahaj Saliya, home" title="Sahaj Saliya, home" data-brand>
+  <a class="brand" href="/" aria-label="info@sahaj.si, Sahaj Saliya, home" title="Sahaj Saliya, home" data-brand>
     <svg class="brand-logo" viewBox="0 0 40 40" width="40" height="40" aria-hidden="true" focusable="false">
       <circle class="ring-track" cx="20" cy="20" r="19.25"/>
       <g transform="rotate(-90 20 20)"><circle class="ring-prog" cx="20" cy="20" r="19.25" pathLength="100"/></g>
@@ -128,7 +128,7 @@ function header({ home = false } = {}) {
   </nav>
   <div class="head-tools">
     <span class="ctx-wrap">
-      <button class="ctx-chip mono" type="button" data-ctx hidden aria-expanded="false" aria-controls="ctx-tip" aria-label="Context window: you and the layer in view. Show your address and the privacy note."><span class="ctx-k">ctx</span><span class="ctx-who" data-ctx-who>…</span><span class="ctx-layer" data-ctx-layer></span></button>
+      <button class="ctx-chip mono" type="button" data-ctx hidden aria-expanded="false" aria-controls="ctx-tip" aria-label="ctx, you and the layer in view: show your address and the privacy note"><span class="ctx-k">ctx</span><span class="ctx-who" data-ctx-who>…</span><span class="ctx-layer" data-ctx-layer></span></button>
       <span class="ctx-tip" id="ctx-tip" role="note" hidden>${PRIVACY}</span>
     </span>
     <button class="kbd-btn" type="button" data-palette-open>
