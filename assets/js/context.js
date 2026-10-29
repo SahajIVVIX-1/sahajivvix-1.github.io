@@ -1,8 +1,8 @@
 // The "context window": the address bar reads like the model's context. Once the visitor's IP is known (head.js,
 // api.ipify.org) it is written in token by token, as if generated: /?context=you@152.58.62.67 (or you@anonymous),
 // one history.replaceState per token, ~60 ms apart. While the visitor scrolls, &layer=NN follows the layer in view
-// (throttled, replaceState only: no history entries). The header chip shows the same: ctx · you@… · layer 03, and
-// clicking it shows the privacy note. A reload starts all of it again (fresh.js, head.js strip the old values).
+// (throttled, replaceState only: no history entries). The header chip shows only ctx · you · layer 03; clicking it
+// shows the address with the privacy note, so the IP is never on screen unasked. A reload starts all of it again (fresh.js, head.js strip the old values).
 const STEP = 60;
 const THROTTLE = 450;
 
@@ -47,7 +47,6 @@ export function initContext({ reducedMotion = false } = {}) {
       const eq = acc.indexOf('=');
       shown = eq < 0 ? '' : acc.slice(eq + 1);
       try { history.replaceState(history.state, '', eq < 0 ? url(null, 0, acc) : url(shown, 0)); } catch { /* ignore */ }
-      if (whoEl) whoEl.textContent = shown || '…';
       await new Promise((r) => setTimeout(r, STEP));
     }
     typed = true;
@@ -57,10 +56,11 @@ export function initContext({ reducedMotion = false } = {}) {
   // The IP lookup may still be running; the address is written once it settles (or fails: you@anonymous).
   (window.__ipPromise || Promise.resolve(null)).then((ip) => {
     const w = `you@${ip || 'anonymous'}`;
-    if (chip) { chip.hidden = false; if (whoEl) whoEl.textContent = '…'; }
+    if (chip) { chip.hidden = false; if (whoEl) whoEl.textContent = 'you'; }
+    if (tip) { const b = document.createElement('b'); b.className = 'ctx-ip mono'; b.textContent = ip ? `Your address: ${ip}.` : 'Your address could not be looked up.'; tip.prepend(b, ' '); }
     // after the loading screen, so the address is generated where the visitor can watch it
     let started = false;
-    const go = () => { if (started) return; started = true; typeIn(w).then(() => { if (whoEl) whoEl.textContent = w; }); };
+    const go = () => { if (started) return; started = true; typeIn(w); };
     if (document.documentElement.classList.contains('booting')) { document.addEventListener('boot:done', go, { once: true }); setTimeout(go, 7000); }
     else go();
   });

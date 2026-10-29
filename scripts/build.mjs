@@ -128,7 +128,7 @@ function header({ home = false } = {}) {
   </nav>
   <div class="head-tools">
     <span class="ctx-wrap">
-      <button class="ctx-chip mono" type="button" data-ctx hidden aria-expanded="false" aria-controls="ctx-tip" aria-label="Context window: your address and the layer in view. Show the privacy note."><span class="ctx-k">ctx</span><span class="ctx-who" data-ctx-who>…</span><span class="ctx-layer" data-ctx-layer></span></button>
+      <button class="ctx-chip mono" type="button" data-ctx hidden aria-expanded="false" aria-controls="ctx-tip" aria-label="Context window: you and the layer in view. Show your address and the privacy note."><span class="ctx-k">ctx</span><span class="ctx-who" data-ctx-who>…</span><span class="ctx-layer" data-ctx-layer></span></button>
       <span class="ctx-tip" id="ctx-tip" role="note" hidden>${PRIVACY}</span>
     </span>
     <button class="kbd-btn" type="button" data-palette-open>
@@ -155,7 +155,8 @@ function footer() {
   <p class="foot-copy-line">© ${new Date().getFullYear()} Sahaj Saliya</p>
   <nav class="foot-links" aria-label="Elsewhere">${profile.links.map(ext).join('')}<a class="foot-link" href="mailto:${profile.email}" aria-label="Email Sahaj Saliya">Email</a></nav>
   <p class="foot-card mono">${synced ? `last forward pass <time datetime="${synced.toISOString()}" title="${utc}" data-foot-time>${utc}</time> <span data-foot-ago></span>` : ''}${BUILD_SHA ? `<span class="foot-build" data-build="${BUILD_SHA}"> · build <a class="foot-link" href="${REPO}/commit/${BUILD_SHA}" target="_blank" rel="noopener" aria-label="build ${BUILD_SHA.slice(0, 7)}: source commit on GitHub (opens in a new tab)">${BUILD_SHA.slice(0, 7)}</a><span data-build-state aria-live="polite"></span></span>` : ''}<span data-session hidden> · ip <b></b> <button class="foot-i" type="button" aria-label="About the IP lookup" aria-describedby="ip-tip">i</button><span class="foot-tip" id="ip-tip" role="tooltip">${privacy}</span></span></p>
-  <button class="foot-top" type="button" data-to-top>↑ top</button>
+  <span class="foot-btns"><button class="foot-top" type="button" data-plain-toggle aria-pressed="false" title="No loading screen, no agents, no animation">plain view</button>
+  <button class="foot-top" type="button" data-to-top>↑ top</button></span>
 </footer>`;
 }
 
@@ -220,6 +221,8 @@ function heroSection() {
         <span class="seg" data-seg><span class="seg-pill" aria-hidden="true"></span><button type="button" data-persona="recruiter" aria-pressed="false">Recruiter</button><button type="button" data-persona="developer" aria-pressed="false">Developer</button><button type="button" data-persona="researcher" aria-pressed="false">Researcher</button><button type="button" data-persona="curious" aria-pressed="false">Curious</button></span>
         <a class="seg-resume" href="${RESUME_PDF}" download="Sahaj-Saliya-Resume.pdf" data-resume><span data-resume-label>Download resume (PDF)</span></a>
       </span>
+      <span aria-hidden="true">·</span>
+      <button type="button" class="tok-link persona-switch" data-plain-toggle aria-pressed="false" title="No loading screen, no agents, no animation">plain view</button>
     </p>
     <ul class="focus-chips mono" aria-label="Focus areas">
       ${profile.focus.map((f, i) => `<li><span class="tid">${String(1000 + i * 137).padStart(5, '0')}</span>${esc(f)}</li>`).join('')}

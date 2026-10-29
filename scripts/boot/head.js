@@ -26,7 +26,8 @@
     var seen = sessionStorage.getItem('booted');
     var home = basePath(location.pathname) === '/';
     var calm = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
-    var noreplay = /[?&]noreplay(=|&|$)/.test(location.search);
+    // plain view (fresh.js) skips the full loading screen, like ?noreplay
+    var noreplay = /[?&]noreplay(=|&|$)/.test(location.search) || window.__plain;
     if (home) { sessionStorage.setItem('booted', '1'); if (!seen && !noreplay) mode = calm ? 'calm' : 'full'; }
   } catch (e) { }
   d.className += ' booting boot-' + mode;
