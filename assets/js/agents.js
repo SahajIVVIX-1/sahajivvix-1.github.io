@@ -36,6 +36,10 @@ const SESSION = 'agentsState';
 function rng(seed) { let a = seed >>> 0; return () => { a = (a + 0x6D2B79F5) >>> 0; let t = Math.imul(a ^ (a >>> 15), 1 | a); t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t; return ((t ^ (t >>> 14)) >>> 0) / 4294967296; }; }
 const hash = (s) => { let h = 2166136261; for (let i = 0; i < s.length; i++) { h ^= s.charCodeAt(i); h = Math.imul(h, 16777619); } return h >>> 0; };
 const wait = (ms) => new Promise((r) => setTimeout(r, ms));
+// skill ids (w00, w01, …) always count in display order, also after the planner reorders a group
+function renumberSkills() {
+  document.querySelectorAll('.sg-items .w').forEach((w, i) => { w.textContent = `w${String(i).padStart(2, '0')}`; });
+}
 
 export function initAgents() {
   if (matchMedia('(prefers-reduced-motion: reduce)').matches || !document.getElementById('top')) return;
@@ -154,7 +158,7 @@ export function initAgents() {
         const ul = pick(lists), items = [...ul.children];
         const order = items.map((li) => [li, R()]).sort((a, b) => a[1] - b[1]).map(([li]) => li);
         const name = ul.closest('.skill-group')?.querySelector('.sg-name')?.textContent || 'skills';
-        return { el: ul, call: `reorder(".sg-items[${name}]")`, run: () => smoothChange(() => order.forEach((li) => ul.append(li)), { move: items, ms: 450, vt: false }) };
+        return { el: ul, call: `reorder(".sg-items[${name}]")`, run: () => smoothChange(() => { order.forEach((li) => ul.append(li)); renumberSkills(); }, { move: items, ms: 450, vt: false }) };
       },
       () => {
         const work = document.getElementById('work');

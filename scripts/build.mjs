@@ -387,7 +387,7 @@ function skillsSection() {
   <div class="skill-groups" data-attend>
     ${profile.skills.map((g) => `<div class="skill-group">
       <h3 class="mono sg-name">${esc(g.group)}</h3>
-      <ul class="sg-items">${g.items.map((s) => `<li><span class="w mono" aria-hidden="true">w${String(n++).padStart(2, '0')}</span>${esc(s)}</li>`).join('')}</ul>
+      <ul class="sg-items">${g.items.map((s) => `<li><span class="w mono" aria-hidden="true">w${String(n++).padStart(2, '0')}</span><span class="sk">${esc(s)}</span></li>`).join('')}</ul>
     </div>`).join('\n    ')}
   </div>
 </section>`;

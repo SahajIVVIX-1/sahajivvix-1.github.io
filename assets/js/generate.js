@@ -144,9 +144,26 @@ export function wrapTokens(el) {
       out.push(s);
       frag.append(s);
     }
+    // In a flex or grid parent every span would be its own item and get the gap between items ("Machi ne"):
+    // the tokens of one text node go into a single inline run instead.
+    if (/flex|grid/.test(getComputedStyle(n.parentElement).display)) {
+      const run = document.createElement('span');
+      run.className = 'gt-run';
+      run.append(frag);
+      n.replaceWith(run);
+      continue;
+    }
     n.replaceWith(frag);
   }
   return out;
+}
+
+// After the reveal, a block's token spans go back to being plain text: the finished words are ordinary text (same
+// kerning, no seams), and token boundaries only ever show during the reveal. Fires gen:text-done for attention.js.
+export function unwrapTokens(el, toks) {
+  for (const s of toks) if (s.isConnected) s.replaceWith(...s.childNodes);
+  el.normalize();
+  document.dispatchEvent(new CustomEvent('gen:text-done', { detail: { el } }));
 }
 
 function textJob(el, toks, lowPower) {
@@ -174,7 +191,8 @@ function textJob(el, toks, lowPower) {
       done = true;
       for (const s of toks) s.classList.add('gt-on');
       newest?.classList.remove('gt-new');
-      for (const d of q('.dist.gt-dist', el)) d.remove();
+      // once the last token's accent has faded and any "next token" popup has gone
+      setTimeout(() => { for (const d of q('.dist.gt-dist', el)) d.remove(); unwrapTokens(el, toks); }, 900);
     },
   };
   return job;

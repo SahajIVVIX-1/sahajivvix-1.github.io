@@ -16,10 +16,12 @@ export async function initAttention({ lowPower = false } = {}) {
   const maxLines = lowPower ? 3 : 6;
 
   for (const region of document.querySelectorAll('[data-attend]')) wrapRegion(region);
+  document.addEventListener('gen:text-done', (e) => { const r = e.detail.el.closest('[data-attend]'); if (r) wrapRegion(r); });
 
   function wrapRegion(root) {
     const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT, {
-      acceptNode: (n) => (n.parentElement.closest('a, button, .w-tok, script, style') || !n.nodeValue.trim() ? NodeFilter.FILTER_REJECT : NodeFilter.FILTER_ACCEPT),
+      // .gt pieces are parts of words still being generated; they are wrapped once the block is plain text again
+      acceptNode: (n) => (n.parentElement.closest('a, button, .w-tok, .gt, script, style') || !n.nodeValue.trim() ? NodeFilter.FILTER_REJECT : NodeFilter.FILTER_ACCEPT),
     });
     const nodes = [];
     while (walker.nextNode()) nodes.push(walker.currentNode);
