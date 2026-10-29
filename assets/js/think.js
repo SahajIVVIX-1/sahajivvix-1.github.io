@@ -1,15 +1,19 @@
 // Hero "thinking" line. A spinner verb is written as ONE continuous word in the tagline's italic serif; token
 // boundaries show as very soft, edge-to-edge highlights behind the letters (like the OpenAI tokenizer page).
-// Tokens arrive whole, left to right; the finished word is held for a few seconds, fades out as one piece,
-// and the next verb streams in. One meta line under it carries the timer and the running token count.
+// Tokens arrive whole, left to right; the finished word is held for a few seconds, then leaves the way it came:
+// detokenised right to left, the caret walking back with it, a short blink, and the next verb streams in. The word's
+// width eases between verbs so the line never jumps. One meta line under it carries the timer and token count.
 // On wide screens a faint panel shows the candidates for the NEXT verb; the sampled winner becomes the next verb.
 import { HERO_VERBS } from './hero-verbs.js';
 import { tokenize, createBag, formatElapsed } from './think-core.js';
 
 const TOKEN_MS = [90, 120];     // per whole token while streaming
 const HOLD_MS = [3000, 4900];   // a finished verb stays this long
-const FADE_MS = 260;            // the old word fades out as one piece
+const LEAVE_MS = 50;            // between tokens as the old word detokenises right to left
+const GONE_MS = 140;            // one token's own exit (fade, blur, 4px up)
+const BLINK_MS = 150;           // just the caret, before the next verb
 const SWAP_MS_CALM = 6000;      // reduced motion: crossfade to a new verb every 6 s, nothing streams
+const CALM_FADE_MS = 200;
 const ANNOUNCE_MS = 10000;      // the screen-reader text changes at most this often
 const TINTS = 3;
 
@@ -91,22 +95,37 @@ export function initThink() {
   }
   const fill = (verb, animate) => tokenize(verb).map((tok, i) => { const el = makeTok(tok, i); if (!animate) el.classList.add('is-static'); word.append(el); return el; });
 
+  // The word box eases to the width of the tokens it holds, so the caret glides and the line never jumps.
+  const fit = () => { let w = 0; for (const t of word.children) if (!t.classList.contains('is-leaving')) w += t.offsetWidth; word.style.width = `${w}px`; };
+
   async function stream(verb) {
     const toks = tokenize(verb);
     for (let i = 0; i < toks.length; i++) {
       await gate();
       word.append(makeTok(toks[i], i)); // fades in with a tiny upward motion (CSS)
+      fit();
       live++;
       renderMeta();
       if (i < toks.length - 1) await sleep(rnd(...TOKEN_MS)); // no trailing pause: the hold starts at the last token
     }
   }
 
+  // The exit mirrors the entrance: right to left, each token fades, blurs and rises 4px while the caret walks back,
+  // and the next-token panel's probabilities fade down. Runs on the pausable clock, so a hidden tab pauses it.
   async function fadeOut() {
-    line.classList.add('is-out');
-    await sleep(FADE_MS);
+    caret.classList.remove('is-waiting');
+    nextEl?.classList.add('is-fading');
+    const toks = [...word.children].reverse();
+    for (const t of toks) {
+      t.classList.add('is-leaving');
+      fit();
+      await sleep(LEAVE_MS);
+    }
+    await sleep(GONE_MS);
     word.replaceChildren();
-    line.classList.remove('is-out');
+    word.style.width = '0px';
+    caret.classList.add('is-waiting');
+    await sleep(BLINK_MS);
   }
 
   /* ---------- next-token panel (wide screens): candidates for the next verb, sampled like a model ---------- */
@@ -141,6 +160,7 @@ export function initThink() {
       return row;
     });
     nextEl.replaceChildren(head, ...rows);
+    nextEl.classList.remove('is-fading');
   }
   wide.addEventListener('change', () => { if (started && !calm) renderNext(false); });
 
@@ -165,12 +185,12 @@ export function initThink() {
   async function loopCalm() {
     for (;;) {
       const verb = bag();
-      if (word.childNodes.length) { line.classList.add('is-out'); await sleep(350); word.replaceChildren(); }
+      if (word.childNodes.length) { line.classList.add('is-out'); await sleep(CALM_FADE_MS); word.replaceChildren(); }
       live += fill(verb, false).length;
       line.classList.remove('is-out');
       announce(verb);
       renderMeta();
-      await sleep(SWAP_MS_CALM - 350); // the 350 ms crossfade is part of the 6 s
+      await sleep(SWAP_MS_CALM - CALM_FADE_MS); // the crossfade is part of the 6 s
     }
   }
 

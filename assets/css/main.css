@@ -424,7 +424,11 @@ main { position: relative; z-index: 1; }
 .skill-group { display: grid; gap: 12px; padding: 22px 0; border-bottom: 1px solid var(--rule); }
 .sg-name { color: var(--ink-3); font-size: 11.5px; text-transform: uppercase; letter-spacing: .08em; font-weight: 400; }
 .sg-items { display: flex; flex-wrap: wrap; gap: 6px 26px; font-size: clamp(1.05rem, 1.6vw, 1.35rem); letter-spacing: -.01em; }
-.sg-items li { display: inline-flex; align-items: baseline; gap: 6px; }
+.sg-items { min-width: 0; }
+.sg-items li { display: inline-flex; align-items: baseline; gap: 6px; max-width: 100%; }
+/* the skill itself is one inline run (its tokens are not flex items) and never wraps in the middle */
+.sg-items .sk { white-space: nowrap; }
+.sg-items .w { flex: none; }
 .w { font-size: 10px; color: var(--ink-3); }
 
 /* ---------- training curve ---------- */
@@ -513,7 +517,8 @@ main { position: relative; z-index: 1; }
 .w-tok.is-q { background: var(--accent); color: var(--accent-ink); box-shadow: 0 0 0 2px var(--accent); }
 .w-tok.is-k { background: color-mix(in srgb, var(--accent) calc(var(--a, .3) * 60%), transparent); box-shadow: 0 0 0 1px var(--accent-line); }
 /* early layers show raw token boundaries; they vanish with depth */
-.w-tok.has-attn { text-decoration: underline dotted color-mix(in srgb, var(--ink-3) calc((1 - var(--d)) * 70%), transparent); text-underline-offset: .28em; text-decoration-thickness: 1px; }
+/* words with attention links read as plain text; the dotted cue only appears on hover */
+.w-tok.has-attn:hover { text-decoration: underline dotted color-mix(in srgb, var(--ink-3) 70%, transparent); text-underline-offset: .28em; text-decoration-thickness: 1px; }
 
 /* ---------- secondary pages ---------- */
 .page-main { min-height: 100svh; display: flex; align-items: center; }
@@ -710,15 +715,22 @@ body.is-leaving main, body.is-leaving .site-foot { animation: softmaxOut .35s va
 .think:not(.is-on) .think-line { visibility: hidden; }
 .think-line { display: flex; align-items: baseline; font-size: var(--vsize); line-height: 1.35; white-space: nowrap; }
 .think-label { margin-right: 12px; color: var(--ink-3); font-size: 11.5px; line-height: 1; letter-spacing: 0; }
-.think-word { font-family: var(--serif); font-style: italic; font-weight: 400; letter-spacing: -.01em; color: var(--accent); white-space: pre; }
+/* while empty (between verbs) a zero-width character keeps the baseline, so "now ▸" never shifts */
+.think-word:empty::before { content: "\200b"; }
+.think-word { display: inline-block; font-family: var(--serif); font-style: italic; font-weight: 400; letter-spacing: -.01em; color: var(--accent); white-space: pre; overflow: visible; transition: width .16s var(--ease-out); }
 .tkn { position: relative; display: inline-block; line-height: 1.15; border-radius: 3px; animation: tknIn .2s var(--ease-out) backwards; }
 .tkn.c0 { background: var(--t0); } .tkn.c1 { background: var(--t1); } .tkn.c2 { background: var(--t2); }
 .tkn.is-static { animation: none; }
 @keyframes tknIn { from { opacity: 0; transform: translateY(.14em); } }
 .think-caret { align-self: center; width: 2px; height: .8em; margin-left: 4px; background: var(--accent); border-radius: 1px; }
 .think-caret.is-waiting { animation: blink 1.05s steps(1) infinite; }
-/* The old word leaves as one piece (fade and blur), then the next one streams in. */
-.think-line.is-out .think-word, .think-line.is-out .think-caret { opacity: 0; filter: blur(6px); transition: opacity .26s var(--ease), filter .26s var(--ease); }
+/* The old word detokenises right to left (think.js): each token fades, blurs and rises 4px. */
+.tkn.is-leaving { opacity: 0; filter: blur(3px); transform: translateY(-4px); transition: opacity .14s var(--ease), filter .14s var(--ease), transform .14s var(--ease); }
+.think-next { transition: opacity .3s var(--ease); }
+.think-next.is-fading { opacity: .25; }
+.think-next.is-fading .nx-b i { width: 0 !important; }
+/* reduced motion: a plain crossfade between verbs */
+.think-line.is-out .think-word, .think-line.is-out .think-caret { opacity: 0; transition: opacity .2s linear; }
 .think-sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
 
 /* Token ids appear only on hover, and only for fine pointers: touch devices never see them. */
@@ -745,7 +757,7 @@ body.is-leaving main, body.is-leaving .site-foot { animation: softmaxOut .35s va
 @media (prefers-reduced-motion: reduce) {
   .tkn { animation: none; }
   .think-caret.is-waiting { animation: none; }
-  .think-line.is-out .think-word, .think-line.is-out .think-caret { filter: none; transition: opacity .35s linear; }
+  .think-word { transition: none; }
 }
 
 /* Short laptop screens: tighten the hero's rhythm so name, tagline, verb, meta, intro and button fit in one screen. */
