@@ -40,7 +40,7 @@ jobs:
         uses: actions/cache@v4
         with:
           path: .cache/models
-          key: minilm-l6-v2-q8
+          key: models-minilm-q8-clip-b32-v1
 
       # fetch-github.mjs keeps the previous files if the API call fails, so this step never breaks the run.
       - name: Fetch GitHub data

@@ -10,6 +10,8 @@ import { readJSON, readText, write, esc, fmtMonth, fmtRange, parseFrontMatter, s
 if (process.argv.includes('--embed')) {
   const { embedAll } = await import('./embed.mjs');
   await embedAll();
+  const { clipAll } = await import('./clip.mjs');
+  await clipAll();
 }
 
 const SITE = 'https://info.sahaj.si';
@@ -279,6 +281,11 @@ function mapSection() {
         <span class="map-status mono" data-map-status role="status"></span>
         <div class="map-chips">${chips.map((c) => `<button type="button" class="map-chip mono" data-q="${esc(c)}">${esc(c)}</button>`).join('')}</div>
       </form>
+      <div class="map-see" data-see>
+        <button type="button" class="map-see-btn" data-see-pick><span class="see-ic" aria-hidden="true"></span>Show it an image</button>
+        <input type="file" accept="image/*" hidden data-see-file aria-label="Choose an image to compare with the work">
+        <p class="map-see-note mono">or drop or paste one on the map · Your image never leaves your browser: CLIP embeds it on your device (≈88 MB model, downloaded once).</p>
+      </div>
       <div class="map-grid">
         <div class="map-main">
           <div class="map-stage" data-latent-map>

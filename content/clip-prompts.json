@@ -1,0 +1,74 @@
+{
+  "_note": "Visual descriptions for 'show it an image' on the map (scripts/clip.mjs). Only skills that something in a picture can stand for are listed; projects take theirs from the \"visual\" field in projects.json. Keys must match a skill name in profile.json. \"other\" are everyday classes with no link to his work: an image closest to one of them is reported as not matching his work.",
+  "skills": {
+    "Computer Vision": [
+      "a photo covered in coloured bounding boxes with labels",
+      "a self-driving car camera view with detected objects"
+    ],
+    "OpenCV": [
+      "a camera frame with green tracking boxes drawn on it",
+      "a chessboard camera calibration pattern"
+    ],
+    "Image Processing": [
+      "an image shown next to its edge-detected version",
+      "a grayscale image with its histogram"
+    ],
+    "OCR": [
+      "a scanned document with printed text",
+      "a photo of a receipt",
+      "a certificate with printed text"
+    ],
+    "Document Image Analysis": [
+      "an old handwritten manuscript page",
+      "a scanned page of a book",
+      "a historical newspaper page"
+    ],
+    "Kraken": [
+      "a page of old handwriting in a historical script"
+    ],
+    "ComfyUI": [
+      "a node graph of an image generation workflow",
+      "a screenshot of an image generation app with nodes and wires"
+    ],
+    "Python": [
+      "a screenshot of Python code in an editor"
+    ],
+    "SQL": [
+      "a database table with rows and columns",
+      "an SQL query in a terminal"
+    ],
+    "Linux / Windows administration": [
+      "a terminal window full of shell commands"
+    ],
+    "Networking": [
+      "network cables plugged into a router",
+      "a diagram of a computer network"
+    ],
+    "Docker": [
+      "a stack of shipping containers"
+    ],
+    "Reinforcement Learning": [
+      "a robot arm picking up objects",
+      "an agent playing a video game"
+    ],
+    "Streamlit": [
+      "a web app dashboard with sliders and charts"
+    ]
+  },
+  "other": [
+    "a photo of a landscape",
+    "a photo of an animal",
+    "a photo of food",
+    "a photo of a car",
+    "a photo of a building",
+    "a photo of the sea",
+    "a plain texture",
+    "a plain colour background",
+    "a company logo",
+    "a cartoon drawing",
+    "a photo of plants and flowers",
+    "a photo of people playing sports",
+    "a grainy noise texture",
+    "a sheet of blank paper"
+  ]
+}

@@ -1,6 +1,7 @@
 [
   {
     "id": "crohnsight",
+    "visual": ["a capsule endoscopy image of the small intestine","a medical scan","an MRI or CT scan","an X-ray image","a microscope image of tissue","a photo of the inside of the human body"],
     "repo": "Crohn-Disease-Early-Prediction",
     "name": "CrohnSight",
     "kind": "Medical computer vision",
@@ -21,6 +22,7 @@
   },
   {
     "id": "agentic-rag",
+    "visual": ["a diagram of connected AI agents","a screenshot of a chatbot conversation","a flowchart","a stack of documents and printed text","a server rack in a data center"],
     "repo": "Multi-Agent-RAG",
     "name": "Enterprise Agentic RAG Orchestrator",
     "kind": "Multi-agent LLM system",
@@ -41,6 +43,7 @@
   },
   {
     "id": "openenv",
+    "visual": ["a spreadsheet table of messy data","a robot learning a task","a video game screen","a line chart of a reward going up"],
     "repo": "open-env-nuclei",
     "name": "OpenEnv Data-Cleaning Agent",
     "kind": "Reinforcement learning environment",
@@ -61,6 +64,7 @@
   },
   {
     "id": "student-xai",
+    "visual": ["students in a classroom","a bar chart explaining a model prediction","an analytics dashboard with charts","a graduation ceremony"],
     "repo": "student-performance-platform",
     "name": "Explainable Student Performance",
     "kind": "MLOps + explainability",
@@ -81,6 +85,7 @@
   },
   {
     "id": "dcgan",
+    "visual": ["a portrait photo of a human face","a photo of a person","a close-up of a face","a photo of a man","a headshot","a grid of AI-generated faces","a selfie","a digital painting","a blurry generated image"],
     "repo": "Modern-DCGAN-Reproducibility",
     "name": "DCGAN Reproducibility+",
     "kind": "Generative vision research",

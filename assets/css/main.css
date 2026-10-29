@@ -948,3 +948,13 @@ html.is-copy .site-head { top: var(--copy-h, 44px); }
 .card.is-spot { outline: 2px solid var(--accent); outline-offset: 4px; box-shadow: 0 0 0 10px var(--accent-soft); transition: box-shadow .4s var(--ease-out); }
 @keyframes agentPulse { 50% { outline-offset: 12px; outline-color: var(--accent-line); } }
 @media (prefers-reduced-motion: reduce) { .agent-hl { animation: none; } }
+
+/* ---------- show it an image (assets/js/see.js) ---------- */
+.map-see { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 14px; margin: 10px 0 14px; }
+.map-see-btn { display: inline-flex; align-items: center; gap: 9px; min-height: 40px; padding: 0 16px 0 12px; border-radius: 999px; border: 1px dashed var(--rule-2); background: transparent; color: var(--ink); font: 500 14px var(--sans); cursor: pointer; transition: border-color .2s, color .2s; }
+.map-see-btn:hover, .map-see-btn:focus-visible { border-color: var(--accent); color: var(--accent); }
+.map-see-btn:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+.see-ic { width: 16px; height: 13px; border: 1.5px solid currentColor; border-radius: 3px; position: relative; }
+.see-ic::after { content: ""; position: absolute; left: 2px; right: 2px; bottom: 2px; height: 5px; background: linear-gradient(135deg, transparent 45%, currentColor 46% 60%, transparent 61%); }
+.map-see-note { margin: 0; flex: 1 1 260px; min-width: 0; font-size: 11px; line-height: 1.5; color: var(--ink-3); }
+[data-map].is-drop .map-stage { outline: 2px dashed var(--accent); outline-offset: -6px; }
