@@ -1078,3 +1078,52 @@ html.is-copy .site-head { top: var(--copy-h, 44px); }
 @keyframes txPulse { 50% { background: transparent; } }
 @media (max-width: 380px) { .ask-tx { font-size: 10px; padding-inline: 12px; } }
 @media (prefers-reduced-motion: reduce) { .ask-tx span { animation: none !important; } }
+
+/* ---------- Recruiter mode: paste a job description (assets/js/fit.js) ---------- */
+.fit-form { display: grid; gap: 14px; max-width: 900px; }
+.fit-jd { width: 100%; min-height: 180px; padding: 16px 18px; border-radius: 16px; border: 1px solid var(--rule-2); background: color-mix(in srgb, var(--paper-2) 60%, transparent); color: var(--ink); font: 15px/1.55 var(--sans); resize: vertical; }
+.fit-jd::placeholder { color: var(--ink-3); }
+.fit-jd:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-soft); }
+.fit-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 10px 14px; }
+.fit-actions .btn:disabled { opacity: .6; cursor: progress; }
+.fit-status { color: var(--ink-3); font-size: 12px; min-height: 1.4em; }
+.fit-out { margin-top: clamp(30px, 5vw, 56px); display: grid; gap: clamp(26px, 4vw, 44px); scroll-margin-top: 100px; }
+.fit-out[hidden] { display: none; }
+.fit-pct { display: flex; flex-wrap: wrap; align-items: baseline; gap: 8px 18px; margin: 0; }
+.fit-pct .metric-val { font-size: clamp(3.4rem, 8vw, 5.6rem); line-height: 1; }
+.fit-pct .mono { color: var(--ink-2); font-size: 13px; }
+.fit-sum { margin: 10px 0 0; color: var(--ink-3); font-size: 12px; }
+.fit-bar { display: block; height: 4px; margin-top: 14px; max-width: 520px; border-radius: 2px; background: var(--rule); overflow: hidden; }
+.fit-bar i { display: block; height: 100%; background: var(--accent); }
+.fit-grid { display: grid; gap: 30px; }
+@media (min-width: 980px) { .fit-grid { grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); gap: 48px; } }
+.fit-h { margin: 0 0 14px; color: var(--ink-3); font-size: 11.5px; letter-spacing: .08em; text-transform: uppercase; }
+.fit-projects { display: grid; gap: 14px; margin: 0; padding: 0; list-style: none; counter-reset: fp; }
+.fit-projects li { counter-increment: fp; display: grid; gap: 3px; padding: 14px 16px; border-radius: 14px; border: 1px solid var(--rule); min-width: 0; }
+.fit-pname { font: 500 1.08rem/1.3 var(--sans); color: var(--ink); }
+.fit-pname::before { content: counter(fp, decimal-leading-zero) "  "; color: var(--accent); font: 500 12px var(--mono); }
+.fit-pmeta { color: var(--ink-3); font-size: 11.5px; overflow-wrap: anywhere; }
+.fit-why { color: var(--ink-2); font-size: 14px; line-height: 1.45; overflow-wrap: anywhere; }
+.fit-reqs { display: grid; gap: 10px; margin: 0; padding: 0; list-style: none; }
+.fit-reqs li { display: grid; grid-template-columns: 22px minmax(0, 1fr); gap: 10px; align-items: start; padding-bottom: 10px; border-bottom: 1px solid var(--rule); }
+.fit-mark { width: 22px; height: 22px; display: grid; place-items: center; border-radius: 50%; font: 600 12px var(--mono); }
+.is-covered .fit-mark { background: color-mix(in srgb, var(--ok) 16%, transparent); color: var(--ok); }
+.is-partial .fit-mark { background: color-mix(in srgb, var(--m2) 18%, transparent); color: var(--m2); }
+.is-gap .fit-mark { background: var(--accent-soft); color: var(--accent); }
+.fit-req { display: block; color: var(--ink); font-size: 15px; line-height: 1.45; overflow-wrap: anywhere; }
+.fit-ev { display: block; margin-top: 3px; color: var(--ink-3); font-size: 13px; line-height: 1.45; overflow-wrap: anywhere; }
+.fit-ev a, .fit-why a { color: var(--ink-2); text-decoration: underline; text-underline-offset: 2px; }
+.fit-gaps ul { margin: 0; padding-left: 18px; display: grid; gap: 6px; color: var(--ink-2); font-size: 14.5px; }
+.fit-print-row { display: flex; flex-wrap: wrap; align-items: center; gap: 10px 16px; margin: 0; font-size: 12px; }
+.fit-print { display: none; }
+@media print {
+  html.fit-printing body > *:not(.fit-print) { display: none !important; }
+  html.fit-printing, html.fit-printing body { background: #fff !important; }
+  html.fit-printing body::before { display: none !important; }
+  html.fit-printing .fit-print { display: block; color: #16140F; font: 9.3pt/1.38 "Inter Tight", system-ui, sans-serif; }
+  .fit-print h1 { margin: 0; font: italic 400 26pt/1 "Instrument Serif", Georgia, serif; }
+  .fit-print h2 { margin: 12px 0 4px; padding-bottom: 2px; border-bottom: 1px solid #D9D0BF; color: #B23E0E; font: 500 8pt/1 "JetBrains Mono", monospace; letter-spacing: .12em; text-transform: uppercase; }
+  .fit-print p { margin: 2px 0; } .fit-print .i { margin: 5px 0; break-inside: avoid; } .fit-print ul { margin: 2px 0; padding-left: 14px; }
+  .fit-print .m { color: #6A6458; font: 8pt/1.45 "JetBrains Mono", monospace; }
+  @page { size: A4; margin: 11mm 13mm; }
+}

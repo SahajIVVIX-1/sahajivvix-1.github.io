@@ -528,6 +528,28 @@ function evalSection() {
 </section>`;
 }
 
+// Recruiter mode: paste a job description, get a match report from Sahaj's own data (assets/js/fit.js). It is a
+// probe, not one of the 12 layers, so the rail keeps counting 12.
+function fitSection() {
+  return `<section class="layer probe fit" id="fit" aria-labelledby="fit-h" data-fit>
+  <header class="layer-head">
+    <p class="layer-tag mono">Probe · fine-tune on your role</p>
+    <h2 id="fit-h" class="layer-title">Paste a job description. <em>See the fit.</em></h2>
+    <p class="layer-sub">It runs in your browser: each requirement is matched against Sahaj's real projects, roles and skills, every match cites where it comes from, and what is missing is said plainly. Nothing is sent anywhere and nothing is invented.</p>
+  </header>
+  <form class="fit-form" data-fit-form>
+    <label class="sr" for="fit-jd">Job description</label>
+    <textarea id="fit-jd" class="fit-jd" rows="8" maxlength="12000" placeholder="Paste the job description here: responsibilities, requirements, nice-to-haves…" data-fit-jd></textarea>
+    <div class="fit-actions">
+      <button class="btn shimmer" type="submit">Check the fit</button>
+      <button class="btn btn-ghost" type="button" data-fit-sample>Try a sample</button>
+      <span class="fit-status mono" data-fit-status role="status" aria-live="polite"></span>
+    </div>
+  </form>
+  <div class="fit-out" data-fit-out hidden></div>
+</section>`;
+}
+
 function contactSection() {
   return `<section class="layer contact" id="contact" data-layer="12" data-layer-name="Output head" aria-labelledby="contact-h">
   <p class="layer-tag mono" data-lt="Output">Layer 12 · Output</p>
@@ -580,6 +602,7 @@ ${workSection()}
 ${skillsSection()}
 ${experienceSection()}
 ${evalSection()}
+${fitSection()}
 ${contactSection()}
 </main>
 ${footer()}
@@ -706,6 +729,7 @@ const outputs = {
 <body><p><a href="/blogs/">Go to the blog</a></p></body>
 </html>
 `,
+  'data/fit.json': fitData(),
   'data/site.json': { blogLive: BLOG_LIVE, posts: BLOG_LIVE ? posts.map(({ slug: s, title, date, summary, tags }) => ({ slug: s, title, date, summary, tags })) : [] },
 };
 if (BLOG_LIVE) for (const p of posts) outputs[`blogs/${p.slug}/index.html`] = renderPost(p);
@@ -715,6 +739,38 @@ for (const [file, content] of Object.entries(outputs)) if (write(file, content))
 if (write('data/build.json', manifest())) { changed++; console.log('wrote data/build.json'); }
 noSourceMaps();
 console.log(`build done, ${changed} file(s) changed`);
+
+// Facts for Recruiter mode: only what is already in content/, plus a vocabulary of every term in it (skills,
+// project stacks, role tags) with where each one comes from. Aliases are other ways a job description says it.
+function fitData() {
+  const ALIAS = {
+    'LLMs': ['llm', 'large language model', 'large language models', 'genai', 'generative ai', 'gpt'], 'Machine Learning': ['ml', 'machine-learning'],
+    'Deep Learning': ['dl', 'neural network', 'neural networks'], 'Computer Vision': ['cv', 'vision', 'image recognition', 'object detection'],
+    'NLP': ['natural language processing', 'nlu', 'text mining'], 'Reinforcement Learning': ['rl', 'ppo'], 'RAG': ['retrieval augmented generation', 'retrieval-augmented generation', 'vector search', 'semantic search'],
+    'Multi-Agent Orchestration': ['agents', 'agentic', 'ai agents', 'multi-agent', 'agent'], 'Tool Calling': ['function calling', 'tool use'],
+    'Kubernetes': ['k8s'], 'PostgreSQL': ['postgres'], 'scikit-learn': ['sklearn'], 'Hugging Face Spaces': ['hugging face', 'huggingface'],
+    'GitHub Actions': ['ci/cd', 'ci cd', 'continuous integration'], 'MLflow': ['experiment tracking', 'track experiments', 'mlops'], 'RAGAS': ['evaluation', 'evaluation sets', 'evals', 'llm evaluation'], 'Docker': ['containers', 'containerization'],
+    'AWS Bedrock': ['aws', 'amazon bedrock', 'bedrock'], 'Transformers': ['transformer', 'transformer models', 'bert'], 'FastAPI': ['rest api', 'apis', 'api development'],
+    'Data Structures & Algorithms': ['data structures', 'algorithms', 'dsa'], 'OOP': ['object oriented', 'object-oriented'], 'Linux / Windows administration': ['linux'],
+    'Qdrant': ['vector database', 'vector db'], 'ChromaDB': ['chroma'], 'OCR': ['optical character recognition'], 'SHAP': ['explainability', 'explainable ai', 'xai'],
+  };
+  const terms = new Map();
+  const add = (t, src) => { const k = t.toLowerCase(); if (!terms.has(k)) terms.set(k, { t, aliases: ALIAS[t] || [], src: [] }); const e = terms.get(k); if (!e.src.some((x) => x.url === src.url)) e.src.push(src); };
+  for (const g of profile.skills) for (const s of g.items) add(s, { label: `${g.group} skills`, url: '#skills' });
+  for (const p of projects) for (const s of p.stack) add(s, { label: p.name, url: `#p-${p.id}` });
+  for (const r of profile.experience) for (const s of r.tags) add(s, { label: `${r.role} · ${r.org}`, url: `#x-${r.id}` });
+  const first = (s) => (String(s).match(/^.*?[.!?](\s|$)/) || [s])[0].trim();
+  return {
+    name: profile.name, tagline: profile.tagline, email: profile.email, site: SITE, location: profile.location,
+    links: profile.links.map((l) => ({ label: l.label, url: l.url })),
+    education: profile.education,
+    terms: [...terms.values()],
+    projects: projects.map((p) => ({ id: p.id, name: p.name, kind: p.kind, year: p.year, metric: p.metric, stack: p.stack, summary: `${first(p.problem)} ${first(p.approach)}`, url: `#p-${p.id}`, repo: `https://github.com/SahajIVVIX-1/${p.repo}` })),
+    experience: profile.experience.map((r) => ({ id: r.id, role: r.role, org: r.org, kind: r.kind, when: fmtRange(r.start, r.end), points: r.points, url: `#x-${r.id}` })),
+    certifications: profile.certifications,
+    achievement: `${gwr.title} · ${gwr.year}`,
+  };
+}
 
 // Build manifest: the source commit plus a SHA-256 of every data file, so the footer can check that the data it is
 // served matches this build. The time only moves when the commit or a hash changes, so a quiet rebuild writes nothing.
