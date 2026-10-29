@@ -26,6 +26,8 @@ export function initRail() {
       t.classList.toggle('is-past', i < k);
       if (i === k) t.setAttribute('aria-current', 'step'); else t.removeAttribute('aria-current');
     });
+    // the context window (context.js) follows the layer in the address bar and the header chip
+    document.dispatchEvent(new CustomEvent('layer:change', { detail: { layer: k } }));
   };
 
   const bind = () => {
