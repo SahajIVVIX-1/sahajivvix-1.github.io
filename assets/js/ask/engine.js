@@ -85,7 +85,7 @@ export async function createEngine() {
     return [...best.values()].sort((a, b) => b.score - a.score);
   }
 
-  return { answer, search, rankProjects, loadEmbedder, get semantic() { return !!extractor; }, chunks, qaCount: qaItems.length };
+  return { answer, search, rankProjects, loadEmbedder, embed: embedQuery, get semantic() { return !!extractor; }, chunks, qaCount: qaItems.length };
 }
 
 export function uniqSources(list) {

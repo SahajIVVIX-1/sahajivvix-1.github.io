@@ -142,6 +142,15 @@ function initLazy() {
     afterBootAgents(() => idle(() => import('./agents.js').then((m) => m.initAgents())));
   }
 
+  // Recruiter mode (paste a job description): its small module when the section is near; the model only on submit.
+  const fit = document.querySelector('[data-fit]');
+  if (fit) {
+    const fo = new IntersectionObserver((entries) => {
+      if (entries.some((en) => en.isIntersecting)) { fo.disconnect(); import('./fit.js').then((m) => m.initFit()); }
+    }, { rootMargin: '600px 0px' });
+    fo.observe(fit);
+  }
+
   // Latent map: when it is about to scroll into view.
   const stage = document.querySelector('[data-map]');
   if (stage) {

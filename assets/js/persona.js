@@ -10,10 +10,11 @@ const RESUME = '/assets/resume/Sahaj-Saliya-Resume.pdf';
 
 // Section order below the hero, per persona. Ids are the section ids in index.html.
 const ORDER = {
-  recruiter: ['about', 'experience', 'work', 'skills', 'certs', 'map', 'contact'],
-  developer: ['work', 'map', 'skills', 'about', 'experience', 'certs', 'contact'],
-  researcher: ['work', 'about', 'certs', 'experience', 'skills', 'map', 'contact'],
-  curious: ['about', 'map', 'work', 'skills', 'experience', 'certs', 'contact'],
+  // "fit" is Recruiter mode (paste a job description): first for recruiters, just before contact for everyone else
+  recruiter: ['fit', 'about', 'experience', 'work', 'skills', 'certs', 'map', 'contact'],
+  developer: ['work', 'map', 'skills', 'about', 'experience', 'certs', 'fit', 'contact'],
+  researcher: ['work', 'about', 'certs', 'experience', 'skills', 'map', 'fit', 'contact'],
+  curious: ['about', 'map', 'work', 'skills', 'experience', 'certs', 'fit', 'contact'],
 };
 // Researchers see the research-flavoured projects first; everyone else keeps the default project order.
 const CARD_ORDER = { researcher: ['crohnsight', 'openenv', 'dcgan', 'agentic-rag', 'student-xai'] };
