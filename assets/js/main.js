@@ -11,6 +11,7 @@ import { initBadge } from './badge.js';
 import { initFooter } from './footer.js';
 import { initBrand } from './brand.js';
 import { initCnn } from './cnn.js';
+import { checkOrigin } from './origin.js';
 
 export const reducedMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
 // Phones, low core counts and data-saver get lighter versions of the effects.
@@ -18,6 +19,7 @@ export const lowPower = matchMedia('(max-width: 700px), (pointer: coarse)').matc
   || (navigator.hardwareConcurrency || 8) <= 4
   || navigator.connection?.saveData === true;
 
+checkOrigin();
 initTheme();
 // Persona first: it reorders and renumbers the layers that the rail and hero then read.
 initPersona();
@@ -27,12 +29,13 @@ initThink();
 initGenerate({ reducedMotion, lowPower });
 initGwr({ reducedMotion });
 initBadge({ reducedMotion });
+// The persona line and badge are placed: the hero can show (see "hero layout settles" in main.css).
+document.documentElement.classList.add('hero-laid');
 initFooter({ reducedMotion, lowPower });
 initBrand({ reducedMotion });
 initCnn({ reducedMotion });
 initLoss();
 initHeader();
-initScrollKeep();
 initAnchors();
 initTransitions();
 initLazy();
@@ -57,21 +60,6 @@ function initHeader() {
   const onScroll = () => head.classList.toggle('is-scrolled', scrollY > 24);
   addEventListener('scroll', onScroll, { passive: true });
   onScroll();
-}
-
-// A reload on /ip=<address> goes through the real page (see head.js), which would start at the top. The scroll
-// position is saved when the page is left and put back once after such a bounce.
-function initScrollKeep() {
-  addEventListener('pagehide', () => { try { sessionStorage.setItem('scrollKeep', JSON.stringify({ y: Math.round(scrollY), t: Date.now() })); } catch { /* storage blocked */ } });
-  try {
-    if (!sessionStorage.getItem('ipBounce')) return;
-    sessionStorage.removeItem('ipBounce');
-    const k = JSON.parse(sessionStorage.getItem('scrollKeep') || 'null');
-    if (!k || Date.now() - k.t > 20000 || location.hash || !k.y) return;
-    const put = () => scrollTo({ top: k.y, behavior: 'instant' });
-    put();
-    addEventListener('load', put, { once: true });
-  } catch { /* ignore */ }
 }
 
 // In-page links (#contact, /#work and so on): scroll to the section without reloading, also when the address is

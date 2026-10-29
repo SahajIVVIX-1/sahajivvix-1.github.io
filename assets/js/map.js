@@ -3,6 +3,7 @@
 // Data: /data/map.json (points, 30 layout keyframes, KL loss per epoch, clusters, keyword index, 5 projects)
 //       /data/map-vectors.json (int8 vectors, loaded lazily for semantic search).
 import { decodeVec, cosineInt8, placeLabels, stem } from './map-core.js';
+import { checkOrigin } from './origin.js';
 
 const TRANSFORMERS = 'https://cdn.jsdelivr.net/npm/@huggingface/transformers@4.3.0';
 const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
@@ -11,6 +12,7 @@ const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&l
 
 export async function initMap(root, { lowPower = false, reducedMotion = false } = {}) {
   if (!root) return null;
+  checkOrigin();
   const stage = root.querySelector('.map-stage');
   const canvas = stage.querySelector('.map-canvas');
   const labelsEl = stage.querySelector('.map-labels');
@@ -160,7 +162,7 @@ export async function initMap(root, { lowPower = false, reducedMotion = false } 
       const qx = tx(Q.pos[0]), qy = ty(Q.pos[1]);
       g.lineWidth = 1;
       for (const h of Q.hits) {
-        g.strokeStyle = colors.accent; g.globalAlpha = clamp(h.sim, 0.12, 1) * dim * 0.9;
+        g.strokeStyle = colors.accent; g.globalAlpha = clamp(h.w ?? h.sim, 0.12, 1) * dim * 0.9;
         g.beginPath(); g.moveTo(qx, qy); g.lineTo(SP[h.i * 2], SP[h.i * 2 + 1]); g.stroke();
       }
       g.globalAlpha = 1;
@@ -190,8 +192,16 @@ export async function initMap(root, { lowPower = false, reducedMotion = false } 
     }
     g.globalAlpha = 1;
 
-    // the query itself: a bright new point where it belongs in the space
-    if (Q && dim > 0.02) {
+    // a dropped image: its thumbnail sits where it lands, ringed like a query
+    if (Q && Q.img?.complete && dim > 0.02) {
+      const qx = tx(Q.pos[0]), qy = ty(Q.pos[1]), r = phone ? 18 : 24;
+      const s = Math.max(Q.img.naturalWidth, 1), t = Math.max(Q.img.naturalHeight, 1), k = (2 * r) / Math.min(s, t);
+      g.save(); g.globalAlpha = dim; g.beginPath(); g.arc(qx, qy, r, 0, 6.2832); g.clip();
+      g.drawImage(Q.img, qx - (s * k) / 2, qy - (t * k) / 2, s * k, t * k); g.restore();
+      g.globalAlpha = dim; g.strokeStyle = colors.accent; g.lineWidth = 2; g.beginPath(); g.arc(qx, qy, r + 2, 0, 6.2832); g.stroke();
+      g.globalAlpha = 1;
+    } else if (Q && dim > 0.02) {
+      // the query itself: a bright new point where it belongs in the space
       const qx = tx(Q.pos[0]), qy = ty(Q.pos[1]);
       const pulse = reducedMotion ? 0 : (Math.sin(now * 0.005) + 1) / 2;
       g.globalAlpha = dim; g.fillStyle = colors.accent; g.beginPath(); g.arc(qx, qy, 5.5, 0, 6.2832); g.fill();
@@ -452,10 +462,13 @@ export async function initMap(root, { lowPower = false, reducedMotion = false } 
     if (my !== askToken) return;
     showResults(q, hits, mode);
     if (!hits.length) { Q = null; dimTarget = 0; kick(); return; }
-    // the query lands where it belongs: weighted average of its nearest neighbours' positions in the trained space
+    land({ text: q, hits, mode }, (h) => Math.max(0, h.sim) ** 3);
+  }
+  // A query lands where it belongs: the weighted average of its nearest neighbours' positions in the trained space.
+  function land(q, weight) {
     let wx = 0, wy = 0, ws = 0;
-    for (const h of hits) { const w = Math.max(0, h.sim) ** 3 + 1e-6; wx += FINAL[h.i * 2] * w; wy += FINAL[h.i * 2 + 1] * w; ws += w; }
-    Q = { text: q, pos: [wx / ws, wy / ws], hits, mode };
+    for (const h of q.hits) { const w = weight(h) + 1e-6; wx += FINAL[h.i * 2] * w; wy += FINAL[h.i * 2 + 1] * w; ws += w; }
+    Q = { ...q, pos: [wx / ws, wy / ws] };
     dimTarget = 1;
     if (tp < 0.999 && tpForced === null) {
       // finish training first so the query lands in the trained space
@@ -473,6 +486,7 @@ export async function initMap(root, { lowPower = false, reducedMotion = false } 
     }).join('');
   }
   function clearQuery() {
+    if (Q?.img) URL.revokeObjectURL(Q.img.src);
     askToken++; Q = null; lastQ = ''; dimTarget = 0; input.value = '';
     resultsEl.innerHTML = '<li class="mr-empty">Ask the map something and the closest passages appear here, with their similarity.</li>';
     resultsHead.textContent = 'Top matches';
@@ -489,6 +503,39 @@ export async function initMap(root, { lowPower = false, reducedMotion = false } 
   root.querySelector('.map-chips').addEventListener('click', (e) => { const b = e.target.closest('button'); if (!b) return; input.value = b.dataset.q; ask(b.dataset.q); });
   root.addEventListener('keydown', (e) => { if (e.key === 'Escape') { clearQuery(); card.hidden = true; cardFor = -1; selI = -1; } });
   clearQuery();
+
+  /* ---------- show it an image: CLIP in the browser (see.js, loaded on first use) ---------- */
+  const seeFile = root.querySelector('[data-see-file]');
+  let seeing = 0;
+  async function see(file) {
+    // some sources give no type: trust an image file name then (the decoder still has the last word)
+    const isImage = (f) => /^image\//.test(f.type) || (!f.type && /\.(jpe?g|png|webp|gif|avif|bmp)$/i.test(f.name));
+    if (!file || !isImage(file)) { status('that is not an image'); return; }
+    const my = ++seeing;
+    // keep the bytes now: a file input that is reset (or a drag that has ended) can leave the File unreadable
+    try { file = new File([await file.arrayBuffer()], file.name, { type: file.type || 'image/*' }); } catch { status('the image could not be read'); return; }
+    const { embedImage } = await import('./see.js');
+    let res;
+    try { res = await embedImage(file, status); } catch (e) { console.warn('see:', e); status(`the vision model could not run here (${e?.message || e})`); return; }
+    if (my !== seeing) return;
+    clearQuery();
+    const img = new Image();
+    img.onload = () => kick();
+    img.src = URL.createObjectURL(file);
+    const hits = res.work.map((h) => ({ i: h.i, sim: h.sim, p: h.p, w: 0.25 + 0.75 * h.p / res.work[0].p, label: h.label, kind: h.kind, u: h.u }));
+    resultsHead.textContent = res.other ? `Not much like his work (closest: ${res.other}) · nearest anyway` : 'Top matches · CLIP ViT-B/32 cosine, on your device';
+    resultsEl.innerHTML = hits.map((h) => `<li><a href="${esc(h.u)}" data-i="${h.i}"><span class="mr-score mono">${h.sim.toFixed(2)}</span><span class="mr-body"><b>${esc(h.label)}</b><span>${h.kind} · ${Math.round(h.p * 100)}% of the match among his work</span></span></a></li>`).join('');
+    status(`image embedded on your device · ${res.ms} ms`);
+    land({ text: file.name || 'image', hits, mode: 'image', img }, (h) => h.p);
+  }
+  root.querySelector('[data-see-pick]')?.addEventListener('click', () => seeFile.click());
+  seeFile?.addEventListener('change', () => { see(seeFile.files[0]).finally(() => { seeFile.value = ''; }); });
+  for (const el of [stage, root.querySelector('[data-see]')].filter(Boolean)) {
+    el.addEventListener('dragover', (e) => { if ([...e.dataTransfer.items].some((x) => x.kind === 'file')) { e.preventDefault(); root.classList.add('is-drop'); } });
+    el.addEventListener('dragleave', () => root.classList.remove('is-drop'));
+    el.addEventListener('drop', (e) => { e.preventDefault(); root.classList.remove('is-drop'); see(e.dataTransfer.files[0]); });
+  }
+  root.addEventListener('paste', (e) => { const f = [...(e.clipboardData?.files || [])].find((x) => /^image\//.test(x.type)); if (f) { e.preventDefault(); see(f); } });
 
   /* ---------- lifecycle ---------- */
   readColors();
@@ -507,7 +554,7 @@ export async function initMap(root, { lowPower = false, reducedMotion = false } 
 
   // small hook so the states can be inspected and frozen (used for screenshots and tests)
   const api = {
-    ask, clear: clearQuery,
+    ask, see, clear: clearQuery,
     freeze(p) { tpForced = p; kick(); },
     unfreeze() { tpForced = null; kick(); },
     state() {

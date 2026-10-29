@@ -213,6 +213,8 @@ main { position: relative; z-index: 1; }
 .hero-name { font: italic 400 clamp(4.1rem, min(17vw, 27vh), 14.5rem)/.86 var(--serif); letter-spacing: -.035em; margin: 14px 0 4px -.04em; }
 .hero-title { font: 450 clamp(1.45rem, 4.6vw, 3.6rem)/1.08 var(--sans); letter-spacing: -.03em; max-width: 19ch; min-height: 1.2em; }
 /* The tagline is one line from 320px up; below that it may wrap, so only the narrowest phones reserve two lines. */
+/* Generated tokens do not wrap, so the static text (before generation) stays on one line too: same height before and after. */
+@media (min-width: 341px) { .hero-title { white-space: nowrap; } }
 @media (max-width: 340px) { .hero-title { min-height: 2.3em; } .hero-title .tk { white-space: pre-wrap; } }
 .hero-title .k { font-family: var(--serif); font-style: italic; font-weight: 400; letter-spacing: -.01em; color: var(--accent); }
 .hero-trace { margin-top: 10px; min-height: 1.5em; color: var(--ink-3); font-size: 12px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
@@ -891,8 +893,9 @@ html[data-thinking] .brand-logo .ring-prog { stroke-dasharray: 26 74; animation:
 .hb-text { display: grid; gap: 2px; text-align: left; }
 .hb-name { font: 450 13px/1.2 var(--sans); white-space: nowrap; }
 .hb-sub { font-size: 12px; color: var(--ink-3); white-space: nowrap; }
-.hb-ph { display: none; position: absolute; inset: 0; align-items: center; justify-content: center; border-radius: inherit; border: 1px dashed var(--rule-2); color: var(--ink-3); font-size: 12px; background: var(--paper); }
-.hero-badge.is-pending .hb-ph { display: flex; }
+.hb-ph { display: none; position: absolute; inset: 0; pointer-events: none; } /* invisible anchor of the probability popup: no chip, no box */
+.hero-badge.is-pending .hb-ph { display: block; }
+.hero-badge.is-pending { border-color: transparent; }
 .hero-badge.is-pending .hb-text, .hero-badge.is-pending .hb-logo { visibility: hidden; }
 .hero-badge.is-pending.is-decoding .hb-ph { display: none; }
 .hero-badge.is-pending.is-decoding .hb-logo { visibility: visible; }
@@ -903,6 +906,55 @@ html[data-thinking] .brand-logo .ring-prog { stroke-dasharray: 26 74; animation:
 .hero-badge.is-wide:hover { border-color: transparent; }
 .hero-badge.is-wide .hb-logo { width: 104px; height: 104px; }
 .hero-badge.is-wide .hb-text { text-align: center; }
-.hero-badge.is-wide .hb-ph { border-radius: 14px; }
 @media (max-width: 480px) { .hero-badge { margin-top: 10px; } }
 @media print { .hero-badge { display: none; } }
+
+/* ---------- copy banner (assets/js/origin.js): only on a host that is not the original ---------- */
+.copy-banner { position: fixed; inset: 0 0 auto 0; z-index: 80; display: flex; justify-content: center; padding: 10px var(--gutter); background: var(--paper-2); border-bottom: 1px solid var(--rule-2); color: var(--ink-2); font: 400 14px/1.45 var(--sans); text-align: center; }
+.copy-banner p { margin: 0; max-width: 72ch; }
+.copy-banner a { color: var(--accent); font-weight: 500; text-decoration: underline; text-underline-offset: 3px; }
+.copy-banner a:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; border-radius: 4px; }
+.copy-dot { display: inline-block; width: 7px; height: 7px; margin-right: 9px; border-radius: 50%; background: var(--accent); vertical-align: 1px; }
+html.is-copy { scroll-padding-top: calc(84px + var(--copy-h, 44px)); }
+html.is-copy body { padding-top: var(--copy-h, 44px); }
+html.is-copy .site-head { top: var(--copy-h, 44px); }
+
+/* ---------- footer build badge (assets/js/footer.js) ---------- */
+.foot-build a.foot-link { font: inherit; }
+:root { --ok: #1F6B4A; }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { --ok: #6FD0A0; } }
+:root[data-theme="dark"] { --ok: #6FD0A0; }
+.foot-build[data-state="ok"] [data-build-state] { color: var(--ok); }
+.foot-build[data-state="bad"] [data-build-state], .foot-build[data-state="stale"] [data-build-state] { color: var(--accent); }
+
+/* ---------- hero layout settles before it is shown ----------
+   persona.js unhides the persona line and badge.js may move the badge into the right column; both change the hero's
+   height, and the hero is vertically centred, so it stays invisible (no layout shift) until main.js has placed them.
+   The animation shows it anyway after 3 s if a script fails. */
+.js:not(.hero-laid) .hero-grid { visibility: hidden; animation: heroShow 0s 3s forwards; }
+@keyframes heroShow { to { visibility: visible; } }
+
+/* ---------- agent (assets/js/ask/tools.js): trace, attention line, highlights ---------- */
+.trace { display: grid; gap: 3px; margin: 0 0 8px; padding: 8px 10px; border-radius: 10px; background: var(--paper); border: 1px solid var(--rule); font-size: 11px; line-height: 1.45; color: var(--ink-2); overflow-wrap: anywhere; }
+.trace li { position: relative; padding-left: 14px; }
+.trace li::before { content: "▸"; position: absolute; left: 0; color: var(--ink-3); }
+.trace li.is-run::before { content: "◌"; color: var(--accent); }
+.trace li.is-ok::before { content: "✓"; color: var(--ok); }
+.trace li.is-err::before { content: "✗"; color: var(--accent); }
+.trace .tr-call { color: var(--ink); }
+.trace .tr-out { color: var(--ink-3); }
+.agent-layer { z-index: 91; }
+.agent-hl { outline: 2px solid var(--accent); outline-offset: 6px; border-radius: 12px; animation: agentPulse 1.2s var(--ease-out) 2; }
+.card.is-spot { outline: 2px solid var(--accent); outline-offset: 4px; box-shadow: 0 0 0 10px var(--accent-soft); transition: box-shadow .4s var(--ease-out); }
+@keyframes agentPulse { 50% { outline-offset: 12px; outline-color: var(--accent-line); } }
+@media (prefers-reduced-motion: reduce) { .agent-hl { animation: none; } }
+
+/* ---------- show it an image (assets/js/see.js) ---------- */
+.map-see { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 14px; margin: 10px 0 14px; }
+.map-see-btn { display: inline-flex; align-items: center; gap: 9px; min-height: 40px; padding: 0 16px 0 12px; border-radius: 999px; border: 1px dashed var(--rule-2); background: transparent; color: var(--ink); font: 500 14px var(--sans); cursor: pointer; transition: border-color .2s, color .2s; }
+.map-see-btn:hover, .map-see-btn:focus-visible { border-color: var(--accent); color: var(--accent); }
+.map-see-btn:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+.see-ic { width: 16px; height: 13px; border: 1.5px solid currentColor; border-radius: 3px; position: relative; }
+.see-ic::after { content: ""; position: absolute; left: 2px; right: 2px; bottom: 2px; height: 5px; background: linear-gradient(135deg, transparent 45%, currentColor 46% 60%, transparent 61%); }
+.map-see-note { margin: 0; flex: 1 1 260px; min-width: 0; font-size: 11px; line-height: 1.5; color: var(--ink-3); }
+[data-map].is-drop .map-stage { outline: 2px dashed var(--accent); outline-offset: -6px; }
