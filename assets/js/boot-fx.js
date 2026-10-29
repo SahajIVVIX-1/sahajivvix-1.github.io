@@ -682,12 +682,13 @@
     }
     var bestI = B.probs.indexOf(Math.max.apply(null, B.probs));
     fly.node = OUT[bestI];
-    var dot = document.querySelector('.brand-logo .cursor');
-    var dr = dot && dot.getBoundingClientRect();
+    // the output neuron flies into the centre of the header logo and is absorbed by it
+    var logo = document.querySelector('.brand-logo');
+    var dr = logo && logo.getBoundingClientRect();
     if (!dr || !dr.width) { fly.node = null; return RETRACT; }
-    fly.target = { x: dr.left + dr.width / 2, y: dr.top + dr.height / 2, r: dr.width / 2 };
+    fly.target = { x: dr.left + dr.width / 2, y: dr.top + dr.height / 2, r: 3 };
     fly.from = { x: fly.node.x, y: fly.node.y };
-    root.classList.add('boot-fly'); // the logo's own dot waits until this one lands on it
+    root.classList.add('boot-fly');
     return RETRACT * 0.6 + fly.move;
   }
   function drawFlight(now) {
@@ -702,6 +703,8 @@
       document.documentElement.classList.remove('boot-fly');
       g.clearRect(0, 0, VW, VH);
       cv.style.opacity = '0';
+      var lg = document.querySelector('.brand-logo');
+      if (lg) { lg.classList.add('is-landed'); setTimeout(function () { lg.classList.remove('is-landed'); }, 600); }
     }
   }
   // The transformer's predicted token ("acts.") flies to where it belongs in the tagline and stays there until the
