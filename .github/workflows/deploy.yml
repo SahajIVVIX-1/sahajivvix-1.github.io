@@ -36,6 +36,13 @@ jobs:
           CHROME: /usr/bin/google-chrome
         run: node scripts/smoke.mjs
 
+      # Another repo with Pages on and no domain of its own is served at info.sahaj.si/<repo>/ and would replace a
+      # same-named path of this site (e.g. a repo called "blog"). Fails, and so emails, when that happens.
+      - name: Check no other repo publishes over this site
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: node scripts/check-pages-paths.mjs
+
       - name: Publish to gh-pages
         env:
           DEPLOY_DEPTH: "1"
