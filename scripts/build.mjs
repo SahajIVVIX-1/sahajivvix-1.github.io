@@ -692,6 +692,20 @@ const outputs = {
   'robots.txt': `User-agent: *\nAllow: /\nSitemap: ${SITE}/sitemap.xml\n`,
   'site.webmanifest': JSON.stringify({ name: 'Sahaj Saliya', short_name: 'Sahaj', start_url: '/', display: 'standalone', background_color: '#171715', theme_color: '#171715', icons: [{ src: '/assets/brand/icon-192.png?v=4', sizes: '192x192', type: 'image/png', purpose: 'any' }, { src: '/assets/brand/icon-512.png?v=4', sizes: '512x512', type: 'image/png', purpose: 'any' }, { src: '/assets/brand/icon-maskable-512.png?v=4', sizes: '512x512', type: 'image/png', purpose: 'maskable' }] }, null, 2) + '\n',
   'resume/index.html': renderResume({ profile, projects, gwr, site: SITE }),
+  // /blog is the blog too: a static host needs a real page there, which forwards to /blogs/ at once
+  'blog/index.html': `<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Blog · Sahaj Saliya</title>
+<meta name="robots" content="noindex">
+<link rel="canonical" href="${SITE}/blogs/">
+<meta http-equiv="refresh" content="0; url=/blogs/">
+<script>location.replace('/blogs/' + location.search + location.hash);</script>
+</head>
+<body><p><a href="/blogs/">Go to the blog</a></p></body>
+</html>
+`,
   'data/site.json': { blogLive: BLOG_LIVE, posts: BLOG_LIVE ? posts.map(({ slug: s, title, date, summary, tags }) => ({ slug: s, title, date, summary, tags })) : [] },
 };
 if (BLOG_LIVE) for (const p of posts) outputs[`blogs/${p.slug}/index.html`] = renderPost(p);

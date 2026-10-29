@@ -5,6 +5,9 @@
    kept, so the restart stays fast.
    Kept as they are: back/forward, links followed inside the site, and ?noreplay (for testing). */
 (function () {
+  // /blog and anything under it (any capitalisation) is the blog at /blogs/: go there at once, keeping the rest.
+  var bm = location.pathname.match(/^\/blog(\/.*)?$/i);
+  if (bm) { location.replace('/blogs' + (bm[1] && bm[1] !== '/' ? bm[1] : '/') + location.search + location.hash); return; }
   var params = new URLSearchParams(location.search);
   var nav = null;
   try { nav = performance.getEntriesByType('navigation')[0]; } catch (e) { }
