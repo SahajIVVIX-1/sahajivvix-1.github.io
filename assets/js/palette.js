@@ -22,6 +22,7 @@ export function initPalette() {
     { label: 'LeetCode', hint: 'sahajs59', href: 'https://leetcode.com/u/sahajs59/' },
     { label: 'Email Sahaj', hint: 'mailto', href: 'mailto:sahajs7959@gmail.com' },
     { label: 'Toggle theme', hint: 'temperature', action: () => document.querySelector('[data-theme-toggle]')?.click() },
+    { label: window.__plain ? 'Full view' : 'Plain view', hint: window.__plain ? 'animation back on' : 'no loader, no animation', action: () => document.querySelector('[data-plain-toggle]')?.click() },
   ];
 
   const wrap = document.createElement('div');

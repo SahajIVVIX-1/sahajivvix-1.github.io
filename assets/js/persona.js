@@ -29,11 +29,11 @@ const CTA = {
 
 const pad = (n) => String(n).padStart(2, '0');
 
-// The visitor's own choice wins, then this page's guess, then the guess saved earlier in the session.
+// The visitor's own choice wins, then a ?for=<view> link, then this page's guess, then the guess saved earlier.
 export function currentPersona() {
   let p = null;
   try {
-    const pick = sessionStorage.getItem('personaPick');
+    const pick = sessionStorage.getItem('personaPick') || new URLSearchParams(location.search).get('for');
     if (NAMES.includes(pick)) p = pick;
     else if (window.__persona?.p) p = window.__persona.p;
     else p = JSON.parse(sessionStorage.getItem('persona') || 'null')?.p;

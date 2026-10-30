@@ -46,17 +46,43 @@ initAnchors();
 initTransitions();
 initLazy();
 initSessionTag();
+initPlain();
 // Tells the inline boot screen that the main script is ready (part of its real progress).
 window.__boot?.mark('js');
 
-// Shows the visitor's public IP (looked up by the inline head script) in the footer once it is known.
+// The visitor's public IP (looked up by the inline head script) in the footer, behind a "show" button so it is
+// never on screen unasked.
 function initSessionTag() {
   const el = document.querySelector('[data-session]');
   if (!el) return;
   (window.__ipPromise || Promise.resolve(null)).then((ip) => {
     if (!ip) return;
-    el.querySelector('b').textContent = ip;
+    const b = el.querySelector('b');
+    const show = document.createElement('button');
+    show.type = 'button';
+    show.className = 'foot-show';
+    show.textContent = 'show';
+    show.setAttribute('aria-label', 'Show your IP address');
+    show.addEventListener('click', () => { b.textContent = ip; b.focus?.(); });
+    b.replaceChildren(show);
     el.hidden = false;
+  });
+}
+
+// Plain view on or off (fresh.js reads ?plain= before anything runs): the page reloads in the other mode.
+function initPlain() {
+  const on = !!window.__plain;
+  for (const b of document.querySelectorAll('[data-plain-toggle]')) {
+    b.textContent = on ? 'full view' : 'plain view';
+    b.setAttribute('aria-pressed', String(on));
+    b.title = on ? 'Turn the loading screen, agents and animation back on' : 'No loading screen, no agents, no animation';
+  }
+  document.addEventListener('click', (e) => {
+    if (!e.target.closest('[data-plain-toggle]')) return;
+    const q = new URLSearchParams(location.search);
+    q.delete('for');
+    q.set('plain', on ? '0' : '1');
+    location.assign(`${location.pathname}?${q}${location.hash}`);
   });
 }
 

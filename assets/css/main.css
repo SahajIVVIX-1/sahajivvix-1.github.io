@@ -799,12 +799,13 @@ body.is-leaving main, body.is-leaving .site-foot { animation: softmaxOut .35s va
 .foot-i:hover + .foot-tip, .foot-i:focus-visible + .foot-tip { opacity: 1; transform: none; }
 .foot-top { font: 400 13px/1 var(--sans); padding: 7px 12px; border-radius: 999px; border: 1px solid var(--rule); background: transparent; color: var(--ink-2); cursor: pointer; transition: border-color .2s, color .2s; }
 .foot-top:hover { border-color: var(--ink-3); color: var(--ink); }
+.foot-btns { display: flex; gap: 8px; }
 .site-foot a:focus-visible, .site-foot button:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; border-radius: 6px; }
 @media (max-width: 720px) {
   .site-foot { display: grid; grid-template-columns: 1fr auto; gap: 10px 16px; padding-bottom: 84px; } /* room for the floating Ask button */
   .foot-links { grid-column: 1 / -1; grid-row: 2; margin: 0; }
   .foot-card { grid-column: 1 / -1; grid-row: 3; }
-  .foot-top { grid-column: 2; grid-row: 1; }
+  .foot-btns { grid-column: 2; grid-row: 1; }
   .foot-tip { right: auto; left: 0; }
 }
 
@@ -1209,3 +1210,14 @@ html.is-copy .site-head { top: var(--copy-h, 44px); }
 .lens-tag { overflow: hidden; text-overflow: ellipsis; }
 /* the live agents step aside while the lens is on, so their cursors do not cross its lines */
 .lens-on :is(.agent-cursor, .agent-layer) { opacity: 0 !important; transition: opacity .3s; }
+
+/* ---------- plain view (scripts/boot/fresh.js): every effect at rest ---------- */
+html.plain *, html.plain *::before, html.plain *::after {
+  animation-duration: .01ms !important; animation-delay: 0s !important; animation-iteration-count: 1 !important;
+  transition-duration: .01ms !important; transition-delay: 0s !important; scroll-behavior: auto !important;
+}
+html.plain body::before { display: none; }
+html.plain .gen-pending main > section, html.plain .gen-pending .site-foot { visibility: visible; }
+.ctx-ip { display: block; margin-bottom: 4px; color: var(--ink); font-weight: 500; font-size: 12px; }
+.foot-show { padding: 0; border: 0; background: none; color: var(--ink-2); font: inherit; text-decoration: underline dotted; text-underline-offset: .2em; cursor: pointer; }
+.foot-show:hover { color: var(--accent); }
