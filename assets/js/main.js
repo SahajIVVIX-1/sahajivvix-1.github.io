@@ -94,7 +94,7 @@ function initPlain() {
   for (const b of document.querySelectorAll('[data-plain-toggle]')) {
     b.textContent = on ? 'full view' : 'plain view';
     b.setAttribute('aria-pressed', String(on));
-    b.title = on ? 'Turn the loading screen, agents and animation back on' : 'No loading screen, no agents, no animation';
+    b.title = on ? 'Turn the loading screen and animation back on' : 'No loading screen, no animation';
   }
   document.addEventListener('click', (e) => {
     if (!e.target.closest('[data-plain-toggle]')) return;
@@ -178,14 +178,6 @@ function initLazy() {
       ? document.addEventListener('boot:done', () => setTimeout(fn, 1200), { once: true })
       : fn());
     idle(() => afterBoot(() => import('./attention.js').then((m) => m.initAttention({ lowPower }))));
-  }
-
-  // Live agents: once the loading screen has gone and the page is idle (never on first paint).
-  if (!reducedMotion && document.getElementById('top')) {
-    const afterBootAgents = (fn) => (document.documentElement.classList.contains('booting')
-      ? document.addEventListener('boot:done', () => setTimeout(fn, 2500), { once: true })
-      : setTimeout(fn, 2500));
-    afterBootAgents(() => idle(() => import('./agents.js').then((m) => m.initAgents())));
   }
 
   // Recruiter mode (paste a job description): its small module when the section is near; the model only on submit.
