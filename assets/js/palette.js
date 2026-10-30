@@ -15,7 +15,7 @@ export function initPalette() {
     { label: 'Experience', hint: 'layer 10', href: go('#experience') },
     { label: 'Certifications & GitHub', hint: 'layer 11', href: go('#certs') },
     { label: 'Contact', hint: 'layer 12', href: go('#contact') },
-    { label: 'Blog', hint: 'page', href: '/blogs/' },
+    { label: 'Blog', hint: 'blog.sahaj.si', href: 'https://blog.sahaj.si/' },
     { label: 'GitHub', hint: 'SahajIVVIX-1', href: 'https://github.com/SahajIVVIX-1' },
     { label: 'LinkedIn', hint: 'sahajs59', href: 'https://www.linkedin.com/in/sahajs59/' },
     { label: 'X', hint: '@SahajS59', href: 'https://x.com/SahajS59' },
