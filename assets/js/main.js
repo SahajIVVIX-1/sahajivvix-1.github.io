@@ -21,24 +21,43 @@ export const lowPower = matchMedia('(max-width: 700px), (pointer: coarse)').matc
   || (navigator.hardwareConcurrency || 8) <= 4
   || navigator.connection?.saveData === true;
 
+// Start-up is split into several short tasks instead of one long one, so the browser can paint and answer input in
+// between (on a slow phone the single task took close to a second). While the loading screen covers the page
+// nothing below it is visible, so the first steps may pause too; otherwise only the steps after the hero do.
+const pause = () => new Promise((r) => setTimeout(r, 0));
+const covered = () => document.documentElement.classList.contains('booting');
+
+// Off-screen sections skip layout until they come near (content-visibility in main.css), so their heights are
+// estimates and a jump within the page would land in the wrong place. The first jump (any scrollIntoView: links,
+// rail, palette, chat tools, lens tags, or a #hash in the address) lays the whole page out for the rest of the visit.
+const fullLayout = () => document.documentElement.classList.add('cv-off');
+const intoView = Element.prototype.scrollIntoView;
+Element.prototype.scrollIntoView = function (...args) { fullLayout(); return intoView.apply(this, args); };
+if (location.hash.length > 1) fullLayout();
+addEventListener('hashchange', fullLayout);
+
 checkOrigin();
 initTheme();
 // Persona first: it reorders and renumbers the layers that the rail and hero then read.
 initPersona();
 initRail();
+if (covered()) await pause();
 initHero();
 initThink();
 initGenerate({ reducedMotion, lowPower });
 // generate.js has hidden what it will animate (or decided not to): the early "hold everything" class can go
 document.documentElement.classList.remove('gen-pending');
+if (covered()) await pause();
 initGwr({ reducedMotion });
 initBadge({ reducedMotion });
 // The persona line and badge are placed: the hero can show (see "hero layout settles" in main.css).
 document.documentElement.classList.add('hero-laid');
+await pause();
 initFooter({ reducedMotion, lowPower });
 initBrand({ reducedMotion });
 initTiles({ reducedMotion, lowPower });
 initLoss();
+await pause();
 initHeader();
 initResume();
 initContext({ reducedMotion });
