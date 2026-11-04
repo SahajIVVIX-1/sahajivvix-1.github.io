@@ -98,7 +98,7 @@ Qdrant, ChromaDB, PostgreSQL, MySQL and MongoDB, plus Hadoop, HDFS and MapReduce
 He holds the AWS certification "Generative AI and AI Agents with Amazon Bedrock" and lists AWS Bedrock among his frameworks. He deploys with Docker, Kubernetes and Hugging Face Spaces.
 
 ## What certifications does Sahaj have? {#certifications}
-Agentic AI with LangChain and LangGraph (IBM); Fundamentals of Building AI Agents (IBM); AWS Generative AI and AI Agents with Amazon Bedrock (Amazon Web Services); Deep Learning (IIT Ropar, NPTEL, score 66%); Data Structures & Algorithms with Python (Udemy).
+Agentic AI with LangChain and LangGraph (IBM); Fundamentals of Building AI Agents (IBM); AWS Generative AI and AI Agents with Amazon Bedrock (Amazon Web Services); Deep Learning (IIT Ropar, NPTEL, score 66%); Data Structures & Algorithms with Python (Udemy). He also has 9 Harvard ManageMentor® completion badges from Harvard Business Impact (October to November 2026): short online management programs in Marketing Essentials, Leading with Generative AI, Time Management, Project Management, Writing Skills, Team Management, Strategy Planning and Execution, Strategic Thinking and Negotiating. They are not a degree.
 
 ## What is Sahaj's community involvement? {#community}
 Lead Convener of IEEE AIMV 2025 (the 2nd International Conference on Artificial Intelligence and Machine Vision at PDEU, Aug 2025); AI/ML Core-Committee Member (2024 to 2025) and Sub-Committee Member (2023 to 2024) at Encode PDEU; Volunteer Assistant with the National Service Scheme (2023 to 2024); and long-running volunteer data management (backups, sync, data security) for the Swaminarayan Temple in Vadodara since 2019.

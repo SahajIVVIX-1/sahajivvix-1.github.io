@@ -1,5 +1,5 @@
 {
-  "_note": "Visual descriptions for 'show it an image' on the map (scripts/clip.mjs). Only skills that something in a picture can stand for are listed; projects take theirs from the \"visual\" field in projects.json. Keys must match a skill name in profile.json. \"other\" are everyday classes with no link to his work: an image closest to one of them is reported as not matching his work.",
+  "_note": "Visual descriptions for 'show it an image' on the map (scripts/clip.mjs). Only skills that something in a picture can stand for are listed; projects take theirs from the \"visual\" field in projects.json. Keys must match a skill name in profile.json. \"adapters\" describe the Harvard ManageMentor badges and certificates (#adapters). \"other\" are everyday classes with no link to his work: an image closest to one of them is reported as not matching his work.",
   "skills": {
     "Computer Vision": [
       "a photo covered in coloured bounding boxes with labels",
@@ -55,6 +55,13 @@
       "a web app dashboard with sliders and charts"
     ]
   },
+  "adapters": [
+    "a shield-shaped digital badge with the word HARVARD and ManageMentor on it",
+    "a colourful gradient shield badge with a white line icon",
+    "a digital course completion badge shaped like a shield",
+    "a landscape certificate of completion with a dark green and black sidebar and a signature",
+    "a certificate with a green shield logo that says Harvard Business Impact"
+  ],
   "other": [
     "a photo of a landscape",
     "a photo of an animal",

@@ -46,6 +46,8 @@
     var motion = !(window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches);
     var willGen = motion && !params.has('noreplay') && (params.has('replay') || fresh || !localStorage.getItem('sahaj:generated'));
     if (willGen) document.documentElement.classList.add('gen-pending');
+    // The adapter rack (#adapters) merges in on every load, so its badges are held back the same way (adapters.js)
+    if (motion && !params.has('noreplay')) document.documentElement.classList.add('ad-pending');
   } catch (e) { }
   if (!fresh && !bounce) return;
   try { history.scrollRestoration = 'manual'; } catch (e) { }

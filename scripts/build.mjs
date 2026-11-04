@@ -37,6 +37,7 @@ for (const [name, code] of [['fresh.js', BOOT_FRESH], ['head.js', BOOT_HEAD], ['
 const bootHtml = () => `<div id="boot-live" class="bs" role="status" aria-live="polite"></div><div id="boot" aria-hidden="true"><div class="boot-box"><p class="boot-cap" id="boot-cap"><span>forward pass · layer 1/5 · 0%</span><span>τ 0.7 · weights seeded per visitor</span></p><p class="boot-feat" id="boot-feat"></p><div class="boot-stage"><canvas id="boot-cv"></canvas></div><p class="boot-greet" id="boot-greet"></p><p class="boot-clock" id="boot-clock"></p><div class="boot-bottom"><ul id="boot-log"></ul><div class="boot-mat"><canvas id="boot-mat"></canvas><p>attention · head 3</p></div></div><p class="boot-hint"><span>heuristic guess · computed in your browser; only your public IP is looked up</span><span>click or press any key to skip</span></p></div></div><script>${BOOT_JS.replace('__V__', ASSET_VERSION)}</script>`;
 const profile = readJSON('content/profile.json');
 const gwr = readJSON('content/guinness.json');
+const harvard = readJSON('content/harvard.json', { programs: [] }).programs;
 // the header logo: Sahaj's own artwork (scripts/brand.mjs), the light and dark versions stacked so the theme
 // toggle can cross-fade them; the scroll-progress ring and the ticks are drawn around it
 const LOGO_MARK = '<image class="logo-img logo-l" href="/assets/brand/logo-light.webp?v=4" x="3" y="3" width="34" height="34"/><image class="logo-img logo-d" href="/assets/brand/logo-dark.webp?v=4" x="3" y="3" width="34" height="34"/>';
@@ -468,7 +469,7 @@ function experienceSection() {
     </article>`).join('\n    ')}
     <aside class="community" id="community">
       <h3 class="mono sg-name">Community</h3>
-      <ul>${profile.community.map((c) => `<li><span class="c-role">${esc(c.role)}</span><span class="muted"> · ${esc(c.org)}</span><span class="mono c-when">${c.end === null ? `${fmtMonth(c.start).split(' ')[1]} – now` : fmtRange(c.start, c.end)}</span></li>`).join('')}</ul>
+      <ul>${profile.community.map((c) => `<li id="c-${slug(c.role)}"><span class="c-role">${esc(c.role)}</span><span class="muted"> · ${esc(c.org)}</span><span class="mono c-when">${c.end === null ? `${fmtMonth(c.start).split(' ')[1]} – now` : fmtRange(c.start, c.end)}</span></li>`).join('')}</ul>
     </aside>
   </div>
   ${trainingLog()}
@@ -577,7 +578,51 @@ function evalSection() {
       <ul class="gh-recent">${recent.map((r) => `<li><a class="tok-link" href="${r.url}" rel="noopener">${esc(r.name)}</a><span class="mono muted">${r.pushed_at.slice(0, 10)}</span></li>`).join('')}</ul>` : `<p class="muted">GitHub data appears after the first sync.</p>`}
     </div>
   </div>
+  ${adaptersBlock()}
 </section>`;
+}
+
+// The Harvard ManageMentor completion badges (content/harvard.json) as "adapters merged into the base model": the
+// base model card, the rack of badges (each flips to its certificate and opens a lightbox) and a plain list for plain
+// view and the Recruiter persona. assets/js/adapters.js runs the merge animation. Wording rules: short online
+// programs from Harvard Business Impact, never a degree; "r=8" is decorative LoRA notation only.
+function adaptersBlock() {
+  if (!harvard.length) return '';
+  const n = harvard.length;
+  const first = harvard[0].month, last = harvard[n - 1].month;
+  const span = first.slice(0, 4) === last.slice(0, 4) ? `${fmtMonth(first).split(' ')[0]} to ${fmtMonth(last)}` : `${fmtMonth(first)} to ${fmtMonth(last)}`;
+  const long = (ym) => new Date(`${ym}-01T00:00:00Z`).toLocaleString('en-US', { month: 'long', year: 'numeric', timeZone: 'UTC' });
+  const alt = (p) => `Harvard ManageMentor completion badge: ${p.program}, ${long(p.month)}`;
+  const slot = (p, i) => `<li class="ad-slot${p.focus ? ' is-focus' : ''}" data-ad="${p.slug}" style="--i:${i}">
+        <button class="ad-badge" type="button" aria-haspopup="dialog" data-ad-open>
+          <span class="ad-card" style="--front:url('${p.badge.small}');--back:url('${p.certificate.tile}')"><img class="ad-front" src="${p.badge.small}" srcset="${p.badge.small} 256w, ${p.badge.src} 512w" sizes="(min-width: 900px) 132px, 120px" width="${p.badge.width}" height="${p.badge.height}" alt="${esc(alt(p))}" loading="lazy" decoding="async"><img class="ad-back" src="${p.certificate.tile}" width="${p.badge.width}" height="${p.badge.height}" alt="" aria-hidden="true" loading="lazy" decoding="async"></span>
+          <span class="ad-prog" aria-hidden="true"></span>
+        </button>
+        <p class="ad-label mono" aria-hidden="true"><span class="ad-name">adapter/${p.slug}</span><span class="ad-meta">r=8 · ${fmtMonth(p.month)}</span><span class="ad-file"></span></p>
+        ${p.focus ? `<span class="ad-tag mono">${esc(p.focus)}</span>` : ''}
+      </li>`;
+  const data = harvard.map((p) => ({ slug: p.slug, program: p.program, month: long(p.month), file: p.file, cert: p.certificate.src, w: p.certificate.width, h: p.certificate.height, pdf: p.pdf, links: p.links || [] }));
+  return `<div class="adapters" id="adapters" aria-labelledby="ad-h" data-adapters>
+    <h3 id="ad-h" class="mono sg-name">Adapters · Harvard ManageMentor</h3>
+    <p class="ad-sub">${n} short online management programs from Harvard ManageMentor®, Harvard Business Impact, completed ${span}. Drawn as LoRA adapters: small add-ons merged on top of an AI-engineer base model, adding management skills without changing the core. Completion badges, not a degree.</p>
+    <div class="ad-grid">
+      <div class="ad-base mono" data-ad-base>
+        <p class="ad-base-h">model card</p>
+        <dl>
+          <div><dt>base</dt><dd>sahaj-saliya · AI engineer</dd></div>
+          <div><dt>adapters merged</dt><dd><span class="ad-n" data-ad-n>${n}</span> / ${n}<span class="ad-ok" aria-hidden="true"> ✓</span></dd></div>
+          <div><dt>issuer</dt><dd>Harvard Business Impact</dd></div>
+        </dl>
+        <p class="ad-base-note">r=8 on each adapter is LoRA notation for decoration, not a measurement.</p>
+      </div>
+      <ol class="ad-rack" data-ad-rack aria-label="Harvard ManageMentor completion badges, oldest first">
+      ${harvard.map(slot).join('\n      ')}
+      </ol>
+      <svg class="ad-wires" aria-hidden="true" data-ad-wires></svg>
+    </div>
+    <ol class="ad-plain">${harvard.map((p) => `<li><span class="ad-plain-name">${esc(p.program)}</span> <span class="mono muted">· ${fmtMonth(p.month)}</span> <a class="tok-link" href="${p.pdf}" download>certificate (PDF)</a></li>`).join('')}</ol>
+    <script type="application/json" data-ad-data>${JSON.stringify(data).replace(/</g, '\\u003c')}</script>
+  </div>`;
 }
 
 // Recruiter mode: paste a job description, get a match report from Sahaj's own data (assets/js/fit.js). It is a
@@ -738,7 +783,7 @@ const outputs = {
   'sitemap.xml': sitemap(),
   'robots.txt': `User-agent: *\nAllow: /\nSitemap: ${SITE}/sitemap.xml\n`,
   'site.webmanifest': JSON.stringify({ name: 'Sahaj Saliya', short_name: 'Sahaj', start_url: '/', display: 'standalone', background_color: '#171715', theme_color: '#171715', icons: [{ src: '/assets/brand/icon-192.png?v=4', sizes: '192x192', type: 'image/png', purpose: 'any' }, { src: '/assets/brand/icon-512.png?v=4', sizes: '512x512', type: 'image/png', purpose: 'any' }, { src: '/assets/brand/icon-maskable-512.png?v=4', sizes: '512x512', type: 'image/png', purpose: 'maskable' }] }, null, 2) + '\n',
-  'resume/index.html': renderResume({ profile, projects, gwr, site: SITE }),
+  'resume/index.html': renderResume({ profile, projects, gwr, harvard, site: SITE }),
   'blog/index.html': blogRedirect(),
   'data/fit.json': fitData(),
   'data/site.json': { blog: `${BLOG}/` },
@@ -778,8 +823,26 @@ function fitData() {
     projects: projects.map((p) => ({ id: p.id, name: p.name, kind: p.kind, year: p.year, metric: p.metric, stack: p.stack, summary: `${first(p.problem)} ${first(p.approach)}`, url: `#p-${p.id}`, repo: `https://github.com/SahajIVVIX-1/${p.repo}` })),
     experience: profile.experience.map((r) => ({ id: r.id, role: r.role, org: r.org, kind: r.kind, when: fmtRange(r.start, r.end), points: r.points, url: `#x-${r.id}` })),
     certifications: profile.certifications,
+    programs: harvardFit(),
     achievement: `${gwr.title} · ${gwr.year}`,
   };
+}
+
+// Recruiter mode evidence from the Harvard ManageMentor programs: which job-description words each program can be
+// cited for. They count as a partial match at most (a short program, not experience) and are labelled that way.
+function harvardFit() {
+  const WORDS = {
+    'team-management': ['leadership', 'lead a team', 'leading teams', 'team lead', 'team management', 'people management', 'manage a team', 'managing teams', 'mentoring', 'mentor'],
+    'project-management': ['project management', 'manage projects', 'managing projects', 'project planning', 'deliver projects', 'delivery', 'milestones', 'stakeholders'],
+    'time-management': ['time management', 'prioritization', 'prioritisation', 'prioritize', 'prioritise', 'deadlines', 'multitasking', 'multi-task'],
+    'writing-skills': ['communication', 'communicate', 'written communication', 'writing', 'technical writing', 'documentation', 'communication skills'],
+    'negotiating': ['negotiation', 'negotiating', 'negotiate'],
+    'strategic-thinking': ['strategic thinking', 'strategic', 'strategy'],
+    'strategy-planning-and-execution': ['strategy', 'strategic planning', 'execution', 'roadmap', 'planning and execution'],
+    'marketing-essentials': ['marketing', 'go-to-market', 'go to market', 'product marketing'],
+    'leading-with-generative-ai': ['ai strategy', 'ai adoption', 'ai leadership', 'leading ai', 'genai adoption', 'generative ai strategy'],
+  };
+  return harvard.map((p) => ({ program: p.program, month: fmtMonth(p.month), url: '#adapters', words: WORDS[p.slug] || [p.program.toLowerCase()] }));
 }
 
 // Build manifest: the source commit plus a SHA-256 of every data file, so the footer can check that the data it is

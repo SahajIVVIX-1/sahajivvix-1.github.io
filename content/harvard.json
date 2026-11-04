@@ -1,0 +1,228 @@
+{
+  "_note": "Harvard ManageMentor completion badges (short online management programs from Harvard Business Impact; not degrees or university courses). Facts are read from each certificate PDF by scripts/harvard-assets.mjs. Added by hand: \"links\" (only where a real counterpart is on the page: the attention lines on hover) and \"focus\".",
+  "programs": [
+    {
+      "program": "Marketing Essentials",
+      "slug": "marketing-essentials",
+      "month": "2026-10",
+      "issuer": "Harvard ManageMentor®, Harvard Business Impact (with HBI Education)",
+      "file": "hmm_marketing_essentials_badge",
+      "mtime": "2026-11-04T09:07:58.463Z",
+      "badge": {
+        "src": "/assets/achievements/harvard/marketing-essentials/badge-512.webp",
+        "small": "/assets/achievements/harvard/marketing-essentials/badge-256.webp",
+        "width": 1000,
+        "height": 1280
+      },
+      "certificate": {
+        "src": "/assets/achievements/harvard/marketing-essentials/certificate.webp",
+        "thumb": "/assets/achievements/harvard/marketing-essentials/certificate-thumb.webp",
+        "tile": "/assets/achievements/harvard/marketing-essentials/certificate-tile.webp",
+        "width": 1600,
+        "height": 1236
+      },
+      "pdf": "/assets/achievements/harvard/marketing-essentials/certificate.pdf",
+      "links": []
+    },
+    {
+      "program": "Leading with Generative AI",
+      "slug": "leading-with-generative-ai",
+      "month": "2026-10",
+      "issuer": "Harvard ManageMentor®, Harvard Business Impact (with HBI Education)",
+      "file": "hmm_leading_with_generative_ai_badge",
+      "mtime": "2026-11-04T09:10:31.308Z",
+      "badge": {
+        "src": "/assets/achievements/harvard/leading-with-generative-ai/badge-512.webp",
+        "small": "/assets/achievements/harvard/leading-with-generative-ai/badge-256.webp",
+        "width": 1000,
+        "height": 1280
+      },
+      "certificate": {
+        "src": "/assets/achievements/harvard/leading-with-generative-ai/certificate.webp",
+        "thumb": "/assets/achievements/harvard/leading-with-generative-ai/certificate-thumb.webp",
+        "tile": "/assets/achievements/harvard/leading-with-generative-ai/certificate-tile.webp",
+        "width": 1600,
+        "height": 1236
+      },
+      "pdf": "/assets/achievements/harvard/leading-with-generative-ai/certificate.pdf",
+      "links": [
+        {
+          "sel": "#x-hnnoix",
+          "label": "Research & Innovation Intern, HNNOIX"
+        }
+      ],
+      "focus": "closest to my work"
+    },
+    {
+      "program": "Time Management",
+      "slug": "time-management",
+      "month": "2026-11",
+      "issuer": "Harvard ManageMentor®, Harvard Business Impact (with HBI Education)",
+      "file": "hmm_time_management_badge",
+      "mtime": "2026-11-03T15:51:20.000Z",
+      "badge": {
+        "src": "/assets/achievements/harvard/time-management/badge-512.webp",
+        "small": "/assets/achievements/harvard/time-management/badge-256.webp",
+        "width": 1000,
+        "height": 1280
+      },
+      "certificate": {
+        "src": "/assets/achievements/harvard/time-management/certificate.webp",
+        "thumb": "/assets/achievements/harvard/time-management/certificate-thumb.webp",
+        "tile": "/assets/achievements/harvard/time-management/certificate-tile.webp",
+        "width": 1600,
+        "height": 1236
+      },
+      "pdf": "/assets/achievements/harvard/time-management/certificate.pdf",
+      "links": []
+    },
+    {
+      "program": "Project Management",
+      "slug": "project-management",
+      "month": "2026-11",
+      "issuer": "Harvard ManageMentor®, Harvard Business Impact (with HBI Education)",
+      "file": "hmm_project_management_badge",
+      "mtime": "2026-11-03T16:07:46.000Z",
+      "badge": {
+        "src": "/assets/achievements/harvard/project-management/badge-512.webp",
+        "small": "/assets/achievements/harvard/project-management/badge-256.webp",
+        "width": 1000,
+        "height": 1280
+      },
+      "certificate": {
+        "src": "/assets/achievements/harvard/project-management/certificate.webp",
+        "thumb": "/assets/achievements/harvard/project-management/certificate-thumb.webp",
+        "tile": "/assets/achievements/harvard/project-management/certificate-tile.webp",
+        "width": 1600,
+        "height": 1236
+      },
+      "pdf": "/assets/achievements/harvard/project-management/certificate.pdf",
+      "links": [
+        {
+          "sel": "#work-h",
+          "label": "projects (model cards)"
+        }
+      ]
+    },
+    {
+      "program": "Writing Skills",
+      "slug": "writing-skills",
+      "month": "2026-11",
+      "issuer": "Harvard ManageMentor®, Harvard Business Impact (with HBI Education)",
+      "file": "hmm_writing_skills_badge",
+      "mtime": "2026-11-03T16:39:12.000Z",
+      "badge": {
+        "src": "/assets/achievements/harvard/writing-skills/badge-512.webp",
+        "small": "/assets/achievements/harvard/writing-skills/badge-256.webp",
+        "width": 1000,
+        "height": 1280
+      },
+      "certificate": {
+        "src": "/assets/achievements/harvard/writing-skills/certificate.webp",
+        "thumb": "/assets/achievements/harvard/writing-skills/certificate-thumb.webp",
+        "tile": "/assets/achievements/harvard/writing-skills/certificate-tile.webp",
+        "width": 1600,
+        "height": 1236
+      },
+      "pdf": "/assets/achievements/harvard/writing-skills/certificate.pdf",
+      "links": []
+    },
+    {
+      "program": "Team Management",
+      "slug": "team-management",
+      "month": "2026-11",
+      "issuer": "Harvard ManageMentor®, Harvard Business Impact (with HBI Education)",
+      "file": "hmm_team_management_badge",
+      "mtime": "2026-11-03T17:00:50.000Z",
+      "badge": {
+        "src": "/assets/achievements/harvard/team-management/badge-512.webp",
+        "small": "/assets/achievements/harvard/team-management/badge-256.webp",
+        "width": 1000,
+        "height": 1280
+      },
+      "certificate": {
+        "src": "/assets/achievements/harvard/team-management/certificate.webp",
+        "thumb": "/assets/achievements/harvard/team-management/certificate-thumb.webp",
+        "tile": "/assets/achievements/harvard/team-management/certificate-tile.webp",
+        "width": 1600,
+        "height": 1236
+      },
+      "pdf": "/assets/achievements/harvard/team-management/certificate.pdf",
+      "links": [
+        {
+          "sel": "#c-lead-convener-ieee-aimv-2025",
+          "label": "Lead Convener, IEEE AIMV 2025"
+        }
+      ]
+    },
+    {
+      "program": "Strategy Planning and Execution",
+      "slug": "strategy-planning-and-execution",
+      "month": "2026-11",
+      "issuer": "Harvard ManageMentor®, Harvard Business Impact (with HBI Education)",
+      "file": "hmm_strategy_planning_and_execution_badge",
+      "mtime": "2026-11-03T17:54:32.000Z",
+      "badge": {
+        "src": "/assets/achievements/harvard/strategy-planning-and-execution/badge-512.webp",
+        "small": "/assets/achievements/harvard/strategy-planning-and-execution/badge-256.webp",
+        "width": 1000,
+        "height": 1280
+      },
+      "certificate": {
+        "src": "/assets/achievements/harvard/strategy-planning-and-execution/certificate.webp",
+        "thumb": "/assets/achievements/harvard/strategy-planning-and-execution/certificate-thumb.webp",
+        "tile": "/assets/achievements/harvard/strategy-planning-and-execution/certificate-tile.webp",
+        "width": 1600,
+        "height": 1236
+      },
+      "pdf": "/assets/achievements/harvard/strategy-planning-and-execution/certificate.pdf",
+      "links": []
+    },
+    {
+      "program": "Strategic Thinking",
+      "slug": "strategic-thinking",
+      "month": "2026-11",
+      "issuer": "Harvard ManageMentor®, Harvard Business Impact (with HBI Education)",
+      "file": "hmm_strategic_thinking_badge",
+      "mtime": "2026-11-03T18:05:00.000Z",
+      "badge": {
+        "src": "/assets/achievements/harvard/strategic-thinking/badge-512.webp",
+        "small": "/assets/achievements/harvard/strategic-thinking/badge-256.webp",
+        "width": 1000,
+        "height": 1280
+      },
+      "certificate": {
+        "src": "/assets/achievements/harvard/strategic-thinking/certificate.webp",
+        "thumb": "/assets/achievements/harvard/strategic-thinking/certificate-thumb.webp",
+        "tile": "/assets/achievements/harvard/strategic-thinking/certificate-tile.webp",
+        "width": 1600,
+        "height": 1236
+      },
+      "pdf": "/assets/achievements/harvard/strategic-thinking/certificate.pdf",
+      "links": []
+    },
+    {
+      "program": "Negotiating",
+      "slug": "negotiating",
+      "month": "2026-11",
+      "issuer": "Harvard ManageMentor®, Harvard Business Impact (with HBI Education)",
+      "file": "hmm_negotiating_badge",
+      "mtime": "2026-11-03T18:19:18.000Z",
+      "badge": {
+        "src": "/assets/achievements/harvard/negotiating/badge-512.webp",
+        "small": "/assets/achievements/harvard/negotiating/badge-256.webp",
+        "width": 1000,
+        "height": 1280
+      },
+      "certificate": {
+        "src": "/assets/achievements/harvard/negotiating/certificate.webp",
+        "thumb": "/assets/achievements/harvard/negotiating/certificate-thumb.webp",
+        "tile": "/assets/achievements/harvard/negotiating/certificate-tile.webp",
+        "width": 1600,
+        "height": 1236
+      },
+      "pdf": "/assets/achievements/harvard/negotiating/certificate.pdf",
+      "links": []
+    }
+  ]
+}

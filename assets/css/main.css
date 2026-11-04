@@ -1184,3 +1184,128 @@ html.plain .gen-pending main > section, html.plain .gen-pending .site-foot { vis
 main > section:not(#top) { content-visibility: auto; contain-intrinsic-size: auto 1000px; }
 html.cv-off main > section:not(#top) { content-visibility: visible; }
 @media print { main > section { content-visibility: visible; } }
+
+/* ---------- adapters: the Harvard ManageMentor badges (assets/js/adapters.js) ---------- */
+/* The purple shields sit on a neutral tile in both themes: warm white on paper, a neutral charcoal (not the navy) at night. */
+:root { --ad-tile: #FCFBF8; --ad-edge: #DDD5C6; }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { --ad-tile: #18191D; --ad-edge: #2C2D33; } }
+:root[data-theme="dark"] { --ad-tile: #18191D; --ad-edge: #2C2D33; }
+
+.adapters { position: relative; margin-top: 72px; padding-top: 28px; border-top: 1px solid var(--rule); scroll-margin-top: 90px; }
+.ad-sub { max-width: 70ch; margin: 10px 0 28px; color: var(--ink-2); font-size: 15px; line-height: 1.55; }
+.ad-grid { position: relative; display: grid; gap: 24px; }
+.ad-base { position: relative; z-index: 1; align-self: start; padding: 18px 18px 16px; border: 1px solid var(--rule-2); border-radius: var(--radius); background: var(--paper-2); font-size: 12.5px; transition: border-color .4s var(--ease), box-shadow .4s var(--ease); }
+.ad-base.is-merged { border-color: var(--accent-line); box-shadow: 0 0 0 3px var(--accent-soft); }
+.ad-base-h { margin: 0 0 12px; color: var(--ink-3); font-size: 10.5px; letter-spacing: .1em; text-transform: uppercase; }
+.ad-base dl { display: grid; gap: 10px; margin: 0; }
+.ad-base dl > div { display: grid; gap: 1px; }
+.ad-base dt { color: var(--ink-3); font-size: 11px; }
+.ad-base dd { margin: 0; color: var(--ink); font-size: 13px; }
+.ad-n { display: inline-block; min-width: 1ch; color: var(--accent); font-weight: 600; }
+.ad-n.is-bump { animation: adBump .3s var(--ease-out); }
+@keyframes adBump { 40% { transform: translateY(-3px); } }
+.ad-ok { color: var(--accent); font-weight: 600; transition: opacity .3s; }
+.ad-base-note { margin: 14px 0 0; color: var(--ink-3); font: 400 11.5px/1.45 var(--sans); }
+
+.ad-rack { position: relative; z-index: 1; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 26px 16px; margin: 0; padding: 12px 0 0; list-style: none; }
+.ad-slot { position: relative; display: grid; justify-items: center; align-content: start; gap: 8px; min-width: 0; }
+.ad-badge { display: grid; justify-items: center; gap: 8px; width: 100%; max-width: 172px; padding: 12px 12px 9px; border: 1px solid var(--ad-edge); border-radius: 12px; background: var(--ad-tile); color: inherit; cursor: pointer; transition: border-color .25s var(--ease); }
+.ad-badge:hover { border-color: var(--rule-2); }
+.ad-badge:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+.ad-card { position: relative; display: block; width: 104px; aspect-ratio: 1000 / 1280; transition: opacity .35s var(--ease), filter .35s var(--ease), transform .35s var(--ease-out); }
+.ad-card img { position: absolute; inset: 0; display: block; width: 100%; height: 100%; transition: opacity .15s linear; }
+.ad-back, .ad-card.is-back .ad-front { opacity: 0; }
+.ad-card.is-back .ad-back { opacity: 1; }
+.ad-prog { display: block; width: 100%; height: 2px; border-radius: 2px; background: var(--rule); overflow: hidden; opacity: 0; transition: opacity .4s .25s; }
+.ad-prog::after { content: ""; display: block; height: 100%; background: var(--accent); transform: scaleX(0); transform-origin: left; }
+.ad-slot.is-loading .ad-prog { opacity: 1; transition: none; }
+.ad-slot.is-loading .ad-prog::after { transform: scaleX(1); transition: transform .42s linear; }
+.ad-label { position: relative; display: grid; justify-items: center; gap: 1px; max-width: 100%; margin: 0; color: var(--ink-3); font-size: 10.5px; line-height: 1.4; text-align: center; }
+.ad-name { color: var(--ink-2); }
+.ad-name, .ad-meta { transition: opacity .3s var(--ease); }
+/* the file name, tokenised in over the label while the badge loads: tokens of a word sit flush, lines wrap only between words */
+.ad-file { position: absolute; inset: 0 0 auto; color: var(--ink-2); font-size: 10px; line-height: 1.6; opacity: 0; transition: opacity .3s var(--ease); }
+.ad-w { white-space: nowrap; }
+.ad-file .tkn { line-height: 1.25; }
+.ad-slot.is-loading .ad-file { opacity: 1; transition: none; }
+.ad-slot.is-focus .ad-badge { border-color: var(--accent-line); box-shadow: 0 0 0 3px var(--accent-soft); }
+.ad-tag { position: absolute; top: -10px; left: 50%; z-index: 2; transform: translateX(-50%); padding: 2px 8px; border: 1px solid var(--accent-line); border-radius: 999px; background: var(--paper); color: var(--accent); font-size: 10px; line-height: 1.4; white-space: nowrap; transition: opacity .3s var(--ease); }
+
+/* flip tiles: the badge split in a 4 x 5 grid, each tile turning over to its piece of the certificate (like the portrait) */
+.ad-tiles { position: absolute; inset: 0; display: grid; grid-template: repeat(5, 1fr) / repeat(4, 1fr); perspective: 520px; opacity: 0; pointer-events: none; }
+.ad-card.is-tiling .ad-tiles { opacity: 1; }
+.ad-card.is-tiling img { opacity: 0; transition: none; }
+.ad-tiles i { position: relative; transform-style: preserve-3d; transition: transform .42s cubic-bezier(.65, 0, .35, 1) var(--d, 0ms); }
+.ad-card.is-turned .ad-tiles i { transform: rotateY(180deg); }
+.ad-card.is-turned .ad-tiles i.ax { transform: rotateX(180deg); }
+.ad-tiles b { position: absolute; inset: -.3px; backface-visibility: hidden; -webkit-backface-visibility: hidden; background: var(--front) calc(var(--x) * 100% / 3) calc(var(--y) * 100% / 4) / 400% 500% no-repeat; }
+.ad-tiles b + b { background-image: var(--back); transform: rotateY(180deg); }
+.ad-tiles i.ax b + b { transform: rotateX(180deg); }
+
+.ad-wires { position: absolute; inset: 0; z-index: 0; width: 100%; height: 100%; overflow: visible; pointer-events: none; }
+.ad-wires path { fill: none; stroke: var(--accent); stroke-width: 1; stroke-dasharray: 1; stroke-dashoffset: 1; opacity: .55; }
+.ad-wires path.is-draw { stroke-dashoffset: 0; transition: stroke-dashoffset .5s var(--ease-out); }
+.ad-wires.is-out path { opacity: 0; transition: opacity .5s; }
+.attn-layer .ad-attn { opacity: .5; }
+.attn-layer text.ad-attn { opacity: .9; paint-order: stroke; stroke: var(--paper); stroke-width: 4px; stroke-linejoin: round; }
+
+/* merge: held back from the first paint (fresh.js sets html.ad-pending), then one badge at a time */
+html.ad-pending .ad-slot:not(.is-in) :is(.ad-card, .ad-name, .ad-meta, .ad-tag) { opacity: 0; }
+html.ad-pending .ad-slot.is-loading .ad-card { opacity: .5; filter: blur(2px) grayscale(.5); transform: scale(.94); }
+html.ad-pending .ad-n { visibility: hidden; }
+html.ad-pending.ad-armed .ad-n { visibility: visible; }
+html.ad-pending .ad-base:not(.is-merged) .ad-ok { opacity: 0; }
+/* safety: if the script never runs, everything shows after 10 s */
+html.ad-pending:not(.ad-armed) .ad-slot :is(.ad-card, .ad-name, .ad-meta, .ad-tag) { animation: adSafe 0s 10s forwards; }
+html.ad-pending:not(.ad-armed) .ad-n { animation: adSafe 0s 10s forwards; }
+@keyframes adSafe { to { opacity: 1; visibility: visible; } }
+
+/* phones: a horizontal strip with scroll snap instead of the 3 x 3 grid */
+@media (max-width: 699px) {
+  .ad-rack { grid-template-columns: none; grid-auto-flow: column; grid-auto-columns: 144px; gap: 12px; margin-inline: calc(-1 * var(--gutter)); padding: 14px var(--gutter) 10px; overflow-x: auto; overscroll-behavior-x: contain; scroll-snap-type: x mandatory; scroll-padding-inline: var(--gutter); }
+  .ad-slot { scroll-snap-align: start; }
+  .ad-sub { font-size: 14.5px; margin-bottom: 18px; }
+  /* a compact model card, so the strip starts on the first screen */
+  .ad-base { padding: 12px 14px; }
+  .ad-base-h { display: none; }
+  .ad-base dl { gap: 4px; }
+  .ad-base dl > div { grid-template-columns: 8.6em minmax(0, 1fr); gap: 8px; align-items: baseline; }
+  .ad-base dd { font-size: 12px; }
+  .ad-base-note { margin-top: 8px; font-size: 11px; }
+}
+@media (min-width: 900px) {
+  .ad-grid { grid-template-columns: 236px minmax(0, 1fr); gap: 48px; }
+  .ad-base { position: sticky; top: 110px; }
+  .ad-card { width: 108px; }
+}
+
+/* plain view and the Recruiter view: a simple list with the certificates */
+.ad-plain { display: none; margin: 0; padding: 0; list-style: none; border-top: 1px solid var(--rule); counter-reset: ad; }
+.ad-plain li { display: flex; flex-wrap: wrap; gap: 4px 10px; align-items: baseline; padding: 12px 0; border-bottom: 1px solid var(--rule); counter-increment: ad; }
+.ad-plain li::before { content: counter(ad, decimal-leading-zero); color: var(--ink-3); font: 400 12px var(--mono); }
+.ad-plain .tok-link { font-size: 13px; }
+html.plain .adapters .ad-grid, html[data-persona="recruiter"] .adapters .ad-grid { display: none; }
+html.plain .ad-plain, html[data-persona="recruiter"] .ad-plain { display: grid; }
+
+@media (prefers-reduced-motion: reduce) {
+  .ad-card, .ad-n.is-bump { transition: none; animation: none; }
+}
+@media print { .adapters .ad-grid { display: none; } .ad-plain { display: grid; } .ad-lb { display: none; } }
+
+/* lightbox: the full certificate, its PDF and the issuer line */
+.ad-lb { position: fixed; inset: 0; z-index: 90; display: grid; place-items: center; padding: 16px; overflow: auto; background: rgba(8, 10, 18, .88); backdrop-filter: blur(6px); animation: lbIn .2s var(--ease-out); }
+.ad-lb-panel { display: grid; gap: 12px; width: min(960px, 100%); color: #E8E2D4; }
+.ad-lb-bar { display: flex; gap: 12px; align-items: center; justify-content: space-between; }
+.ad-lb-t { margin: 0; font: 500 clamp(1.05rem, .9rem + .8vw, 1.4rem)/1.25 var(--sans); letter-spacing: -.01em; }
+.ad-lb-t .mono { color: #A9A497; font-size: 12px; letter-spacing: 0; }
+.ad-lb-fig { margin: 0; overflow: hidden; border-radius: 8px; background: #fff; }
+.ad-lb-fig img { display: block; width: 100%; height: auto; max-height: 68vh; object-fit: contain; }
+.ad-lb-q { margin: 0; color: #D6D0C2; font: italic 400 15px/1.5 var(--sans); }
+.ad-lb-issuer { margin: 0; color: #A9A497; font-size: 11.5px; line-height: 1.5; }
+.ad-lb-actions { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+.ad-lb-actions .sp { flex: 1; }
+.ad-lb-pos { color: #A9A497; font-size: 12px; }
+.ad-lb button, .ad-lb-dl { padding: 9px 13px; border: 1px solid rgba(255, 255, 255, .25); border-radius: 999px; background: rgba(255, 255, 255, .06); color: #EEE; font: 400 13px/1 var(--sans); text-decoration: none; cursor: pointer; }
+.ad-lb-dl { border-color: #FF8A5B; background: #FF8A5B; color: #1A0B04; font-weight: 500; }
+.ad-lb button:hover { border-color: #FF8A5B; }
+.ad-lb :is(button, a):focus-visible { outline: 2px solid #fff; outline-offset: 2px; }

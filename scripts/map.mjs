@@ -104,7 +104,7 @@ function faqEntries(md) {
 }
 
 /* ---------- collect every real chunk ---------- */
-export function collectChunks({ profile, projects, github, aboutMd, readmes }) {
+export function collectChunks({ profile, projects, github, aboutMd, readmes, harvard = [] }) {
   const c = [];
   const add = (o) => c.push(o);
   const fmtRange = (a, b) => `${a}${b && b !== a ? ' – ' + b : ''}`;
@@ -134,6 +134,9 @@ export function collectChunks({ profile, projects, github, aboutMd, readmes }) {
   for (const r of profile.experience) for (const pt of r.points) add({ k: 'resume', t: `${r.role} · ${r.org}`, text: pt, src: `Resume · ${r.org}`, u: `#x-${r.id}` });
   for (const m of profile.community) add({ k: 'resume', t: m.role, text: `${m.role}, ${m.org.split(' · ')[0]}. ${m.note || ''}`.trim(), src: 'Resume · Community', u: '#community' });
   for (const ct of profile.certifications) add({ k: 'resume', t: ct.name, text: `${ct.name}, ${ct.issuer}${ct.note ? ', ' + ct.note : ''}`, src: 'Resume · Certification', u: '#certs' });
+  // Harvard ManageMentor completion badges: one point for all of them (more would skew the cluster keywords); CLIP
+  // image search lands on it (scripts/clip.mjs)
+  if (harvard.length) add({ k: 'resume', t: 'Harvard ManageMentor programs', text: `${harvard.length} short management programs from Harvard Business Impact: ${harvard.map((h) => h.program).join(', ')}`, src: 'Resume · Harvard ManageMentor', u: '#adapters' });
   for (const g of profile.skills) for (const it of g.items) add({ k: 'skill', t: it, text: `${it}: ${g.group}`, src: `Skills · ${g.group}`, u: '#skills' });
   // bio and FAQ answers about the work (not the website itself)
   for (const f of faqEntries(aboutMd)) {
@@ -160,8 +163,8 @@ export function collectChunks({ profile, projects, github, aboutMd, readmes }) {
 const q8 = (v) => Buffer.from(Int8Array.from(v.map((x) => Math.max(-127, Math.min(127, Math.round(x * 127))))).buffer).toString('base64');
 const titleCase = (w) => w.charAt(0).toUpperCase() + w.slice(1);
 
-export async function buildMap({ profile, projects, github, aboutMd, readmes, embed, model }) {
-  const chunks = collectChunks({ profile, projects, github, aboutMd, readmes });
+export async function buildMap({ profile, projects, github, aboutMd, readmes, harvard = [], embed, model }) {
+  const chunks = collectChunks({ profile, projects, github, aboutMd, readmes, harvard });
   const N = chunks.length;
   const vecs = await embed(chunks.map((x) => `${x.t}. ${x.text}`));
 

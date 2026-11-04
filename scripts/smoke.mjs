@@ -14,6 +14,13 @@ const fails = [];
 const check = (ok, what) => { if (!ok) fails.push(what); console.log(`${ok ? 'ok  ' : 'FAIL'} ${what}`); };
 const wait = (ms) => new Promise((r) => setTimeout(r, ms));
 
+// The Harvard ManageMentor badges are short programs: no page or data file may call them anything more.
+const BANNED = /harvard (university|degree|graduate|alumni)|studied at harvard/i;
+for (const f of ['index.html', '404.html', 'resume/index.html', ...readdirSync(path('data')).filter((x) => x.endsWith('.json')).map((x) => `data/${x}`), 'content/harvard.json']) {
+  const hit = readFileSync(path(f), 'utf8').match(BANNED);
+  check(!hit, `${f} makes no Harvard degree claim${hit ? ` (found "${hit[0]}")` : ''}`);
+}
+
 // Every data file parses.
 for (const f of readdirSync(path('data')).filter((f) => f.endsWith('.json'))) {
   let ok = true;
@@ -63,6 +70,32 @@ try {
     await wait(200);
     const lensOff = await page.evaluate(() => !document.documentElement.classList.contains('lens-on'));
     check(lensOn && lensOff, `${name}: lens toggles on and off`);
+
+    // Harvard ManageMentor adapters: all badges, certificate images and PDFs load, and the block ends merged.
+    const ad = await page.evaluate(async () => {
+      const root = document.querySelector('[data-adapters]');
+      if (!root) return { n: 0, slots: 0, bad: ['no #adapters block'] };
+      const d = JSON.parse(root.querySelector('[data-ad-data]').textContent);
+      const urls = [...new Set([...root.querySelectorAll('.ad-slot img')].map((i) => i.getAttribute('src')).concat(d.flatMap((x) => [x.cert, x.pdf])))];
+      const bad = [];
+      for (const u of urls) {
+        const r = await fetch(u);
+        const b = r.ok ? new Uint8Array(await r.arrayBuffer()) : null;
+        if (!b || b.length < 1000 || (u.endsWith('.pdf') && String.fromCharCode(...b.slice(0, 5)) !== '%PDF-')) bad.push(u);
+      }
+      return { n: d.length, slots: root.querySelectorAll('.ad-slot').length, pdfs: d.filter((x) => x.pdf).length, bad };
+    });
+    check(ad.n === 9 && ad.slots === 9 && ad.pdfs === 9 && !ad.bad.length, `${name}: 9 Harvard ManageMentor badges, certificates and PDFs load${ad.bad.length ? ` (broken: ${ad.bad.slice(0, 3).join(', ')})` : ''}`);
+    if (name === 'desktop') {
+      await page.evaluate(() => { document.documentElement.style.scrollBehavior = 'auto'; document.getElementById('adapters').scrollIntoView(); });
+      await wait(2500);
+      const seen = await page.evaluate(() => ({
+        decoded: [...document.querySelectorAll('#adapters .ad-front')].filter((i) => i.complete && i.naturalWidth > 0).length,
+        n: document.querySelector('[data-ad-n]')?.textContent,
+      }));
+      check(seen.decoded === 9 && seen.n === '9', `${name}: the adapter rack shows 9 badges, merged ${seen.n} / 9`);
+      await page.evaluate(() => scrollTo(0, 0));
+    }
 
     // The chat panel opens.
     await page.evaluate(() => window.__ask?.());

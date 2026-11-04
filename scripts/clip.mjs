@@ -25,6 +25,9 @@ export async function clipAll({ force = process.argv.includes('--force') } = {})
   // every picture and drowns out the real matches.
   const cp = readJSON('content/clip-prompts.json', { skills: {}, other: [] });
   map.points.forEach((pt, i) => { if (pt.k === 'skill' && cp.skills[pt.t]) items.push({ i, label: pt.t, kind: 'skill', u: pt.u, prompts: cp.skills[pt.t] }); });
+  // The Harvard ManageMentor badges and certificates: a dropped shield or certificate lands on the adapter rack.
+  const ad = map.points.findIndex((pt) => pt.u === '#adapters');
+  if (ad >= 0 && cp.adapters?.length) items.push({ i: ad, label: 'Harvard ManageMentor badges', kind: 'cert', u: '#adapters', prompts: cp.adapters });
   // Everyday classes with no map point: they absorb images unrelated to the work (zero-shot "none of the above").
   for (const t of cp.other || []) items.push({ i: -1, label: t, kind: 'other', prompts: [t] });
 

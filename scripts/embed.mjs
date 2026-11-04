@@ -8,7 +8,7 @@
 // Skips the work when no input changed since the last run (hash in data/meta.json).
 import { createHash, createHmac } from 'node:crypto';
 import { existsSync, readdirSync, readFileSync } from 'node:fs';
-import { readJSON, readText, write, tokenizeWords, STOP, parseFrontMatter, fmtRange, slug, path } from './lib.mjs';
+import { readJSON, readText, write, tokenizeWords, STOP, parseFrontMatter, fmtMonth, fmtRange, slug, path } from './lib.mjs';
 
 const MODEL = 'Xenova/all-MiniLM-L6-v2';
 const DIM = 384;
@@ -18,6 +18,8 @@ export async function embedAll({ force = process.argv.includes('--force') } = {}
   const projects = readJSON('content/projects.json');
   const github = readJSON('data/github.json', { repos: [], languages: {}, user: {} });
   const aboutMd = readText('content/about-me.md');
+  // Harvard ManageMentor completion badges (short programs, never a degree): chatbot, lens, map and CLIP
+  const harvard = readJSON('content/harvard.json', { programs: [] }).programs;
   const readmes = Object.fromEntries(projects.map((p) => [p.repo, readText(`data/readmes/${p.repo}.md`)]));
   // every README in data/readmes (featured projects and the other public repos) feeds the embedding map
   const allReadmes = Object.fromEntries(readdirSync(path('data/readmes')).filter((f) => f.endsWith('.md')).map((f) => [f.replace(/\.md$/, ''), readText(`data/readmes/${f}`)]));
@@ -25,7 +27,7 @@ export async function embedAll({ force = process.argv.includes('--force') } = {}
 
   // GitHub timestamps change hourly but do not change meaning; hash only the stable parts.
   const ghStable = { user: github.user, languages: github.languages, repos: github.repos.map(({ pushed_at, ...r }) => r) };
-  const hash = createHash('sha256').update(JSON.stringify([profile, projects, aboutMd, allReadmes, readText('content/map-clusters.json'), ghStable, posts, 6])).digest('hex').slice(0, 16);
+  const hash = createHash('sha256').update(JSON.stringify([profile, projects, aboutMd, allReadmes, readText('content/map-clusters.json'), ghStable, posts, harvard.map(({ program, month }) => [program, month]), 7])).digest('hex').slice(0, 16);
   const meta = readJSON('data/meta.json', {});
   if (!force && meta.hash === hash && existsSync(path('data/kb.json')) && existsSync(path('data/lens.json'))) {
     console.log('embed: inputs unchanged, skipping');
@@ -45,7 +47,7 @@ export async function embedAll({ force = process.argv.includes('--force') } = {}
   };
 
   // ---------- 1. knowledge-base chunks ----------
-  const chunks = buildChunks({ profile, projects, github, aboutMd, readmes, posts });
+  const chunks = buildChunks({ profile, projects, github, aboutMd, readmes, posts, harvard });
   const chunkVecs = await embed(chunks.map((c) => `${c.title}. ${c.text}`));
   write('data/kb.json', {
     model: MODEL, dim: DIM, built: hash,
@@ -54,7 +56,7 @@ export async function embedAll({ force = process.argv.includes('--force') } = {}
   console.log(`embed: ${chunks.length} knowledge chunks`);
 
   // ---------- 2. Q&A bank ----------
-  const qa = buildQA({ profile, projects, github, aboutMd });
+  const qa = buildQA({ profile, projects, github, aboutMd, harvard });
   const qaVecs = await embed(qa.map((x) => x.q));
   watermark(qa);
   write('data/qa-bank.json', { model: MODEL, dim: DIM, items: qa.map((x, i) => ({ ...x, v: q8(qaVecs[i]) })) });
@@ -100,6 +102,7 @@ export async function embedAll({ force = process.argv.includes('--force') } = {}
     ...profile.experience.map((r) => ({ id: `x-${r.id}`, label: r.role, text: [`${r.role} at ${r.org}`, ...r.points, (r.tags || []).join(', ')].join('. ') })),
     { id: 'community', label: 'Community', text: profile.community.map((c) => `${c.role}, ${c.org}`).join('. ') },
     { id: 'certs', label: 'Certifications', text: profile.certifications.map((c) => `${c.name} (${c.issuer})`).join('. ') },
+    ...(harvard.length ? [{ id: 'adapters', label: 'Harvard ManageMentor programs', text: `Harvard ManageMentor completion badges from Harvard Business Impact: ${harvard.map((h) => h.program).join(', ')}. Short online management programs.` }] : []),
   ].map((p) => ({ ...p, text: p.text.replace(/\*/g, '') }));
   const partVecs = [];
   for (const p of parts) {
@@ -151,7 +154,7 @@ export async function embedAll({ force = process.argv.includes('--force') } = {}
 
   // ---------- 5. embedding map: real chunks, t-SNE keyframes, clusters (see scripts/map.mjs) ----------
   const { buildMap } = await import('./map.mjs');
-  const built = await buildMap({ profile, projects, github, aboutMd, readmes: allReadmes, embed, model: MODEL });
+  const built = await buildMap({ profile, projects, github, aboutMd, readmes: allReadmes, harvard, embed, model: MODEL });
 
   write('data/meta.json', JSON.stringify({ hash, model: MODEL, chunks: chunks.length, qa: qa.length, points: built.N }, null, 1) + '\n');
 }
@@ -219,7 +222,7 @@ function parseFaq(md) {
   return out.map((x) => ({ ...x, a: x.a.trim(), url: FAQ_SECTIONS[x.section] || '/#about' })).filter((x) => x.a);
 }
 
-function buildChunks({ profile, projects, github, aboutMd, readmes, posts }) {
+function buildChunks({ profile, projects, github, aboutMd, readmes, posts, harvard = [] }) {
   const chunks = [];
   const add = (title, text, url, source) => chunks.push({ id: `c${chunks.length}`, title, text, url, source });
   for (const f of parseFaq(aboutMd)) {
@@ -231,6 +234,10 @@ function buildChunks({ profile, projects, github, aboutMd, readmes, posts }) {
   for (const r of profile.experience) add(`${r.role}, ${r.org}`, `${r.kind}, ${fmtRange(r.start, r.end)}, ${r.place}. ${r.points.join(' ')}`, `/#x-${r.id}`, 'Experience');
   for (const c of profile.community) add(c.role, `${c.role} at ${c.org}, ${c.end === null ? `since ${c.start}` : fmtRange(c.start, c.end)}. ${c.note || ''}`, '/#community', 'Community');
   add('Certifications', profile.certifications.map((c) => `${c.name} (${c.issuer}${c.note ? `, ${c.note}` : ''})`).join('; ') + '.', '/#certs', 'Certifications');
+  if (harvard.length) {
+    add('Harvard ManageMentor programs', `${harvardSummary(harvard)} Each certificate says Sahaj has completed the program and understands the principles, approaches, and best practices presented in it.`, '/#adapters', 'Harvard ManageMentor');
+    for (const h of harvard) add(`Harvard ManageMentor: ${h.program}`, `Sahaj completed the Harvard ManageMentor program ${h.program} (Harvard Business Impact, ${fmtMonth(h.month)}), a short online management program. The certificate says he understands the principles, approaches, and best practices presented in ${h.program}.`, '/#adapters', 'Harvard ManageMentor');
+  }
   for (const g of profile.skills) add(`Skills: ${g.group}`, `${g.group}: ${g.items.join(', ')}.`, '/#skills', 'Skills');
   add('Links and contact', `Email ${profile.email}. ${profile.links.map((l) => `${l.label}: ${l.url}`).join('. ')}. No phone number is shared.`, '/#contact', 'Contact');
   for (const p of projects) {
@@ -258,7 +265,7 @@ function buildChunks({ profile, projects, github, aboutMd, readmes, posts }) {
   return chunks;
 }
 
-function buildQA({ profile, projects, github, aboutMd }) {
+function buildQA({ profile, projects, github, aboutMd, harvard = [] }) {
   const qa = [];
   const projectLabel = Object.fromEntries([...projects.map((p) => [`/#p-${p.id}`, p.name]), ...profile.experience.map((r) => [`/#x-${r.id}`, r.org])]);
   const src = (url) => [{ label: projectLabel[url] || SECTION_LABEL[url] || (url.startsWith('http') ? 'GitHub' : 'Site'), url }];
@@ -309,6 +316,16 @@ function buildQA({ profile, projects, github, aboutMd }) {
 
   // Certifications.
   for (const c of profile.certifications) add([`Does Sahaj have the ${c.name} certification?`, `Who issued his ${c.name} certificate?`], `Yes, ${c.name}, issued by ${c.issuer}${c.note ? ` (${c.note})` : ''}.`, '/#certs');
+
+  // Harvard ManageMentor: what they are, and plainly what they are not.
+  if (harvard.length) {
+    const url = '/#adapters';
+    add(['Does Sahaj have Harvard certificates?', 'Does he have any Harvard certifications?', 'What Harvard programs has Sahaj completed?', 'What are the Harvard ManageMentor badges?', 'What are the adapters on the site?'], `Yes: ${harvardSummary(harvard)} The badges and certificates are in the Adapters block of the Evaluation section.`, url);
+    add(['Does Sahaj have a degree from Harvard?', 'Did Sahaj attend Harvard?', 'Did Sahaj go to Harvard?', 'Is he an alumnus of Harvard?', 'Did he study at Harvard?'], `No. His degree is the ${profile.education.degree} at ${profile.education.school}. What he has is ${harvard.length} Harvard ManageMentor completion badges from Harvard Business Impact (${harvardSpan(harvard)}): short online management programs, not a degree and not a university course.`, url);
+    add(['Does Sahaj have management or leadership training?', 'Has he done any management courses?'], `He completed ${harvard.length} short Harvard ManageMentor programs from Harvard Business Impact (${harvardSpan(harvard)}): ${harvard.map((h) => h.program).join(', ')}. For leadership in practice, he was Lead Convener of IEEE AIMV 2025.`, url);
+    const NOUN = { Negotiating: 'negotiation', 'Writing Skills': 'writing', 'Strategic Thinking': 'strategic thinking', 'Strategy Planning and Execution': 'strategy' };
+    for (const h of harvard) add([`Has Sahaj done the ${h.program} program?`, `Does Sahaj have a certificate in ${h.program}?`, `Has he had any ${NOUN[h.program] || h.program.toLowerCase()} training?`], `Yes. Harvard ManageMentor: ${h.program}, completed ${fmtMonth(h.month)}, from Harvard Business Impact. It is a short online program; the certificate says he understands the principles, approaches, and best practices presented in ${h.program}.`, url);
+  }
 
   // Links.
   for (const l of profile.links) add([`What is Sahaj's ${l.label}?`, `${l.label} profile link`], `${l.label}: ${l.url}`, '/#contact');
@@ -371,6 +388,12 @@ function mapItems({ profile, projects }) {
   for (const r of profile.experience) items.push({ label: r.org.replace(/ (India )?Private Limited/, ''), kind: 'experience', href: `#x-${r.id}`, text: `${r.role} at ${r.org}. ${r.points.join(' ')}` });
   for (const c of profile.certifications) items.push({ label: c.name, kind: 'cert', href: '#certs', text: `${c.name} certification by ${c.issuer}` });
   return items;
+}
+
+// "9 Harvard ManageMentor® programs from Harvard Business Impact (in collaboration with HBI Education), completed Oct to Nov 2026: ..."
+const harvardSpan = (list) => { const a = fmtMonth(list[0].month), b = fmtMonth(list[list.length - 1].month); return a === b ? a : a.slice(-4) === b.slice(-4) ? `${a.slice(0, 3)} to ${b}` : `${a} to ${b}`; };
+function harvardSummary(list) {
+  return `${list.length} Harvard ManageMentor® programs from Harvard Business Impact (in collaboration with HBI Education), completed ${harvardSpan(list)}: ${list.map((h) => `${h.program} (${fmtMonth(h.month)})`).join(', ')}. They are short online management programs with completion badges and certificates, not a degree and not a university course.`;
 }
 
 const aOrAn = (w) => (/^[aeiou]/i.test(w) ? 'an' : 'a');
