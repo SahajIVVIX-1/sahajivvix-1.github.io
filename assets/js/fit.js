@@ -46,7 +46,7 @@ export function initFit() {
   });
 
   async function load() {
-    if (!facts) { status.textContent = 'loading Sahaj\'s data…'; facts = await (await fetch('/data/fit.json')).json(); facts.terms.forEach((t) => { t.res = [t.t, ...t.aliases].map(re); }); }
+    if (!facts) { status.textContent = 'loading Sahaj\'s data…'; facts = await (await fetch('/data/fit.json')).json(); facts.terms.forEach((t) => { t.res = [t.t, ...t.aliases].map(re); }); (facts.programs || []).forEach((p) => { p.res = p.words.map(re); }); }
     if (!eng) {
       status.textContent = 'loading the matching model (MiniLM, ≈23 MB, once)…';
       const { createEngine } = await import('./ask/engine.js');
@@ -90,7 +90,9 @@ export function initFit() {
         v = await eng.embed(r);
         for (const c of chunks) { let s = 0; for (let i = 0; i < v.length; i++) s += v[i] * c.vec[i]; s /= 127; if (!best || s > best.s) best = { s, c }; }
       }
-      const res = { text: r, terms, best, state: 'gap', note: '', vec: v };
+      // Harvard ManageMentor programs whose subject the requirement names (leadership, negotiation, ...)
+      const programs = (facts.programs || []).filter((p) => p.res.some((x) => x.test(r)));
+      const res = { text: r, terms, programs, best, state: 'gap', note: '', vec: v };
       // facts that need the record, not a similarity: years of experience, degrees
       const yrs = r.match(/(\d+)\s*\+?\s*(years?|yrs)/i);
       if (yrs && /experience|industry|professional|production|working/i.test(r)) {
@@ -102,6 +104,8 @@ export function initFit() {
         res.state = 'gap'; res.note = `Asks for a postgraduate degree; Sahaj is completing a ${facts.education.degree}.`;
       } else if (terms.length || (best && best.s >= 0.5)) res.state = 'covered';
       else if (best && best.s >= 0.4) res.state = 'partial';
+      // a short program on its own is related training, never full coverage
+      if (res.state === 'gap' && !res.note && programs.length) { res.state = 'partial'; res.programOnly = true; }
       results.push(res);
     }
     const n = results.length;
@@ -128,7 +132,8 @@ export function initFit() {
     if (r.note) return esc(r.note);
     const bits = [];
     for (const t of r.terms.slice(0, 3)) bits.push(`<b>${esc(t.t)}</b> · ${t.src.slice(0, 2).map((s) => `<a href="${s.url}">${esc(s.label)}</a>`).join(', ')}`);
-    if (!r.terms.length && r.best && r.state !== 'gap') bits.push(`closest: <a href="${r.best.c.url.slice(1)}">${esc(r.best.c.source || r.best.c.title)}</a> <span class="mono">(${r.best.s.toFixed(2)})</span>`);
+    if (!r.terms.length && r.best && r.state !== 'gap' && !r.programOnly) bits.push(`closest: <a href="${r.best.c.url.slice(1)}">${esc(r.best.c.source || r.best.c.title)}</a> <span class="mono">(${r.best.s.toFixed(2)})</span>`);
+    for (const p of (r.programs || []).slice(0, 2)) bits.push(`<b>${esc(p.program)}</b> · <a href="${p.url}">Harvard ManageMentor, a short program (${esc(p.month)})</a>`);
     return bits.join(' · ') || 'No match in Sahaj\'s data.';
   }
 
@@ -149,7 +154,7 @@ export function initFit() {
           <ul class="fit-reqs">${a.results.map((r) => `<li class="is-${r.state}"><span class="fit-mark" aria-label="${r.state}">${mark[r.state]}</span><span><span class="fit-req">${esc(r.text)}</span><span class="fit-ev">${evidence(r)}</span></span></li>`).join('')}</ul>
         </div>
       </div>
-      ${a.n - a.covered ? `<div class="fit-gaps"><h3 class="mono fit-h">Gaps, stated plainly</h3><ul>${a.results.filter((r) => r.state !== 'covered').map((r) => `<li>${esc(r.text)}${r.note ? ` · <span class="muted">${esc(r.note)}</span>` : r.state === 'partial' ? ' · <span class="muted">related work, not a direct match</span>' : ''}</li>`).join('')}</ul></div>` : ''}
+      ${a.n - a.covered ? `<div class="fit-gaps"><h3 class="mono fit-h">Gaps, stated plainly</h3><ul>${a.results.filter((r) => r.state !== 'covered').map((r) => `<li>${esc(r.text)}${r.note ? ` · <span class="muted">${esc(r.note)}</span>` : r.state === 'partial' ? ` · <span class="muted">${r.programOnly ? 'a short Harvard ManageMentor program only, not work experience' : 'related work, not a direct match'}</span>` : ''}</li>`).join('')}</ul></div>` : ''}
       <p class="fit-print-row"><button class="btn shimmer" type="button" data-fit-print>One-page summary (print / save as PDF)</button><span class="muted mono">only facts from his data</span></p>`;
     status.textContent = `${a.fit}% fit · ${a.covered}/${a.n} covered`;
     out.querySelector('[data-fit-print]').addEventListener('click', () => printSummary(a));
@@ -169,7 +174,7 @@ export function initFit() {
       <section><h2>For: ${esc(a.role)}</h2><p><b>${a.fit}%</b> of the listed requirements are covered by his own work (${a.covered} of ${a.n} fully, ${a.partial} partly), matched in the browser on ${new Date().toLocaleDateString()}.</p>${skills.length ? `<p><b>Matching skills:</b> ${skills.map(esc).join(', ')}</p>` : ''}</section>
       <section><h2>Most relevant projects</h2>${projs.map((p) => `<div class="i"><p><b>${esc(p.name)}</b> · ${esc(p.kind)} · ${esc(p.year)} · <b>${esc(p.metric.value)}</b> ${esc(p.metric.label)}</p><p>${esc(p.summary)}</p><p class="m">${p.stack.map(esc).join(' · ')} · ${esc(p.repo.replace(/^https:\/\//, ''))}</p></div>`).join('')}</section>
       <section><h2>Experience</h2>${f.experience.map((r) => `<div class="i"><p><b>${esc(r.role)}</b> · ${esc(r.org)} · ${esc(r.when)}</p><ul>${r.points.slice(0, 1).map((x) => `<li>${esc(x)}</li>`).join('')}</ul></div>`).join('')}</section>
-      <section><h2>Education &amp; recognition</h2><p>${esc(f.education.degree)}, ${esc(f.education.school)} · CGPA ${esc(f.education.cgpa)} · ${esc(f.education.start.slice(0, 4))}–${esc(f.education.end.slice(0, 4))}</p><p>${f.certifications.map((c) => esc(`${c.name} (${c.issuer})`)).join(' · ')}</p><p>${esc(f.achievement)}</p></section>
+      <section><h2>Education &amp; recognition</h2><p>${esc(f.education.degree)}, ${esc(f.education.school)} · CGPA ${esc(f.education.cgpa)} · ${esc(f.education.start.slice(0, 4))}–${esc(f.education.end.slice(0, 4))}</p><p>${f.certifications.map((c) => esc(`${c.name} (${c.issuer})`)).join(' · ')}</p>${f.programs?.length ? `<p>Harvard ManageMentor (Harvard Business Impact): ${f.programs.length} short programs, ${esc(f.programs.map((p) => p.program).join(', '))}</p>` : ''}<p>${esc(f.achievement)}</p></section>
       ${a.n - a.covered ? `<section><h2>Not covered by his data</h2><ul>${a.results.filter((r) => r.state !== 'covered').map((r) => `<li>${esc(r.text)}${r.note ? ` · ${esc(r.note)}` : ''}</li>`).join('')}</ul></section>` : ''}
       <p class="m">Generated in the browser at info.sahaj.si from Sahaj's own data; the job description was not sent anywhere.</p>`;
     document.documentElement.classList.add('fit-printing');

@@ -19,6 +19,7 @@ export const SECTIONS = {
   '#experience': ['Experience', 'experience training internships jobs'],
   '#certs': ['Certifications and evaluation', 'certifications certificates evaluation github stats'],
   '#guinness': ['the Guinness World Records entry', 'guinness world record'],
+  '#adapters': ['the Harvard ManageMentor adapters', 'harvard managementor adapters badges'],
   '#contact': ['Contact', 'contact email hire reach'],
 };
 
@@ -143,6 +144,27 @@ export function createTools({ projects, onPhoneAction }) {
         return 'certificate open';
       },
     },
+    open_adapters: {
+      args: ['program'],
+      opt: ['program'],
+      doc: 'open_adapters(program?): show the Harvard ManageMentor completion badges ("adapters"); with a program name, also open its certificate',
+      async run({ program }, ctx) {
+        if (!isHome()) { location.href = '/#adapters'; return 'opening the home page'; }
+        const el = target('#adapters');
+        await scroll(el);
+        const api = await window.__adapters?.();
+        if (!api) throw new Error('adapters not ready');
+        const p = program ? api.find(program) : null;
+        if (program && !p) throw new Error(`no Harvard ManageMentor program called ${program}`);
+        if (p) { api.open(p.slug); return `certificate open: ${p.program}`; }
+        // the Recruiter view shows the plain list instead of the rack
+        const rack = el.querySelector('.ad-rack');
+        const shown = rack?.offsetParent ? rack : el;
+        arc(ctx.from, shown);
+        glow(shown, 'agent-hl', 2600);
+        return 'adapter rack in view';
+      },
+    },
     copy_link: {
       args: ['selector'],
       doc: 'copy_link(selector): copy a link to a section or card to the clipboard',
@@ -160,7 +182,7 @@ export function createTools({ projects, onPhoneAction }) {
     const t = call && tools[call.name];
     if (!t) return null;
     const args = call.args && typeof call.args === 'object' ? call.args : {};
-    if (t.args.some((a) => a !== 'selector' && args[a] == null)) return null;
+    if (t.args.some((a) => a !== 'selector' && !(t.opt || []).includes(a) && args[a] == null)) return null;
     if (call.name === 'scroll_to' || call.name === 'highlight') { if (!ID.test(args.selector || '')) return null; }
     return { name: call.name, args: Object.fromEntries(t.args.filter((a) => args[a] != null).map((a) => [a, String(args[a])])) };
   }

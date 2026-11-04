@@ -216,6 +216,7 @@ export function initAsk() {
     const say = {
       switch_theme: (s) => `Switched the theme to ${s.args.mode}.`,
       open_certificate: () => 'Opened his Guinness World Records Certificate of Participation.',
+      open_adapters: (s, r) => (/^certificate open: /.test(r) ? `Opened his Harvard ManageMentor certificate for ${r.replace(/^certificate open: /, '')} (a short online program from Harvard Business Impact, not a degree).` : `Here are his ${document.querySelectorAll('.ad-slot').length} Harvard ManageMentor completion badges: short online management programs from Harvard Business Impact, not a degree. Hover or tap a badge to see its certificate.`),
       filter_map: (s, r) => `Searched the embedding map for “${s.args.query}”: ${r}.`,
       copy_link: (s, r) => `${r[0].toUpperCase()}${r.slice(1)} to your clipboard.`,
       scroll_to: (s, r) => `Here you are: ${r.replace(/^at /, '')}.`,

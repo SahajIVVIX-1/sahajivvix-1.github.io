@@ -180,6 +180,18 @@ function initLazy() {
     idle(() => afterBoot(() => import('./attention.js').then((m) => m.initAttention({ lowPower }))));
   }
 
+  // Harvard ManageMentor adapters (#adapters): the module when the block is near; the merge starts once it is in
+  // view. The chat's tools load it on demand too.
+  let adMod;
+  window.__adapters = () => (adMod ||= import('./adapters.js').then((m) => m.initAdapters({ reducedMotion })));
+  const ad = document.querySelector('[data-adapters]');
+  if (ad) {
+    const ao = new IntersectionObserver((entries) => {
+      if (entries.some((en) => en.isIntersecting)) { ao.disconnect(); window.__adapters(); }
+    }, { rootMargin: '900px 0px' });
+    ao.observe(ad);
+  }
+
   // Recruiter mode (paste a job description): its small module when the section is near; the model only on submit.
   const fit = document.querySelector('[data-fit]');
   if (fit) {

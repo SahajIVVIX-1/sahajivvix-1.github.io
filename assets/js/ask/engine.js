@@ -7,7 +7,7 @@ const STOP = new Set('a an the and or of to in on at by for with from is are was
 const tok = (s) => (s.toLowerCase().match(/[a-z0-9+#]+/g) || []).filter((w) => !STOP.has(w));
 
 // Topics this assistant answers; anything far from them is politely declined.
-const ON_TOPIC = /\b(sahaj|saliya|he|his|him|you|your|project|work|experience|intern|skill|stack|education|study|college|university|pdeu|cgpa|gpa|contact|email|hire|available|resume|cv|github|linkedin|leetcode|twitter|x|cert|award|hackathon|rag|llm|agent|vision|crohn|dcgan|openenv|student|model|ai|ml|python|site|website|blog|phone|location|based|graduat|role|job|team|research|paper|language|framework|tool)/i;
+const ON_TOPIC = /\b(sahaj|saliya|he|his|him|you|your|project|work|experience|intern|skill|stack|education|study|college|university|pdeu|cgpa|gpa|contact|email|hire|available|resume|cv|github|linkedin|leetcode|twitter|x|cert|award|hackathon|harvard|managementor|adapter|badge|leadership|management|negotiat|rag|llm|agent|vision|crohn|dcgan|openenv|student|model|ai|ml|python|site|website|blog|phone|location|based|graduat|role|job|team|research|paper|language|framework|tool)/i;
 
 export async function createEngine() {
   const [qa, kb] = await Promise.all([

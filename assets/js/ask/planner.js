@@ -37,6 +37,14 @@ export async function planRules(q, eng) {
   const theme = /\b(dark|night)\b/.test(s) ? 'dark' : /\blight\b/.test(s) ? 'light' : /\b(auto|system)\b/.test(s) ? 'auto' : null;
   if (theme && /\b(mode|theme)\b/.test(s)) return { steps: [{ name: 'switch_theme', args: { mode: theme } }] };
 
+  // Harvard ManageMentor badges ("adapters"): the rack, or one program's certificate when it is named
+  if (/harvard|managementor|\badapters?\b/.test(s) && /\b(show|open|see|view|where|take me|go to|scroll|jump)\b/.test(s)) {
+    let names = [];
+    try { names = JSON.parse(document.querySelector('[data-ad-data]')?.textContent || '[]').map((d) => d.program); } catch { /* no rack on this page */ }
+    const program = names.find((n) => s.includes(n.toLowerCase())) || (/\bgen(erative)? ?ai\b/.test(s) ? 'Leading with Generative AI' : '');
+    return { steps: [{ name: 'open_adapters', args: { program } }] };
+  }
+
   if (/certificate|guinness/.test(s) && /\b(show|open|see|view)\b/.test(s)) return { steps: [{ name: 'open_certificate', args: {} }] };
 
   const named = NAMED.find(([, re]) => re.test(s))?.[0];
