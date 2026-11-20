@@ -1,30 +1,55 @@
 {
- "fetched_at": "2026-11-05T15:31:17.832Z",
+ "fetched_at": "2026-11-20T12:58:31.205Z",
  "user": {
   "login": "SahajIVVIX-1",
-  "public_repos": 16,
+  "public_repos": 20,
   "followers": 5,
   "bio": "AI/ML Engineer | Generative AI, LLMs, Agentic AI & AI Infrastructure | Building scalable, intelligent solutions through research and engineering.",
   "since": "2023-09-01T13:00:47Z"
  },
  "totals": {
   "stars": 2,
-  "repos": 12
+  "repos": 16
  },
  "languages": {
+  "TypeScript": 1446477,
+  "JavaScript": 1670277,
+  "CSS": 205901,
+  "HTML": 1922888,
+  "Batchfile": 6514,
+  "NSIS": 748,
   "Python": 12195298,
-  "JavaScript": 793493,
-  "CSS": 58592,
-  "Shell": 7063,
+  "Shell": 9251,
   "PowerShell": 11451,
-  "HTML": 1679038,
   "Dockerfile": 10639,
-  "TypeScript": 203607,
-  "Batchfile": 3632,
   "Makefile": 827,
   "TeX": 535408
  },
  "repos": [
+  {
+   "name": "Smaran-Reminder-App",
+   "description": "Smaran Reminder is a lightweight, fully customizable, non-intrusive desktop popup reminder application designed with PyQt6. It runs silently in your system tray and displays elegant, customizable notification bursts right on your screen without interrupting your typing or stealing window focus.",
+   "url": "https://github.com/SahajIVVIX-1/Smaran-Reminder-App",
+   "language": "TypeScript",
+   "stars": 0,
+   "forks": 0,
+   "topics": [],
+   "fork": false,
+   "created_at": "2026-04-06T10:14:52Z",
+   "pushed_at": "2026-11-20T12:39:11Z"
+  },
+  {
+   "name": "Reverse-Engineer",
+   "description": "Reverse engineer anything with agents, from app behavior down to native binaries.",
+   "url": "https://github.com/SahajIVVIX-1/Reverse-Engineer",
+   "language": null,
+   "stars": 0,
+   "forks": 0,
+   "topics": [],
+   "fork": true,
+   "created_at": "2026-11-18T05:21:20Z",
+   "pushed_at": "2026-11-18T05:04:05Z"
+  },
   {
    "name": "SahajIVVIX-1",
    "description": "AI Engineer | Deep Learning • RL • Computer Vision Turning data into intelligent systems.",
@@ -35,7 +60,19 @@
    "topics": [],
    "fork": false,
    "created_at": "2024-01-24T19:11:08Z",
-   "pushed_at": "2026-11-05T10:53:07Z"
+   "pushed_at": "2026-11-16T11:19:12Z"
+  },
+  {
+   "name": "blogs",
+   "description": "",
+   "url": "https://github.com/SahajIVVIX-1/blogs",
+   "language": "JavaScript",
+   "stars": 0,
+   "forks": 0,
+   "topics": [],
+   "fork": false,
+   "created_at": "2026-10-29T17:44:16Z",
+   "pushed_at": "2026-11-16T11:03:12Z"
   },
   {
    "name": "BDA-Analytics",
@@ -55,7 +92,23 @@
    ],
    "fork": false,
    "created_at": "2026-10-08T09:56:06Z",
-   "pushed_at": "2026-11-02T06:29:35Z"
+   "pushed_at": "2026-11-14T14:09:01Z"
+  },
+  {
+   "name": "sahajivvix-1.github.io",
+   "description": "The source of Sahaj Saliya's portfolio. The original site is info.sahaj.si. Any other address showing this design or content is a copy.",
+   "url": "https://github.com/SahajIVVIX-1/sahajivvix-1.github.io",
+   "language": "JavaScript",
+   "stars": 0,
+   "forks": 0,
+   "topics": [
+    "clock",
+    "javascript",
+    "timer"
+   ],
+   "fork": false,
+   "created_at": "2026-04-25T07:43:48Z",
+   "pushed_at": "2026-11-05T15:32:15Z"
   },
   {
    "name": "Crohn-Disease-Early-Prediction",
@@ -193,227 +246,193 @@
  ],
  "events": [
   {
-   "type": "PushEvent",
-   "repo": "Crohn-Disease-Early-Prediction",
-   "at": "2026-10-29T17:26:57Z",
-   "head": "8003db4ada8ea7b4ba0416d80a9609d59544a5d0",
-   "commits": 3
+   "type": "ReleaseEvent",
+   "repo": "Smaran-Reminder-App",
+   "at": "2026-11-20T12:44:01Z"
   },
   {
    "type": "PushEvent",
-   "repo": "open-env-nuclei",
-   "at": "2026-10-17T09:55:19Z",
-   "head": "de4f53ffe9880eea0ba15194e18186ea8731127c",
-   "commits": 19
-  },
-  {
-   "type": "PushEvent",
-   "repo": "BDA-Analytics",
-   "at": "2026-10-16T15:07:22Z",
-   "head": "5d4aea280a7b3eb9808da6d8ec577ae6fe20c451",
-   "commits": 2
-  },
-  {
-   "type": "PushEvent",
-   "repo": "BDA-Analytics",
-   "at": "2026-10-16T14:17:18Z",
-   "head": "a4392f7975fde953b14c43167a0187f63bc5b557",
+   "repo": "Smaran-Reminder-App",
+   "at": "2026-11-18T19:20:55Z",
+   "head": "e4dec48dd326265365652d10d9097e2cb93af6a3",
    "commits": 1
   },
   {
    "type": "PushEvent",
-   "repo": "BDA-Analytics",
-   "at": "2026-10-16T15:14:57Z",
-   "head": "01926986200ec5b7004d9db48e410499d15eee96",
+   "repo": "Smaran-Reminder-App",
+   "at": "2026-11-18T19:16:08Z",
+   "head": "167963c77f3e4081b80b2d26337bd192ad7a8d7d",
    "commits": 1
-  },
-  {
-   "type": "CreateEvent",
-   "repo": "BDA-Analytics",
-   "at": "2026-10-16T15:14:39Z"
-  },
-  {
-   "type": "CreateEvent",
-   "repo": "BDA-Analytics",
-   "at": "2026-10-16T15:05:39Z"
-  },
-  {
-   "type": "PushEvent",
-   "repo": "BDA-Analytics",
-   "at": "2026-10-16T13:06:31Z",
-   "head": "cd681bbf3901e1fb180c94f69abebd5bbe108a78",
-   "commits": 1
-  },
-  {
-   "type": "PushEvent",
-   "repo": "BDA-Analytics",
-   "at": "2026-10-16T13:06:25Z",
-   "head": "d977dcb04323fb8eb92e18f01678b7a46fb6bebc",
-   "commits": null
-  },
-  {
-   "type": "PushEvent",
-   "repo": "BDA-Analytics",
-   "at": "2026-10-16T14:17:19Z",
-   "head": "9d33d64b55b4f10f2d93354c381635cf91d9a569",
-   "commits": 1
-  },
-  {
-   "type": "PushEvent",
-   "repo": "BDA-Analytics",
-   "at": "2026-10-16T12:42:23Z",
-   "head": "a2b288a925f7fbdf7bf4e0866a6d8858274b551a",
-   "commits": 1
-  },
-  {
-   "type": "PushEvent",
-   "repo": "BDA-Analytics",
-   "at": "2026-10-16T13:06:28Z",
-   "head": "912fc91d1e7b7186e975267c1fd716f07b5bc218",
-   "commits": null
-  },
-  {
-   "type": "PushEvent",
-   "repo": "SahajIVVIX-1",
-   "at": "2026-10-16T15:17:38Z",
-   "head": "1104dc9564db90b0d44c5ca73bde01c6150faa21",
-   "commits": 2
-  },
-  {
-   "type": "PushEvent",
-   "repo": "BDA-Analytics",
-   "at": "2026-10-16T15:16:07Z",
-   "head": "144e5ba68d6aeedac6cb69a87d9e3c5369a3d460",
-   "commits": 2
-  },
-  {
-   "type": "PushEvent",
-   "repo": "BDA-Analytics",
-   "at": "2026-10-16T11:08:06Z",
-   "head": "95cac3e33cf15317510c66161bdae920cb107156",
-   "commits": 1
-  },
-  {
-   "type": "PushEvent",
-   "repo": "BDA-Analytics",
-   "at": "2026-10-16T12:47:25Z",
-   "head": "9770ed9defc906ed233f0766f1d2fc18d6a32665",
-   "commits": 1
-  },
-  {
-   "type": "PushEvent",
-   "repo": "BDA-Analytics",
-   "at": "2026-10-16T12:14:47Z",
-   "head": "399106d42d217471ccc7af51332d5840f7e5e4e8",
-   "commits": 1
-  },
-  {
-   "type": "PullRequestEvent",
-   "repo": "BDA-Analytics",
-   "at": "2026-10-16T15:07:21Z"
-  },
-  {
-   "type": "PullRequestEvent",
-   "repo": "BDA-Analytics",
-   "at": "2026-10-16T15:15:56Z"
-  },
-  {
-   "type": "PullRequestEvent",
-   "repo": "BDA-Analytics",
-   "at": "2026-10-16T15:16:05Z"
-  },
-  {
-   "type": "PullRequestEvent",
-   "repo": "BDA-Analytics",
-   "at": "2026-10-16T15:15:56Z"
-  },
-  {
-   "type": "PullRequestEvent",
-   "repo": "BDA-Analytics",
-   "at": "2026-10-16T15:15:56Z"
-  },
-  {
-   "type": "PullRequestEvent",
-   "repo": "BDA-Analytics",
-   "at": "2026-10-16T15:07:09Z"
   },
   {
    "type": "ReleaseEvent",
-   "repo": "BDA-Analytics",
-   "at": "2026-10-16T12:22:54Z"
+   "repo": "Smaran-Reminder-App",
+   "at": "2026-11-20T07:10:51Z"
+  },
+  {
+   "type": "ReleaseEvent",
+   "repo": "Smaran-Reminder-App",
+   "at": "2026-11-20T07:05:47Z"
+  },
+  {
+   "type": "ReleaseEvent",
+   "repo": "Smaran-Reminder-App",
+   "at": "2026-11-20T07:00:42Z"
   },
   {
    "type": "PushEvent",
-   "repo": "Crohn-Disease-Early-Prediction",
-   "at": "2026-10-12T16:26:39Z",
-   "head": "3175539897c2764f5305ec16c2e30dd64687e61c",
+   "repo": "Smaran-Reminder-App",
+   "at": "2026-11-19T17:57:11Z",
+   "head": "da004caac7ff04745b14ebfa8525cfc47f06cefb",
    "commits": 1
   },
   {
    "type": "PushEvent",
-   "repo": "NLP-Based-Search",
-   "at": "2026-10-11T12:19:45Z",
-   "head": "18d52ae4c6f2cfd6d4563ad3f0aad0a85f5476a4",
+   "repo": "Smaran-Reminder-App",
+   "at": "2026-11-18T18:31:02Z",
+   "head": "869366ad40872c43282c24f9757170b5d28f2533",
+   "commits": 1
+  },
+  {
+   "type": "PushEvent",
+   "repo": "Smaran-Reminder-App",
+   "at": "2026-11-18T16:59:55Z",
+   "head": "4b92296afb77684814a2f8308f43e0faa62dbbe5",
+   "commits": 1
+  },
+  {
+   "type": "PushEvent",
+   "repo": "Smaran-Reminder-App",
+   "at": "2026-11-18T18:18:28Z",
+   "head": "24b43b071051796a624d90a8d81a7c2f6ed903af",
+   "commits": 1
+  },
+  {
+   "type": "PushEvent",
+   "repo": "Smaran-Reminder-App",
+   "at": "2026-11-19T01:50:03Z",
+   "head": "0c2b7c1ed11b21b77b931b8f5aff5dbb5cb565c3",
+   "commits": 1
+  },
+  {
+   "type": "PushEvent",
+   "repo": "Smaran-Reminder-App",
+   "at": "2026-11-18T12:50:50Z",
+   "head": "4597cd5a4d365423c9aa18f2570c034fb0228911",
+   "commits": 1
+  },
+  {
+   "type": "PushEvent",
+   "repo": "Smaran-Reminder-App",
+   "at": "2026-11-19T15:46:37Z",
+   "head": "0d4b5421bc9690d5e1053c167ec0c2d707753eab",
+   "commits": 1
+  },
+  {
+   "type": "PushEvent",
+   "repo": "Smaran-Reminder-App",
+   "at": "2026-11-18T15:22:22Z",
+   "head": "2635cc39edcf1c9d7c45c0d0224745c5d6b55941",
+   "commits": 1
+  },
+  {
+   "type": "ReleaseEvent",
+   "repo": "Smaran-Reminder-App",
+   "at": "2026-11-19T18:29:25Z"
+  },
+  {
+   "type": "ReleaseEvent",
+   "repo": "Smaran-Reminder-App",
+   "at": "2026-11-19T18:02:18Z"
+  },
+  {
+   "type": "PushEvent",
+   "repo": "Smaran-Reminder-App",
+   "at": "2026-11-18T05:17:36Z",
+   "head": "39da18855459d4aab3ba2adc12227784a78f3833",
+   "commits": 1
+  },
+  {
+   "type": "ReleaseEvent",
+   "repo": "Smaran-Reminder-App",
+   "at": "2026-11-19T17:12:42Z"
+  },
+  {
+   "type": "PushEvent",
+   "repo": "Smaran-Reminder-App",
+   "at": "2026-11-18T05:29:38Z",
+   "head": "0b55643cc801a7e4a72c2fa99e40716382c2c274",
+   "commits": 1
+  },
+  {
+   "type": "PushEvent",
+   "repo": "Smaran-Reminder-App",
+   "at": "2026-11-19T09:52:04Z",
+   "head": "020c19166be4646056278167214e98f47e37a48d",
+   "commits": 1
+  },
+  {
+   "type": "ReleaseEvent",
+   "repo": "Smaran-Reminder-App",
+   "at": "2026-11-19T15:51:27Z"
+  },
+  {
+   "type": "PushEvent",
+   "repo": "Smaran-Reminder-App",
+   "at": "2026-11-19T09:18:23Z",
+   "head": "a28d5969f8154be4713a86f7cea583c78e5cef7e",
+   "commits": 1
+  },
+  {
+   "type": "ReleaseEvent",
+   "repo": "Smaran-Reminder-App",
+   "at": "2026-11-19T14:41:53Z"
+  },
+  {
+   "type": "ReleaseEvent",
+   "repo": "Smaran-Reminder-App",
+   "at": "2026-11-19T13:57:19Z"
+  },
+  {
+   "type": "PushEvent",
+   "repo": "Smaran-Reminder-App",
+   "at": "2026-11-19T08:39:08Z",
+   "head": "44b073f02e873f668e2bd957205c98ebd0e41b01",
+   "commits": 1
+  },
+  {
+   "type": "ReleaseEvent",
+   "repo": "Smaran-Reminder-App",
+   "at": "2026-11-19T12:36:11Z"
+  },
+  {
+   "type": "ReleaseEvent",
+   "repo": "Smaran-Reminder-App",
+   "at": "2026-11-19T11:09:13Z"
+  },
+  {
+   "type": "PushEvent",
+   "repo": "Smaran-Reminder-App",
+   "at": "2026-11-18T05:56:56Z",
+   "head": "cd0e9ca56a0f855df4486da661d5d5d36915c76b",
+   "commits": 1
+  },
+  {
+   "type": "PushEvent",
+   "repo": "Smaran-Reminder-App",
+   "at": "2026-11-18T08:13:47Z",
+   "head": "1f421afdedec04c56d2851f39b87a2968ca3d938",
+   "commits": 2
+  },
+  {
+   "type": "PushEvent",
+   "repo": "Smaran-Reminder-App",
+   "at": "2026-11-18T15:22:41Z",
+   "head": "b695365beff7f618a876f85c43724aff68d71865",
    "commits": 1
   }
  ],
  "calendar": [
-  [
-   "2025-11-02",
-   0
-  ],
-  [
-   "2025-11-03",
-   0
-  ],
-  [
-   "2025-11-04",
-   0
-  ],
-  [
-   "2025-11-05",
-   0
-  ],
-  [
-   "2025-11-06",
-   0
-  ],
-  [
-   "2025-11-07",
-   0
-  ],
-  [
-   "2025-11-08",
-   0
-  ],
-  [
-   "2025-11-09",
-   0
-  ],
-  [
-   "2025-11-10",
-   0
-  ],
-  [
-   "2025-11-11",
-   0
-  ],
-  [
-   "2025-11-12",
-   0
-  ],
-  [
-   "2025-11-13",
-   0
-  ],
-  [
-   "2025-11-14",
-   0
-  ],
-  [
-   "2025-11-15",
-   0
-  ],
   [
    "2025-11-16",
    0
@@ -980,7 +999,7 @@
   ],
   [
    "2026-04-06",
-   8
+   9
   ],
   [
    "2026-04-07",
@@ -1724,7 +1743,7 @@
   ],
   [
    "2026-10-09",
-   1
+   48
   ],
   [
    "2026-10-10",
@@ -1748,11 +1767,11 @@
   ],
   [
    "2026-10-15",
-   0
+   1
   ],
   [
    "2026-10-16",
-   11
+   34
   ],
   [
    "2026-10-17",
@@ -1804,11 +1823,11 @@
   ],
   [
    "2026-10-29",
-   35
+   63
   ],
   [
    "2026-10-30",
-   0
+   99
   ],
   [
    "2026-10-31",
@@ -1824,21 +1843,81 @@
   ],
   [
    "2026-11-03",
-   0
+   30
   ],
   [
    "2026-11-04",
-   1
+   5
   ],
   [
    "2026-11-05",
    0
+  ],
+  [
+   "2026-11-06",
+   0
+  ],
+  [
+   "2026-11-07",
+   0
+  ],
+  [
+   "2026-11-08",
+   0
+  ],
+  [
+   "2026-11-09",
+   0
+  ],
+  [
+   "2026-11-10",
+   0
+  ],
+  [
+   "2026-11-11",
+   0
+  ],
+  [
+   "2026-11-12",
+   0
+  ],
+  [
+   "2026-11-13",
+   0
+  ],
+  [
+   "2026-11-14",
+   3
+  ],
+  [
+   "2026-11-15",
+   0
+  ],
+  [
+   "2026-11-16",
+   5
+  ],
+  [
+   "2026-11-17",
+   1
+  ],
+  [
+   "2026-11-18",
+   21
+  ],
+  [
+   "2026-11-19",
+   23
+  ],
+  [
+   "2026-11-20",
+   10
   ]
  ],
  "work": {
   "issuesOpen": 0,
   "issuesClosed": 1,
   "prsOpen": 7,
-  "prsMerged": 5
+  "prsMerged": 7
  }
 }
