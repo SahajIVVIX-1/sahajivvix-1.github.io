@@ -1,5 +1,5 @@
 {
- "fetched_at": "2026-11-21T18:00:17.264Z",
+ "fetched_at": "2026-11-21T23:22:47.918Z",
  "user": {
   "login": "SahajIVVIX-1",
   "public_repos": 20,
@@ -15,11 +15,11 @@
   "TypeScript": 1856825,
   "JavaScript": 1681997,
   "CSS": 205901,
-  "HTML": 1924846,
+  "HTML": 1924831,
   "Batchfile": 6751,
   "NSIS": 748,
-  "Shell": 9251,
   "Python": 12195298,
+  "Shell": 9251,
   "PowerShell": 11451,
   "Dockerfile": 10639,
   "Makefile": 827,
@@ -36,7 +36,19 @@
    "topics": [],
    "fork": false,
    "created_at": "2026-04-06T10:14:52Z",
-   "pushed_at": "2026-11-21T17:53:52Z"
+   "pushed_at": "2026-11-21T19:12:24Z"
+  },
+  {
+   "name": "SahajIVVIX-1",
+   "description": "AI Engineer | Deep Learning • RL • Computer Vision Turning data into intelligent systems.",
+   "url": "https://github.com/SahajIVVIX-1/SahajIVVIX-1",
+   "language": "Python",
+   "stars": 1,
+   "forks": 0,
+   "topics": [],
+   "fork": false,
+   "created_at": "2024-01-24T19:11:08Z",
+   "pushed_at": "2026-11-21T18:47:02Z"
   },
   {
    "name": "sahajivvix-1.github.io",
@@ -52,19 +64,7 @@
    ],
    "fork": false,
    "created_at": "2026-04-25T07:43:48Z",
-   "pushed_at": "2026-11-21T11:12:18Z"
-  },
-  {
-   "name": "SahajIVVIX-1",
-   "description": "AI Engineer | Deep Learning • RL • Computer Vision Turning data into intelligent systems.",
-   "url": "https://github.com/SahajIVVIX-1/SahajIVVIX-1",
-   "language": "Python",
-   "stars": 1,
-   "forks": 0,
-   "topics": [],
-   "fork": false,
-   "created_at": "2024-01-24T19:11:08Z",
-   "pushed_at": "2026-11-21T06:00:19Z"
+   "pushed_at": "2026-11-21T18:01:03Z"
   },
   {
    "name": "Reverse-Engineer",
@@ -248,6 +248,37 @@
   {
    "type": "PushEvent",
    "repo": "Smaran-Reminder-App",
+   "at": "2026-11-21T07:22:14Z",
+   "head": "7c2923a8f5eaa00361afc471770e7b7205b006a8",
+   "commits": 3
+  },
+  {
+   "type": "PushEvent",
+   "repo": "Smaran-Reminder-App",
+   "at": "2026-11-21T18:28:47Z",
+   "head": "07adbfc1d819fa4e5fe39231a204712d6e0a95d8",
+   "commits": 1
+  },
+  {
+   "type": "ReleaseEvent",
+   "repo": "Smaran-Reminder-App",
+   "at": "2026-11-21T19:16:13Z"
+  },
+  {
+   "type": "PushEvent",
+   "repo": "Smaran-Reminder-App",
+   "at": "2026-11-21T15:41:37Z",
+   "head": "05149c86848d71c050200e5de2ad161b50e1e7b2",
+   "commits": 1
+  },
+  {
+   "type": "ReleaseEvent",
+   "repo": "Smaran-Reminder-App",
+   "at": "2026-11-21T18:32:53Z"
+  },
+  {
+   "type": "PushEvent",
+   "repo": "Smaran-Reminder-App",
    "at": "2026-11-21T14:35:35Z",
    "head": "5350d1c240dfc0d03424a8fbdf00e6d2b40ea299",
    "commits": 1
@@ -394,20 +425,6 @@
    "repo": "Smaran-Reminder-App",
    "at": "2026-11-19T08:44:14Z",
    "head": "b34ab70f7a19416cb15229803ffc62a4e691b65e",
-   "commits": 1
-  },
-  {
-   "type": "PushEvent",
-   "repo": "Smaran-Reminder-App",
-   "at": "2026-11-21T02:54:50Z",
-   "head": "e4a11afb545517d4708140d4ef7f8238091edab4",
-   "commits": 1
-  },
-  {
-   "type": "PushEvent",
-   "repo": "Smaran-Reminder-App",
-   "at": "2026-11-19T09:23:08Z",
-   "head": "2ee7353faec1fe958bfed83a9c8a4cbe617fc0b7",
    "commits": 1
   }
  ],
