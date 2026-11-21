@@ -1,5 +1,5 @@
 {
- "fetched_at": "2026-11-20T21:10:09.552Z",
+ "fetched_at": "2026-11-21T02:21:17.499Z",
  "user": {
   "login": "SahajIVVIX-1",
   "public_repos": 20,
@@ -12,10 +12,10 @@
   "repos": 16
  },
  "languages": {
-  "TypeScript": 1537298,
-  "JavaScript": 1670277,
+  "TypeScript": 1671382,
+  "JavaScript": 1681885,
   "CSS": 205901,
-  "HTML": 1922473,
+  "HTML": 1922622,
   "Batchfile": 6514,
   "NSIS": 748,
   "Shell": 9251,
@@ -36,7 +36,7 @@
    "topics": [],
    "fork": false,
    "created_at": "2026-04-06T10:14:52Z",
-   "pushed_at": "2026-11-20T20:59:26Z"
+   "pushed_at": "2026-11-20T23:47:18Z"
   },
   {
    "name": "sahajivvix-1.github.io",
@@ -52,7 +52,7 @@
    ],
    "fork": false,
    "created_at": "2026-04-25T07:43:48Z",
-   "pushed_at": "2026-11-20T12:59:22Z"
+   "pushed_at": "2026-11-20T21:11:09Z"
   },
   {
    "name": "Reverse-Engineer",
@@ -248,6 +248,26 @@
   {
    "type": "ReleaseEvent",
    "repo": "Smaran-Reminder-App",
+   "at": "2026-11-20T23:48:53Z"
+  },
+  {
+   "type": "ReleaseEvent",
+   "repo": "Smaran-Reminder-App",
+   "at": "2026-11-20T23:25:08Z"
+  },
+  {
+   "type": "ReleaseEvent",
+   "repo": "Smaran-Reminder-App",
+   "at": "2026-11-20T22:52:33Z"
+  },
+  {
+   "type": "ReleaseEvent",
+   "repo": "Smaran-Reminder-App",
+   "at": "2026-11-20T21:36:32Z"
+  },
+  {
+   "type": "ReleaseEvent",
+   "repo": "Smaran-Reminder-App",
    "at": "2026-11-20T21:00:47Z"
   },
   {
@@ -408,30 +428,6 @@
    "at": "2026-11-18T05:17:36Z",
    "head": "39da18855459d4aab3ba2adc12227784a78f3833",
    "commits": 1
-  },
-  {
-   "type": "ReleaseEvent",
-   "repo": "Smaran-Reminder-App",
-   "at": "2026-11-19T17:12:42Z"
-  },
-  {
-   "type": "PushEvent",
-   "repo": "Smaran-Reminder-App",
-   "at": "2026-11-18T05:29:38Z",
-   "head": "0b55643cc801a7e4a72c2fa99e40716382c2c274",
-   "commits": 1
-  },
-  {
-   "type": "PushEvent",
-   "repo": "Smaran-Reminder-App",
-   "at": "2026-11-19T09:52:04Z",
-   "head": "020c19166be4646056278167214e98f47e37a48d",
-   "commits": 1
-  },
-  {
-   "type": "ReleaseEvent",
-   "repo": "Smaran-Reminder-App",
-   "at": "2026-11-19T15:51:27Z"
   }
  ],
  "calendar": [
@@ -1914,6 +1910,10 @@
   [
    "2026-11-20",
    11
+  ],
+  [
+   "2026-11-21",
+   8
   ]
  ],
  "work": {
