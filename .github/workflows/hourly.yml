@@ -6,11 +6,8 @@ name: hourly-data
 
 on:
   schedule:
-    - cron: "17 * * * *"
+    - cron: "17 */12 * * *"
   workflow_dispatch:
-  push:
-    branches: [info.sahaj.si]
-    paths: ["content/**", "scripts/**", "package.json"]
 
 permissions:
   contents: write
