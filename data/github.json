@@ -1,5 +1,5 @@
 {
- "fetched_at": "2026-11-21T23:22:47.918Z",
+ "fetched_at": "2026-11-22T06:55:25.242Z",
  "user": {
   "login": "SahajIVVIX-1",
   "public_repos": 20,
@@ -12,13 +12,13 @@
   "repos": 16
  },
  "languages": {
-  "TypeScript": 1856825,
-  "JavaScript": 1681997,
-  "CSS": 205901,
-  "HTML": 1924831,
+  "Python": 12195298,
+  "TypeScript": 2107846,
+  "JavaScript": 1694414,
+  "HTML": 1940619,
+  "CSS": 215750,
   "Batchfile": 6751,
   "NSIS": 748,
-  "Python": 12195298,
   "Shell": 9251,
   "PowerShell": 11451,
   "Dockerfile": 10639,
@@ -26,18 +26,6 @@
   "TeX": 535408
  },
  "repos": [
-  {
-   "name": "Smaran-Reminder-App",
-   "description": "Smaran Reminder is a lightweight, fully customizable, non-intrusive desktop popup reminder application designed with PyQt6. It runs silently in your system tray and displays elegant, customizable notification bursts right on your screen without interrupting your typing or stealing window focus.",
-   "url": "https://github.com/SahajIVVIX-1/Smaran-Reminder-App",
-   "language": "TypeScript",
-   "stars": 0,
-   "forks": 0,
-   "topics": [],
-   "fork": false,
-   "created_at": "2026-04-06T10:14:52Z",
-   "pushed_at": "2026-11-21T19:12:24Z"
-  },
   {
    "name": "SahajIVVIX-1",
    "description": "AI Engineer | Deep Learning • RL • Computer Vision Turning data into intelligent systems.",
@@ -48,7 +36,19 @@
    "topics": [],
    "fork": false,
    "created_at": "2024-01-24T19:11:08Z",
-   "pushed_at": "2026-11-21T18:47:02Z"
+   "pushed_at": "2026-11-22T05:29:24Z"
+  },
+  {
+   "name": "Smaran-Reminder-App",
+   "description": "Smaran Reminder is a lightweight, fully customizable, non-intrusive desktop popup reminder application designed with PyQt6. It runs silently in your system tray and displays elegant, customizable notification bursts right on your screen without interrupting your typing or stealing window focus.",
+   "url": "https://github.com/SahajIVVIX-1/Smaran-Reminder-App",
+   "language": "TypeScript",
+   "stars": 0,
+   "forks": 0,
+   "topics": [],
+   "fork": false,
+   "created_at": "2026-04-06T10:14:52Z",
+   "pushed_at": "2026-11-22T04:59:32Z"
   },
   {
    "name": "sahajivvix-1.github.io",
@@ -64,7 +64,7 @@
    ],
    "fork": false,
    "created_at": "2026-04-25T07:43:48Z",
-   "pushed_at": "2026-11-21T18:01:03Z"
+   "pushed_at": "2026-11-21T23:23:35Z"
   },
   {
    "name": "Reverse-Engineer",
@@ -248,6 +248,42 @@
   {
    "type": "PushEvent",
    "repo": "Smaran-Reminder-App",
+   "at": "2026-11-22T04:08:01Z",
+   "head": "09bac78f47859ce6f0d7eed34643fd813ac9e366",
+   "commits": 19
+  },
+  {
+   "type": "ReleaseEvent",
+   "repo": "Smaran-Reminder-App",
+   "at": "2026-11-22T04:59:32Z"
+  },
+  {
+   "type": "ReleaseEvent",
+   "repo": "Smaran-Reminder-App",
+   "at": "2026-11-22T03:13:59Z"
+  },
+  {
+   "type": "PushEvent",
+   "repo": "Smaran-Reminder-App",
+   "at": "2026-11-20T23:19:14Z",
+   "head": "501a79c5ab36b51667bb56b51fed333d8660f44f",
+   "commits": 1
+  },
+  {
+   "type": "ReleaseEvent",
+   "repo": "Smaran-Reminder-App",
+   "at": "2026-11-22T01:59:07Z"
+  },
+  {
+   "type": "PushEvent",
+   "repo": "Smaran-Reminder-App",
+   "at": "2026-11-21T09:37:06Z",
+   "head": "269c39756cd023894088b7e68ed75e809ff914eb",
+   "commits": 1
+  },
+  {
+   "type": "PushEvent",
+   "repo": "Smaran-Reminder-App",
    "at": "2026-11-21T07:22:14Z",
    "head": "7c2923a8f5eaa00361afc471770e7b7205b006a8",
    "commits": 3
@@ -393,70 +429,9 @@
    "type": "ReleaseEvent",
    "repo": "Smaran-Reminder-App",
    "at": "2026-11-21T08:42:14Z"
-  },
-  {
-   "type": "PushEvent",
-   "repo": "Smaran-Reminder-App",
-   "at": "2026-11-21T07:27:41Z",
-   "head": "f1c8f5b324604fdff1d18db458330404a82153eb",
-   "commits": 1
-  },
-  {
-   "type": "PushEvent",
-   "repo": "Smaran-Reminder-App",
-   "at": "2026-11-21T03:43:38Z",
-   "head": "ed60ac94bfa1421c4bfb35f89456b46c2c1f8bf6",
-   "commits": 1
-  },
-  {
-   "type": "PushEvent",
-   "repo": "Smaran-Reminder-App",
-   "at": "2026-11-21T03:35:03Z",
-   "head": "922eaca0dfa3d331c628e3c9734bbcc5f325a75e",
-   "commits": 1
-  },
-  {
-   "type": "ReleaseEvent",
-   "repo": "Smaran-Reminder-App",
-   "at": "2026-11-21T07:26:31Z"
-  },
-  {
-   "type": "PushEvent",
-   "repo": "Smaran-Reminder-App",
-   "at": "2026-11-19T08:44:14Z",
-   "head": "b34ab70f7a19416cb15229803ffc62a4e691b65e",
-   "commits": 1
   }
  ],
  "calendar": [
-  [
-   "2025-11-16",
-   0
-  ],
-  [
-   "2025-11-17",
-   0
-  ],
-  [
-   "2025-11-18",
-   0
-  ],
-  [
-   "2025-11-19",
-   0
-  ],
-  [
-   "2025-11-20",
-   0
-  ],
-  [
-   "2025-11-21",
-   0
-  ],
-  [
-   "2025-11-22",
-   0
-  ],
   [
    "2025-11-23",
    0
@@ -1911,7 +1886,11 @@
   ],
   [
    "2026-11-21",
-   28
+   37
+  ],
+  [
+   "2026-11-22",
+   12
   ]
  ],
  "work": {
