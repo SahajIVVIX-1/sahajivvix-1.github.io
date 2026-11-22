@@ -1,5 +1,5 @@
 {
- "fetched_at": "2026-11-22T06:55:25.242Z",
+ "fetched_at": "2026-11-22T15:22:47.073Z",
  "user": {
   "login": "SahajIVVIX-1",
   "public_repos": 20,
@@ -12,32 +12,20 @@
   "repos": 16
  },
  "languages": {
-  "Python": 12195298,
   "TypeScript": 2107846,
-  "JavaScript": 1694414,
-  "HTML": 1940619,
-  "CSS": 215750,
+  "JavaScript": 1731210,
+  "HTML": 1951683,
+  "CSS": 224969,
   "Batchfile": 6751,
   "NSIS": 748,
   "Shell": 9251,
+  "Python": 12195298,
   "PowerShell": 11451,
   "Dockerfile": 10639,
   "Makefile": 827,
   "TeX": 535408
  },
  "repos": [
-  {
-   "name": "SahajIVVIX-1",
-   "description": "AI Engineer | Deep Learning • RL • Computer Vision Turning data into intelligent systems.",
-   "url": "https://github.com/SahajIVVIX-1/SahajIVVIX-1",
-   "language": "Python",
-   "stars": 1,
-   "forks": 0,
-   "topics": [],
-   "fork": false,
-   "created_at": "2024-01-24T19:11:08Z",
-   "pushed_at": "2026-11-22T05:29:24Z"
-  },
   {
    "name": "Smaran-Reminder-App",
    "description": "Smaran Reminder is a lightweight, fully customizable, non-intrusive desktop popup reminder application designed with PyQt6. It runs silently in your system tray and displays elegant, customizable notification bursts right on your screen without interrupting your typing or stealing window focus.",
@@ -48,7 +36,7 @@
    "topics": [],
    "fork": false,
    "created_at": "2026-04-06T10:14:52Z",
-   "pushed_at": "2026-11-22T04:59:32Z"
+   "pushed_at": "2026-11-22T15:15:12Z"
   },
   {
    "name": "sahajivvix-1.github.io",
@@ -64,7 +52,19 @@
    ],
    "fork": false,
    "created_at": "2026-04-25T07:43:48Z",
-   "pushed_at": "2026-11-21T23:23:35Z"
+   "pushed_at": "2026-11-22T06:56:24Z"
+  },
+  {
+   "name": "SahajIVVIX-1",
+   "description": "AI Engineer | Deep Learning • RL • Computer Vision Turning data into intelligent systems.",
+   "url": "https://github.com/SahajIVVIX-1/SahajIVVIX-1",
+   "language": "Python",
+   "stars": 1,
+   "forks": 0,
+   "topics": [],
+   "fork": false,
+   "created_at": "2024-01-24T19:11:08Z",
+   "pushed_at": "2026-11-22T05:29:24Z"
   },
   {
    "name": "Reverse-Engineer",
@@ -248,6 +248,34 @@
   {
    "type": "PushEvent",
    "repo": "Smaran-Reminder-App",
+   "at": "2026-11-21T11:40:16Z",
+   "head": "98351460306d6203ef888094bbed3ba40aebf10c",
+   "commits": 1
+  },
+  {
+   "type": "PushEvent",
+   "repo": "Smaran-Reminder-App",
+   "at": "2026-11-22T11:45:13Z",
+   "head": "b7e6ca47a51d3ddd3aadb86c394df491b98dc165",
+   "commits": 1
+  },
+  {
+   "type": "PushEvent",
+   "repo": "Smaran-Reminder-App",
+   "at": "2026-11-21T17:53:53Z",
+   "head": "2e945e990c8db6a5c3a825f049e181f003fb75a3",
+   "commits": 1
+  },
+  {
+   "type": "PushEvent",
+   "repo": "Smaran-Reminder-App",
+   "at": "2026-11-22T08:09:05Z",
+   "head": "9f163a7d79649c0b2f3070ec4861a79294020a8b",
+   "commits": 1
+  },
+  {
+   "type": "PushEvent",
+   "repo": "Smaran-Reminder-App",
    "at": "2026-11-22T04:08:01Z",
    "head": "09bac78f47859ce6f0d7eed34643fd813ac9e366",
    "commits": 19
@@ -403,32 +431,6 @@
    "at": "2026-11-21T09:37:09Z",
    "head": "269c39756cd023894088b7e68ed75e809ff914eb",
    "commits": 1
-  },
-  {
-   "type": "PushEvent",
-   "repo": "Smaran-Reminder-App",
-   "at": "2026-11-19T19:00:17Z",
-   "head": "916dfafe258b3963e7d16d644aa6f2059515dbaa",
-   "commits": 1
-  },
-  {
-   "type": "PushEvent",
-   "repo": "Smaran-Reminder-App",
-   "at": "2026-11-21T08:35:52Z",
-   "head": "75a46d84f942f131221b13a2add9c0740d4de6e9",
-   "commits": 1
-  },
-  {
-   "type": "PushEvent",
-   "repo": "Smaran-Reminder-App",
-   "at": "2026-11-19T12:09:48Z",
-   "head": "cb378a9109686c91f6f7ed1cfedc813495dcd101",
-   "commits": 1
-  },
-  {
-   "type": "ReleaseEvent",
-   "repo": "Smaran-Reminder-App",
-   "at": "2026-11-21T08:42:14Z"
   }
  ],
  "calendar": [
@@ -1890,7 +1892,7 @@
   ],
   [
    "2026-11-22",
-   12
+   21
   ]
  ],
  "work": {
