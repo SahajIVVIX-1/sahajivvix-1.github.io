@@ -1,5 +1,5 @@
 {
- "fetched_at": "2026-11-22T15:22:47.073Z",
+ "fetched_at": "2026-11-22T17:24:24.092Z",
  "user": {
   "login": "SahajIVVIX-1",
   "public_repos": 20,
@@ -12,32 +12,19 @@
   "repos": 16
  },
  "languages": {
-  "TypeScript": 2107846,
-  "JavaScript": 1731210,
-  "HTML": 1951683,
-  "CSS": 224969,
-  "Batchfile": 6751,
-  "NSIS": 748,
+  "JavaScript": 1567200,
+  "HTML": 1893639,
+  "CSS": 173614,
   "Shell": 9251,
   "Python": 12195298,
+  "TypeScript": 352440,
   "PowerShell": 11451,
   "Dockerfile": 10639,
+  "Batchfile": 3632,
   "Makefile": 827,
   "TeX": 535408
  },
  "repos": [
-  {
-   "name": "Smaran-Reminder-App",
-   "description": "Smaran Reminder is a lightweight, fully customizable, non-intrusive desktop popup reminder application designed with PyQt6. It runs silently in your system tray and displays elegant, customizable notification bursts right on your screen without interrupting your typing or stealing window focus.",
-   "url": "https://github.com/SahajIVVIX-1/Smaran-Reminder-App",
-   "language": "TypeScript",
-   "stars": 0,
-   "forks": 0,
-   "topics": [],
-   "fork": false,
-   "created_at": "2026-04-06T10:14:52Z",
-   "pushed_at": "2026-11-22T15:15:12Z"
-  },
   {
    "name": "sahajivvix-1.github.io",
    "description": "The source of Sahaj Saliya's portfolio. The original site is info.sahaj.si. Any other address showing this design or content is a copy.",
@@ -52,7 +39,19 @@
    ],
    "fork": false,
    "created_at": "2026-04-25T07:43:48Z",
-   "pushed_at": "2026-11-22T06:56:24Z"
+   "pushed_at": "2026-11-22T17:24:07Z"
+  },
+  {
+   "name": "Smaran-Studio",
+   "description": "",
+   "url": "https://github.com/SahajIVVIX-1/Smaran-Studio",
+   "language": null,
+   "stars": 0,
+   "forks": 0,
+   "topics": [],
+   "fork": false,
+   "created_at": "2026-11-22T16:43:52Z",
+   "pushed_at": "2026-11-22T17:03:21Z"
   },
   {
    "name": "SahajIVVIX-1",
@@ -246,6 +245,35 @@
  ],
  "events": [
   {
+   "type": "CreateEvent",
+   "repo": "Smaran-Studio",
+   "at": "2026-11-22T16:57:36Z"
+  },
+  {
+   "type": "PushEvent",
+   "repo": "Smaran-Reminder-App",
+   "at": "2026-11-22T01:54:59Z",
+   "head": "7606062c47ae92dfedb070e6bf90bdf14cb7fd68",
+   "commits": 1
+  },
+  {
+   "type": "ReleaseEvent",
+   "repo": "Smaran-Studio",
+   "at": "2026-11-22T17:03:21Z"
+  },
+  {
+   "type": "PushEvent",
+   "repo": "Smaran-Reminder-App",
+   "at": "2026-11-21T14:29:06Z",
+   "head": "aa40b050688326d88af3a540a4d1c43167a14620",
+   "commits": 1
+  },
+  {
+   "type": "CreateEvent",
+   "repo": "Smaran-Studio",
+   "at": "2026-11-22T16:43:54Z"
+  },
+  {
    "type": "PushEvent",
    "repo": "Smaran-Reminder-App",
    "at": "2026-11-21T11:40:16Z",
@@ -397,39 +425,6 @@
    "repo": "Smaran-Reminder-App",
    "at": "2026-11-19T12:32:36Z",
    "head": "cfe44cd21fa676c4f6f321f998cf0eeff0fb5ae9",
-   "commits": 1
-  },
-  {
-   "type": "PushEvent",
-   "repo": "Smaran-Reminder-App",
-   "at": "2026-11-20T13:47:31Z",
-   "head": "1f4d1a3dd951e532a267ae8bb9a4a32b726b2c38",
-   "commits": 1
-  },
-  {
-   "type": "ReleaseEvent",
-   "repo": "Smaran-Reminder-App",
-   "at": "2026-11-21T11:18:14Z"
-  },
-  {
-   "type": "PushEvent",
-   "repo": "Smaran-Reminder-App",
-   "at": "2026-11-19T13:52:38Z",
-   "head": "639d5af28a014b45c1bfc489c82c8105bc66e0dc",
-   "commits": 1
-  },
-  {
-   "type": "PushEvent",
-   "repo": "Smaran-Reminder-App",
-   "at": "2026-11-20T12:39:08Z",
-   "head": "a6a53f113257661fa4933434a40a1d591b383ff0",
-   "commits": 1
-  },
-  {
-   "type": "PushEvent",
-   "repo": "Smaran-Reminder-App",
-   "at": "2026-11-21T09:37:09Z",
-   "head": "269c39756cd023894088b7e68ed75e809ff914eb",
    "commits": 1
   }
  ],
@@ -940,11 +935,11 @@
   ],
   [
    "2026-03-29",
-   1
+   0
   ],
   [
    "2026-03-30",
-   16
+   17
   ],
   [
    "2026-03-31",
@@ -972,7 +967,7 @@
   ],
   [
    "2026-04-06",
-   9
+   8
   ],
   [
    "2026-04-07",
@@ -1716,7 +1711,7 @@
   ],
   [
    "2026-10-09",
-   48
+   1
   ],
   [
    "2026-10-10",
@@ -1740,11 +1735,11 @@
   ],
   [
    "2026-10-15",
-   1
+   0
   ],
   [
    "2026-10-16",
-   34
+   11
   ],
   [
    "2026-10-17",
@@ -1872,33 +1867,33 @@
   ],
   [
    "2026-11-17",
-   1
+   0
   ],
   [
    "2026-11-18",
-   21
+   1
   ],
   [
    "2026-11-19",
-   23
+   0
   ],
   [
    "2026-11-20",
-   11
+   0
   ],
   [
    "2026-11-21",
-   37
+   0
   ],
   [
    "2026-11-22",
-   21
+   4
   ]
  ],
  "work": {
   "issuesOpen": 0,
   "issuesClosed": 1,
-  "prsOpen": 7,
+  "prsOpen": 10,
   "prsMerged": 7
  }
 }
