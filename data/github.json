@@ -1,5 +1,5 @@
 {
- "fetched_at": "2026-11-22T17:24:24.092Z",
+ "fetched_at": "2026-11-23T07:38:37.431Z",
  "user": {
   "login": "SahajIVVIX-1",
   "public_repos": 20,
@@ -8,15 +8,15 @@
   "since": "2023-09-01T13:00:47Z"
  },
  "totals": {
-  "stars": 2,
+  "stars": 3,
   "repos": 16
  },
  "languages": {
-  "JavaScript": 1567200,
-  "HTML": 1893639,
-  "CSS": 173614,
-  "Shell": 9251,
   "Python": 12195298,
+  "JavaScript": 1632788,
+  "HTML": 1947566,
+  "CSS": 213042,
+  "Shell": 9251,
   "TypeScript": 352440,
   "PowerShell": 11451,
   "Dockerfile": 10639,
@@ -25,34 +25,6 @@
   "TeX": 535408
  },
  "repos": [
-  {
-   "name": "sahajivvix-1.github.io",
-   "description": "The source of Sahaj Saliya's portfolio. The original site is info.sahaj.si. Any other address showing this design or content is a copy.",
-   "url": "https://github.com/SahajIVVIX-1/sahajivvix-1.github.io",
-   "language": "JavaScript",
-   "stars": 0,
-   "forks": 0,
-   "topics": [
-    "clock",
-    "javascript",
-    "timer"
-   ],
-   "fork": false,
-   "created_at": "2026-04-25T07:43:48Z",
-   "pushed_at": "2026-11-22T17:24:07Z"
-  },
-  {
-   "name": "Smaran-Studio",
-   "description": "",
-   "url": "https://github.com/SahajIVVIX-1/Smaran-Studio",
-   "language": null,
-   "stars": 0,
-   "forks": 0,
-   "topics": [],
-   "fork": false,
-   "created_at": "2026-11-22T16:43:52Z",
-   "pushed_at": "2026-11-22T17:03:21Z"
-  },
   {
    "name": "SahajIVVIX-1",
    "description": "AI Engineer | Deep Learning • RL • Computer Vision Turning data into intelligent systems.",
@@ -63,7 +35,35 @@
    "topics": [],
    "fork": false,
    "created_at": "2024-01-24T19:11:08Z",
-   "pushed_at": "2026-11-22T05:29:24Z"
+   "pushed_at": "2026-11-23T06:08:52Z"
+  },
+  {
+   "name": "Smaran-Studio",
+   "description": "",
+   "url": "https://github.com/SahajIVVIX-1/Smaran-Studio",
+   "language": "JavaScript",
+   "stars": 0,
+   "forks": 0,
+   "topics": [],
+   "fork": false,
+   "created_at": "2026-11-22T16:43:52Z",
+   "pushed_at": "2026-11-22T19:48:03Z"
+  },
+  {
+   "name": "sahajivvix-1.github.io",
+   "description": "The source of Sahaj Saliya's portfolio. The original site is info.sahaj.si. Any other address showing this design or content is a copy.",
+   "url": "https://github.com/SahajIVVIX-1/sahajivvix-1.github.io",
+   "language": "JavaScript",
+   "stars": 1,
+   "forks": 0,
+   "topics": [
+    "clock",
+    "javascript",
+    "timer"
+   ],
+   "fork": false,
+   "created_at": "2026-04-25T07:43:48Z",
+   "pushed_at": "2026-11-22T17:25:22Z"
   },
   {
    "name": "Reverse-Engineer",
@@ -245,28 +245,35 @@
  ],
  "events": [
   {
+   "type": "ReleaseEvent",
+   "repo": "Smaran-Studio",
+   "at": "2026-11-22T19:47:57Z"
+  },
+  {
+   "type": "PushEvent",
+   "repo": "Smaran-Studio",
+   "at": "2026-11-22T18:32:50Z",
+   "head": "10efcb64734cc5dd3d21cbcf1a81cacc9f3ea39e",
+   "commits": 1
+  },
+  {
+   "type": "PushEvent",
+   "repo": "Smaran-Studio",
+   "at": "2026-11-22T17:49:21Z",
+   "head": "55c533376f9f8b35ed354dd1b2cd442f17f1fd12",
+   "commits": 1
+  },
+  {
+   "type": "PushEvent",
+   "repo": "sahajivvix-1.github.io",
+   "at": "2026-11-22T17:25:15Z",
+   "head": "02fa4d408172d35dffcdf139d5041a24bd007870",
+   "commits": 1
+  },
+  {
    "type": "CreateEvent",
    "repo": "Smaran-Studio",
    "at": "2026-11-22T16:57:36Z"
-  },
-  {
-   "type": "PushEvent",
-   "repo": "Smaran-Reminder-App",
-   "at": "2026-11-22T01:54:59Z",
-   "head": "7606062c47ae92dfedb070e6bf90bdf14cb7fd68",
-   "commits": 1
-  },
-  {
-   "type": "ReleaseEvent",
-   "repo": "Smaran-Studio",
-   "at": "2026-11-22T17:03:21Z"
-  },
-  {
-   "type": "PushEvent",
-   "repo": "Smaran-Reminder-App",
-   "at": "2026-11-21T14:29:06Z",
-   "head": "aa40b050688326d88af3a540a4d1c43167a14620",
-   "commits": 1
   },
   {
    "type": "CreateEvent",
@@ -275,157 +282,38 @@
   },
   {
    "type": "PushEvent",
-   "repo": "Smaran-Reminder-App",
-   "at": "2026-11-21T11:40:16Z",
-   "head": "98351460306d6203ef888094bbed3ba40aebf10c",
+   "repo": "blogs",
+   "at": "2026-11-16T07:58:25Z",
+   "head": "ba4479bc8d26a59b9679fac6ccbb01954c45d145",
    "commits": 1
   },
   {
    "type": "PushEvent",
-   "repo": "Smaran-Reminder-App",
-   "at": "2026-11-22T11:45:13Z",
-   "head": "b7e6ca47a51d3ddd3aadb86c394df491b98dc165",
+   "repo": "SahajIVVIX-1",
+   "at": "2026-11-16T11:19:13Z",
+   "head": "9c3e9ed0b341efb7e03f821718dcfaf992bd3a4a",
    "commits": 1
   },
   {
    "type": "PushEvent",
-   "repo": "Smaran-Reminder-App",
-   "at": "2026-11-21T17:53:53Z",
-   "head": "2e945e990c8db6a5c3a825f049e181f003fb75a3",
+   "repo": "blogs",
+   "at": "2026-11-16T11:03:12Z",
+   "head": "f5e053247a866454364f54980e5dfd8682302111",
    "commits": 1
   },
   {
    "type": "PushEvent",
-   "repo": "Smaran-Reminder-App",
-   "at": "2026-11-22T08:09:05Z",
-   "head": "9f163a7d79649c0b2f3070ec4861a79294020a8b",
-   "commits": 1
+   "repo": "BDA-Analytics",
+   "at": "2026-11-14T14:09:02Z",
+   "head": "3211c007ad02f55824ceaf4b07c07cc5dae9768b",
+   "commits": 2
   },
   {
    "type": "PushEvent",
-   "repo": "Smaran-Reminder-App",
-   "at": "2026-11-22T04:08:01Z",
-   "head": "09bac78f47859ce6f0d7eed34643fd813ac9e366",
-   "commits": 19
-  },
-  {
-   "type": "ReleaseEvent",
-   "repo": "Smaran-Reminder-App",
-   "at": "2026-11-22T04:59:32Z"
-  },
-  {
-   "type": "ReleaseEvent",
-   "repo": "Smaran-Reminder-App",
-   "at": "2026-11-22T03:13:59Z"
-  },
-  {
-   "type": "PushEvent",
-   "repo": "Smaran-Reminder-App",
-   "at": "2026-11-20T23:19:14Z",
-   "head": "501a79c5ab36b51667bb56b51fed333d8660f44f",
-   "commits": 1
-  },
-  {
-   "type": "ReleaseEvent",
-   "repo": "Smaran-Reminder-App",
-   "at": "2026-11-22T01:59:07Z"
-  },
-  {
-   "type": "PushEvent",
-   "repo": "Smaran-Reminder-App",
-   "at": "2026-11-21T09:37:06Z",
-   "head": "269c39756cd023894088b7e68ed75e809ff914eb",
-   "commits": 1
-  },
-  {
-   "type": "PushEvent",
-   "repo": "Smaran-Reminder-App",
-   "at": "2026-11-21T07:22:14Z",
-   "head": "7c2923a8f5eaa00361afc471770e7b7205b006a8",
+   "repo": "Crohn-Disease-Early-Prediction",
+   "at": "2026-10-29T17:26:57Z",
+   "head": "8003db4ada8ea7b4ba0416d80a9609d59544a5d0",
    "commits": 3
-  },
-  {
-   "type": "PushEvent",
-   "repo": "Smaran-Reminder-App",
-   "at": "2026-11-21T18:28:47Z",
-   "head": "07adbfc1d819fa4e5fe39231a204712d6e0a95d8",
-   "commits": 1
-  },
-  {
-   "type": "ReleaseEvent",
-   "repo": "Smaran-Reminder-App",
-   "at": "2026-11-21T19:16:13Z"
-  },
-  {
-   "type": "PushEvent",
-   "repo": "Smaran-Reminder-App",
-   "at": "2026-11-21T15:41:37Z",
-   "head": "05149c86848d71c050200e5de2ad161b50e1e7b2",
-   "commits": 1
-  },
-  {
-   "type": "ReleaseEvent",
-   "repo": "Smaran-Reminder-App",
-   "at": "2026-11-21T18:32:53Z"
-  },
-  {
-   "type": "PushEvent",
-   "repo": "Smaran-Reminder-App",
-   "at": "2026-11-21T14:35:35Z",
-   "head": "5350d1c240dfc0d03424a8fbdf00e6d2b40ea299",
-   "commits": 1
-  },
-  {
-   "type": "PushEvent",
-   "repo": "Smaran-Reminder-App",
-   "at": "2026-11-21T03:14:11Z",
-   "head": "bf1280254eb340217b4260338edb0474878dfd2b",
-   "commits": 1
-  },
-  {
-   "type": "PushEvent",
-   "repo": "Smaran-Reminder-App",
-   "at": "2026-11-21T02:54:53Z",
-   "head": "e4a11afb545517d4708140d4ef7f8238091edab4",
-   "commits": 1
-  },
-  {
-   "type": "PushEvent",
-   "repo": "Smaran-Reminder-App",
-   "at": "2026-11-19T18:25:50Z",
-   "head": "749ab13a1681c08acb7f2729f515f874fa530b1f",
-   "commits": 1
-  },
-  {
-   "type": "PushEvent",
-   "repo": "Smaran-Reminder-App",
-   "at": "2026-11-21T15:48:13Z",
-   "head": "61641120f83e69ab3655f9acf456e65f2234c61b",
-   "commits": 1
-  },
-  {
-   "type": "ReleaseEvent",
-   "repo": "Smaran-Reminder-App",
-   "at": "2026-11-21T15:52:45Z"
-  },
-  {
-   "type": "ReleaseEvent",
-   "repo": "Smaran-Reminder-App",
-   "at": "2026-11-21T14:01:16Z"
-  },
-  {
-   "type": "PushEvent",
-   "repo": "Smaran-Reminder-App",
-   "at": "2026-11-19T14:36:30Z",
-   "head": "8e8e93f79a339c7b9bbeddd936c144793444bbb1",
-   "commits": 1
-  },
-  {
-   "type": "PushEvent",
-   "repo": "Smaran-Reminder-App",
-   "at": "2026-11-19T12:32:36Z",
-   "head": "cfe44cd21fa676c4f6f321f998cf0eeff0fb5ae9",
-   "commits": 1
   }
  ],
  "calendar": [
@@ -935,11 +823,11 @@
   ],
   [
    "2026-03-29",
-   0
+   1
   ],
   [
    "2026-03-30",
-   17
+   16
   ],
   [
    "2026-03-31",
@@ -1887,13 +1775,17 @@
   ],
   [
    "2026-11-22",
-   4
+   7
+  ],
+  [
+   "2026-11-23",
+   2
   ]
  ],
  "work": {
   "issuesOpen": 0,
   "issuesClosed": 1,
-  "prsOpen": 10,
+  "prsOpen": 6,
   "prsMerged": 7
  }
 }
