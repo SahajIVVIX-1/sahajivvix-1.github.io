@@ -1,5 +1,5 @@
 {
- "fetched_at": "2026-11-23T07:38:37.431Z",
+ "fetched_at": "2026-11-23T23:53:29.567Z",
  "user": {
   "login": "SahajIVVIX-1",
   "public_repos": 20,
@@ -14,7 +14,7 @@
  "languages": {
   "Python": 12195298,
   "JavaScript": 1632788,
-  "HTML": 1947566,
+  "HTML": 1947679,
   "CSS": 213042,
   "Shell": 9251,
   "TypeScript": 352440,
@@ -35,19 +35,7 @@
    "topics": [],
    "fork": false,
    "created_at": "2024-01-24T19:11:08Z",
-   "pushed_at": "2026-11-23T06:08:52Z"
-  },
-  {
-   "name": "Smaran-Studio",
-   "description": "",
-   "url": "https://github.com/SahajIVVIX-1/Smaran-Studio",
-   "language": "JavaScript",
-   "stars": 0,
-   "forks": 0,
-   "topics": [],
-   "fork": false,
-   "created_at": "2026-11-22T16:43:52Z",
-   "pushed_at": "2026-11-22T19:48:03Z"
+   "pushed_at": "2026-11-23T23:29:13Z"
   },
   {
    "name": "sahajivvix-1.github.io",
@@ -63,7 +51,19 @@
    ],
    "fork": false,
    "created_at": "2026-04-25T07:43:48Z",
-   "pushed_at": "2026-11-22T17:25:22Z"
+   "pushed_at": "2026-11-23T07:39:34Z"
+  },
+  {
+   "name": "Smaran-Studio",
+   "description": "",
+   "url": "https://github.com/SahajIVVIX-1/Smaran-Studio",
+   "language": "JavaScript",
+   "stars": 0,
+   "forks": 0,
+   "topics": [],
+   "fork": false,
+   "created_at": "2026-11-22T16:43:52Z",
+   "pushed_at": "2026-11-22T19:48:03Z"
   },
   {
    "name": "Reverse-Engineer",
