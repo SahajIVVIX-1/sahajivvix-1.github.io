@@ -1,41 +1,41 @@
 {
- "fetched_at": "2026-11-24T09:53:50.761Z",
+ "fetched_at": "2026-11-24T22:27:06.557Z",
  "user": {
   "login": "SahajIVVIX-1",
-  "public_repos": 20,
+  "public_repos": 21,
   "followers": 5,
   "bio": "AI/ML Engineer | Generative AI, LLMs, Agentic AI & AI Infrastructure | Building scalable, intelligent solutions through research and engineering.",
   "since": "2023-09-01T13:00:47Z"
  },
  "totals": {
   "stars": 3,
-  "repos": 16
+  "repos": 17
  },
  "languages": {
-  "Python": 12195298,
+  "Python": 12331100,
+  "Batchfile": 6457,
   "JavaScript": 1632788,
-  "HTML": 1947679,
+  "HTML": 1947680,
   "CSS": 213042,
   "Shell": 9251,
   "TypeScript": 352440,
   "PowerShell": 11451,
   "Dockerfile": 10639,
-  "Batchfile": 3632,
   "Makefile": 827,
   "TeX": 535408
  },
  "repos": [
   {
-   "name": "SahajIVVIX-1",
-   "description": "AI Engineer | Deep Learning • RL • Computer Vision Turning data into intelligent systems.",
-   "url": "https://github.com/SahajIVVIX-1/SahajIVVIX-1",
+   "name": "Sleep-Consolidating-LLM",
+   "description": "",
+   "url": "https://github.com/SahajIVVIX-1/Sleep-Consolidating-LLM",
    "language": "Python",
-   "stars": 1,
+   "stars": 0,
    "forks": 0,
    "topics": [],
    "fork": false,
-   "created_at": "2024-01-24T19:11:08Z",
-   "pushed_at": "2026-11-24T08:46:52Z"
+   "created_at": "2026-11-23T19:14:18Z",
+   "pushed_at": "2026-11-24T21:22:20Z"
   },
   {
    "name": "sahajivvix-1.github.io",
@@ -51,7 +51,19 @@
    ],
    "fork": false,
    "created_at": "2026-04-25T07:43:48Z",
-   "pushed_at": "2026-11-23T23:54:10Z"
+   "pushed_at": "2026-11-24T09:54:35Z"
+  },
+  {
+   "name": "SahajIVVIX-1",
+   "description": "AI Engineer | Deep Learning • RL • Computer Vision Turning data into intelligent systems.",
+   "url": "https://github.com/SahajIVVIX-1/SahajIVVIX-1",
+   "language": "Python",
+   "stars": 1,
+   "forks": 0,
+   "topics": [],
+   "fork": false,
+   "created_at": "2024-01-24T19:11:08Z",
+   "pushed_at": "2026-11-24T08:46:52Z"
   },
   {
    "name": "Smaran-Studio",
@@ -244,6 +256,13 @@
   }
  ],
  "events": [
+  {
+   "type": "PushEvent",
+   "repo": "Sleep-Consolidating-LLM",
+   "at": "2026-11-24T14:54:51Z",
+   "head": "27c389a50d4fe70889405c0aceb5b00de3292b37",
+   "commits": 1
+  },
   {
    "type": "PushEvent",
    "repo": "Smaran-Studio",
@@ -1786,11 +1805,11 @@
   ],
   [
    "2026-11-23",
-   2
+   5
   ],
   [
    "2026-11-24",
-   0
+   22
   ]
  ],
  "work": {
