@@ -24,7 +24,7 @@ export function initBrand({ reducedMotion = false } = {}) {
   if (name) morph(brand, name, reducedMotion);
 }
 
-// The ring shows how far through the page (the 12 layers) the visitor is.
+// The ring shows how far through the page (all the layers) the visitor is.
 function progress(brand) {
   const ring = brand.querySelector('.ring-prog');
   let queued = false;

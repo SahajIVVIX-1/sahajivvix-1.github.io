@@ -5,16 +5,18 @@ export function initPalette() {
   const home = location.pathname === '/' || /^\/ip=/.test(location.pathname);
   const go = (hash) => (home ? hash : `/${hash}`);
   const cards = [...document.querySelectorAll('.card[id]')].map((c) => ({ label: c.querySelector('.card-title')?.textContent, hint: 'project', href: `#${c.id}` }));
+  // build.mjs writes the project count (one layer each) into the page, so the layer numbers below follow it.
+  const np = Number(document.querySelector('meta[name="project-count"]')?.content) || 5;
   const items = [
     { label: 'Home', hint: 'layer 1', href: home ? '#top' : '/' },
     { label: 'About', hint: 'layer 2', href: go('#about') },
     { label: 'Embedding map', hint: 'layer 3', href: go('#map') },
-    { label: 'Projects', hint: 'layers 4–8', href: go('#work') },
+    { label: 'Projects', hint: `layers 4–${3 + np}`, href: go('#work') },
     ...(home ? cards : []),
-    { label: 'Skills', hint: 'layer 9', href: go('#skills') },
-    { label: 'Experience', hint: 'layer 10', href: go('#experience') },
-    { label: 'Certifications & GitHub', hint: 'layer 11', href: go('#certs') },
-    { label: 'Contact', hint: 'layer 12', href: go('#contact') },
+    { label: 'Skills', hint: `layer ${4 + np}`, href: go('#skills') },
+    { label: 'Experience', hint: `layer ${5 + np}`, href: go('#experience') },
+    { label: 'Certifications & GitHub', hint: `layer ${6 + np}`, href: go('#certs') },
+    { label: 'Contact', hint: `layer ${7 + np}`, href: go('#contact') },
     { label: 'Blog', hint: 'blog.sahaj.si', href: 'https://blog.sahaj.si/' },
     { label: 'GitHub', hint: 'SahajIVVIX-1', href: 'https://github.com/SahajIVVIX-1' },
     { label: 'LinkedIn', hint: 'sahajs59', href: 'https://www.linkedin.com/in/sahajs59/' },
