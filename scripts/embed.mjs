@@ -8,14 +8,14 @@
 // Skips the work when no input changed since the last run (hash in data/meta.json).
 import { createHash, createHmac } from 'node:crypto';
 import { existsSync, readdirSync, readFileSync } from 'node:fs';
-import { readJSON, readText, write, tokenizeWords, STOP, parseFrontMatter, fmtMonth, fmtRange, slug, path, projectUrl } from './lib.mjs';
+import { readJSON, readText, write, tokenizeWords, STOP, parseFrontMatter, fmtMonth, fmtRange, slug, path, projectUrl, loadPortfolio } from './lib.mjs';
 
 const MODEL = 'Xenova/all-MiniLM-L6-v2';
 const DIM = 384;
 
 export async function embedAll({ force = process.argv.includes('--force') } = {}) {
   const profile = readJSON('content/profile.json');
-  const projects = readJSON('content/projects.json');
+  const projects = loadPortfolio().all;
   const github = readJSON('data/github.json', { repos: [], languages: {}, user: {} });
   const aboutMd = readText('content/about-me.md');
   // Harvard ManageMentor completion badges (short programs, never a degree): chatbot, lens, map and CLIP

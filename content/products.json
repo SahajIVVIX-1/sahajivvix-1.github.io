@@ -1,0 +1,103 @@
+[
+  {
+    "id": "smaran",
+    "visual": ["a Windows desktop notification card", "a reminder app on a computer screen", "a screenshot of a settings window", "a task scheduler list", "a software landing page"],
+    "repo": "Smaran-Studio",
+    "localReadme": true,
+    "links": [
+      {"label": "Product page & downloads", "url": "https://info.sahaj.si/Smaran-Studio/"},
+      {"label": "GitHub", "url": "https://github.com/SahajIVVIX-1/Smaran-Studio"}
+    ],
+    "date": "2026-11",
+    "name": "Smaran",
+    "kind": "Windows desktop app",
+    "year": "2026",
+    "task": "Reminders · automations · offline licensing",
+    "problem": "Reminder apps either shout at you or hide in a calendar, and Windows' Task Scheduler is too heavy for everyday routines. People want to type \"stretch every 45 min\" or \"call mom at 6pm\", be nudged calmly, and have their PC do the dull things (lock, sleep, open a file) on its own.",
+    "approach": "A tray app that parses plain sentences into schedules and slides in a small card with Done and Snooze. Normal reminders fade away; important ones stay and break through quiet hours and full-screen apps. Automations chain up to 20 steps (open apps, files, scripts and links, or lock, sleep, sign out, shut down) on a time or a Windows event, with a 30-second cancellable countdown before anything destructive. Licences are Ed25519-signed cards hidden in a PNG and checked offline.",
+    "features": [
+      "Natural-language quick add and any schedule, from every few minutes to yearly",
+      "Quiet hours and focus: held while a full-screen app, game or presentation is showing",
+      "Snooze, follow-ups and rotating lines (stretches, tips) per reminder",
+      "Automations on a time, startup, sign-in, lock, unlock, sleep, wake, charger or idle",
+      "History of every reminder and automation run, plus rolling backups",
+      "Installer or portable exe, light and dark themes, a tray icon that shows what is next"
+    ],
+    "stack": ["Electron", "React", "TypeScript", "Tailwind CSS", "Zod", "Vitest", "Playwright", "Ed25519"],
+    "metric": {"value": "3.6.0", "label": "current Windows release, installer and portable exe"},
+    "metrics": [
+      ["Platform", "Windows 10 and 11, runs from the tray"],
+      ["Automations", "up to 20 chained steps; 30 s cancel countdown before sign-out, sleep or shut down"],
+      ["Licensing", "Ed25519-signed card hidden in a PNG, verified offline"],
+      ["Quality gates", "Vitest unit tests, Playwright tests on the real app, smoke test of the packaged build"]
+    ],
+    "limits": "Builds are unsigned, so SmartScreen warns on first run. Offline licensing deters copying but cannot make it impossible. The app's source is private; this repo holds the product page and downloads.",
+    "team": "Solo product"
+  },
+  {
+    "id": "vmix-manager",
+    "visual": ["a video production switcher interface", "a table of video inputs and file paths", "a desktop application with a black and white interface", "a live streaming control room", "a folder tree of media files"],
+    "repo": "vMix-Manager",
+    "links": [
+      {"label": "Code & README on GitHub", "url": "https://github.com/SahajIVVIX-1/vMix-Manager"}
+    ],
+    "date": "2026-03",
+    "name": "vMix Manager",
+    "kind": "Desktop production tool",
+    "year": "2026",
+    "task": "Batch automation · XML manipulation",
+    "problem": "Large live shows have hundreds of playback files, and vMix's own interface means dragging them in one by one, renaming categories by hand and fixing broken paths input by input, hours before going on air.",
+    "approach": "Instead of controlling vMix through its API, it edits the .vmix session file's XML directly, so nothing needs to be open. Batch import queues folders and puts a bold GT Title divider before each one; a deep swap physically moves inputs between category slots while keeping their order; clone and relink checks every path (found or missing) and rebases a whole project onto a new drive; three wipe levels and drag-and-drop reordering finish the job. Every cloned input gets a fresh UUID.",
+    "features": [
+      "Offline editing of .vmix files with no vMix running and no GPU load",
+      "Folder import with an automatic 214 px bold GT Title divider per folder",
+      "Category deep swap across vMix slots 1 to 6 and custom slots 50 to 65",
+      "Relink root: batch-update file paths when a project moves drive, with found/missing checks",
+      "Factory export, three wipe levels, drag-and-drop reorder and a timestamped activity log",
+      "One-file Windows executable through PyInstaller"
+    ],
+    "stack": ["Python", "PyQt6", "XML", "PyInstaller", "vMix 24+"],
+    "metric": {"value": "XML", "label": "edits .vmix session files directly, no running vMix needed"},
+    "metrics": [
+      ["Interface", "PyQt6, high-contrast black and white with Cambria type for stressful shows"],
+      ["Batch import", "many folders queued, one GT Title header injected per folder"],
+      ["Category swap", "rewrites each input's category and keeps its position order"],
+      ["Safety", "fresh UUID per cloned input; the README says to back up .vmix files first"]
+    ],
+    "limits": "An independent tool, not affiliated with or endorsed by StudioCoast (vMix). It rewrites session files directly, so a backup before any bulk operation is essential. Built for Windows and vMix 24 or newer.",
+    "team": "Solo product"
+  },
+  {
+    "id": "sentinel-proxy",
+    "visual": ["a network traffic monitoring dashboard", "a dark web dashboard with charts", "a screenshot of a command line server log", "a firewall or security settings panel", "a world map of network requests"],
+    "repo": "SentinelProxy-Suite",
+    "links": [
+      {"label": "Code & README on GitHub", "url": "https://github.com/SahajIVVIX-1/SentinelProxy-Suite"}
+    ],
+    "date": "2026-02",
+    "name": "SentinelProxy Suite",
+    "kind": "Local network security tool",
+    "year": "2026",
+    "task": "DNS filtering · HTTPS proxy · live dashboard",
+    "problem": "Ad and tracker blocking usually lives in a browser extension that malware and other apps can bypass, and DNS filters rarely show you what is happening live. A machine needs one place that blocks bad domains before a connection starts and cuts the network if that guard is bypassed.",
+    "approach": "A single Node.js process runs a DNS server on port 53 and an HTTPS proxy on port 5309. Queries are checked against blocklists indexed in SQLite3 and against heuristics (suspicious TLDs such as .zip, .mov, .top and .xyz, and tracker words like ads, track and pixel) before they resolve. It rewrites the system DNS and proxy settings and restores them on shutdown, generates its own certificates for HTTPS inspection, streams every query to a live dashboard over socket.io, and a Windows Firewall kill switch drops outgoing traffic if the proxy goes offline.",
+    "features": [
+      "DNS server and HTTPS proxy in one process, with automatic system hooks and restore",
+      "Indexed SQLite3 blocklists plus heuristic pattern blocking",
+      "Certificate authority engine (node-forge) for local HTTPS inspection",
+      "Live HTTPS dashboard over Express and WebSockets with a query log you can export",
+      "Network kill switch through Windows Firewall rules",
+      "Standalone x64 executable built with pkg"
+    ],
+    "stack": ["Node.js", "dns2", "http-proxy", "SQLite3", "Express", "socket.io", "node-forge"],
+    "metric": {"value": "53 + 5309", "label": "DNS and HTTPS-proxy ports served by one process"},
+    "metrics": [
+      ["Blocklists", "millions of domains held in an indexed SQLite3 lookup (design target in the README)"],
+      ["Heuristics", "suspicious TLDs and tracker substrings blocked before a name resolves"],
+      ["Dashboard", "live query log over WebSockets, 12 screenshots in the repo"],
+      ["Packaging", "one portable x64 .exe; MIT licence"]
+    ],
+    "limits": "Windows-first: the kill switch and the system hooks use netsh and need an Administrator shell. Inspecting HTTPS means installing its own local certificate authority, so it is meant for machines you own. The README gives no benchmark of lookup speed.",
+    "team": "Solo product"
+  }
+]

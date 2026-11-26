@@ -33,6 +33,8 @@ export function initRail() {
   const bind = () => {
     const layers = [...document.querySelectorAll('.layer[data-layer]')].filter((l) => Number(l.dataset.layer) > 0);
     if (!layers.length) return;
+    // Cards in a sideways track are all on screen at once; hscroll.js says which one is current (hs:active).
+    const observed = layers.filter((l) => !l.closest('[data-hs-track]'));
     ticks.forEach((t) => {
       const target = layers.find((l) => l.dataset.layer === t.dataset.railTick);
       if (target?.id) t.href = `#${target.id}`;
@@ -42,10 +44,11 @@ export function initRail() {
     io = new IntersectionObserver((entries) => {
       for (const e of entries) if (e.isIntersecting) set(e.target);
     }, { rootMargin: '-45% 0px -50% 0px' });
-    layers.forEach((l) => io.observe(l));
+    observed.forEach((l) => io.observe(l));
   };
   bind();
   document.addEventListener('persona:change', bind);
+  document.addEventListener('hs:active', (e) => { if (e.detail?.card) set(e.detail.card); });
 
   const onScroll = () => {
     const max = document.documentElement.scrollHeight - innerHeight;

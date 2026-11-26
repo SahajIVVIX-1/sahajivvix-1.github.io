@@ -3,7 +3,7 @@
 import { readdirSync, readFileSync } from 'node:fs';
 import { createHash } from 'node:crypto';
 import { execSync } from 'node:child_process';
-import { readJSON, readText, write, esc, fmtMonth, fmtRange, slug, path, projectUrl } from './lib.mjs';
+import { readJSON, readText, write, esc, fmtMonth, fmtRange, slug, path, projectUrl, projectCodeLabel, loadPortfolio } from './lib.mjs';
 import { renderResume, RESUME_PDF } from './resume.mjs';
 
 if (process.argv.includes('--embed')) {
@@ -41,11 +41,14 @@ const harvard = readJSON('content/harvard.json', { programs: [] }).programs;
 // the header logo: Sahaj's own artwork (scripts/brand.mjs), the light and dark versions stacked so the theme
 // toggle can cross-fade them; the scroll-progress ring and the ticks are drawn around it
 const LOGO_MARK = '<image class="logo-img logo-l" href="/assets/brand/logo-light.webp?v=4" x="3" y="3" width="34" height="34"/><image class="logo-img logo-d" href="/assets/brand/logo-dark.webp?v=4" x="3" y="3" width="34" height="34"/>';
-const projects = readJSON('content/projects.json');
+// Two horizontal-scroll sections: projects (model cards, the attention heads) and products (the feed-forward blocks).
+// portfolioAll feeds everything that treats both alike (timeline, job-fit matcher, map listing).
+const { projects, products, all: portfolioAll } = loadPortfolio();
 // The page is one layer per section; each project is one attention-head layer, so the count follows projects.json.
 // persona.js renumbers the same way in the browser.
 const NP = projects.length;
-const LAYER = { skills: 4 + NP, experience: 5 + NP, certs: 6 + NP, contact: 7 + NP };
+const NPR = products.length;
+const LAYER = { products: 4 + NP, skills: 4 + NP + NPR, experience: 5 + NP + NPR, certs: 6 + NP + NPR, contact: 7 + NP + NPR };
 const LAYERS = LAYER.contact;
 const L2 = (n) => String(n).padStart(2, '0');
 const NUM_WORDS = ['zero', 'one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine', 'ten', 'eleven', 'twelve'];
@@ -79,6 +82,7 @@ function head({ title, description, url, image = '/assets/img/og.png', type = 'w
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="project-count" content="${NP}">
+<meta name="product-count" content="${NPR}">
 <title>${esc(title)}</title>
 <meta name="description" content="${esc(description)}">
 <link rel="canonical" href="${SITE}${url}">
@@ -118,6 +122,7 @@ function header({ home = false } = {}) {
   const base = home ? '' : '/';
   const nav = [
     ['Work', `${base}#work`],
+    ['Products', `${base}#products`],
     ['Map', `${base}#map`],
     ['Training', `${base}#experience`],
     ['Contact', `${base}#contact`],
@@ -326,7 +331,7 @@ function mapSection() {
   </div>
   <ul class="sr" aria-label="Map clusters and projects">
     ${clusters.map((c) => `<li>Cluster “${esc(c.name)}”: ${c.n} passages about ${esc(c.keywords.slice(0, 5).join(', '))}.</li>`).join('')}
-    ${projects.map((p) => `<li>Project <a href="#p-${p.id}">${esc(p.name)}</a>: ${esc(p.kind)}.</li>`).join('')}
+    ${portfolioAll.map((p) => `<li>${p.product ? 'Product' : 'Project'} <a href="#p-${p.id}">${esc(p.name)}</a>: ${esc(p.kind)}.</li>`).join('')}
   </ul>
 </section>`;
 }
@@ -349,42 +354,80 @@ function heatmapSVG(id) {
   </figure>`;
 }
 
-function projectCard(p, i) {
-  const repo = projectUrl(p);
+// One slide of a horizontal-scroll track. `sec` says which track it belongs to (the layer number, the "Head" or
+// "Block" name and the kicker follow from it); persona.js renumbers the same way when the order changes.
+function projectCard(p, i, sec) {
+  const prod = sec.key === 'products';
   const gh = p.link ? null : github.repos.find((r) => r.name === p.repo);
-  return `<article class="card layer" id="p-${p.id}" data-default-index="${i}" data-layer="${4 + i}" data-layer-name="Head ${i + 1} · ${esc(p.name)}" aria-labelledby="p-${p.id}-h">
+  const links = p.links || [{ label: projectCodeLabel(p), url: projectUrl(p) }];
+  const n = i + 1;
+  return `<article class="card layer" id="p-${p.id}" data-default-index="${i}" data-layer="${sec.first + i}" data-layer-name="${sec.unit} ${n} · ${esc(p.name)}" aria-labelledby="p-${p.id}-h">
+  <div class="card-side">
   <header class="card-head">
     ${heatmapSVG(p.id)}
     <div class="card-id">
-      <p class="mono card-kicker">Model card · <span data-ci>${String(i + 1).padStart(2, '0')}</span> / ${String(projects.length).padStart(2, '0')} · ${esc(p.kind)}</p>
+      <p class="mono card-kicker">${sec.card} · <span data-ci>${String(n).padStart(2, '0')}</span> / ${String(sec.list.length).padStart(2, '0')} · ${esc(p.kind)}</p>
       <h3 id="p-${p.id}-h" class="card-title">${esc(p.name)}</h3>
       <p class="mono card-task">${esc(p.task)}</p>
       <div class="card-metric"><span class="metric-val">${esc(p.metric.value)}</span><span class="metric-label mono">${esc(p.metric.label)}</span></div>
     </div>
   </header>
+  <dl class="card-meta" data-attend>
+    <div class="cb-row cb-stack"><dt class="mono">Stack</dt><dd><ul class="stack mono">${p.stack.map((s) => `<li>${esc(s)}</li>`).join('')}</ul></dd></div>
+    <div class="cb-row cb-team"><dt class="mono">Authors</dt><dd class="muted">${esc(p.team)}</dd></div>
+  </dl>
+  </div>
   <dl class="card-body" data-attend>
-    <div class="cb-row"><dt class="mono">Problem</dt><dd>${esc(p.problem)}</dd></div>
-    <div class="cb-row"><dt class="mono">Approach</dt><dd>${esc(p.approach)}</dd></div>
-    <div class="cb-row"><dt class="mono">Evaluation</dt><dd><table class="evals"><tbody>${p.metrics.map(([k, v]) => `<tr><th scope="row">${esc(k)}</th><td class="mono">${esc(v)}</td></tr>`).join('')}</tbody></table></dd></div>
-    <div class="cb-row"><dt class="mono">Stack</dt><dd><ul class="stack mono">${p.stack.map((s) => `<li>${esc(s)}</li>`).join('')}</ul></dd></div>
-    ${p.limits ? `<div class="cb-row"><dt class="mono">Limits</dt><dd class="muted">${esc(p.limits)}</dd></div>` : ''}
-    <div class="cb-row"><dt class="mono">Authors</dt><dd class="muted">${esc(p.team)}</dd></div>
+    <div class="cb-row cb-problem"><dt class="mono">Problem</dt><dd>${esc(p.problem)}</dd></div>
+    <div class="cb-row cb-approach"><dt class="mono">Approach</dt><dd>${esc(p.approach)}</dd></div>
+    ${p.features?.length ? `<div class="cb-row cb-features"><dt class="mono">Features</dt><dd><ul class="feat">${p.features.map((f) => `<li>${esc(f)}</li>`).join('')}</ul></dd></div>` : ''}
+    <div class="cb-row cb-eval"><dt class="mono">${prod ? 'Specs' : 'Evaluation'}</dt><dd><table class="evals"><tbody>${p.metrics.map(([k, v]) => `<tr><th scope="row">${esc(k)}</th><td class="mono">${esc(v)}</td></tr>`).join('')}</tbody></table></dd></div>
+    ${p.limits ? `<div class="cb-row cb-limits"><dt class="mono">Limits</dt><dd class="muted">${esc(p.limits)}</dd></div>` : ''}
   </dl>
   <footer class="card-foot mono">
-    <a class="tok-link card-repo" href="${repo}" rel="noopener">${p.link ? esc(p.link.label) : 'Code &amp; README on GitHub'} <span aria-hidden="true">↗</span></a>
+    <span class="card-links">${links.map((l) => `<a class="tok-link card-repo" href="${l.url}" rel="noopener">${esc(l.label)} <span aria-hidden="true">↗</span></a>`).join('')}</span>
     ${gh ? `<span class="card-gh">${gh.language ? esc(gh.language) + ' · ' : ''}★ ${gh.stars} · updated ${gh.pushed_at.slice(0, 10)}</span>` : ''}
   </footer>
 </article>`;
 }
+
+// A horizontal-scroll track. Without JavaScript (and on phones and with reduced motion) it is a swipeable row; on wide
+// screens assets/js/hscroll.js pins it and turns the page's vertical scroll into sideways movement until the last
+// card, then lets the page go on (see .hs in main.css).
+function hsTrack(sec) {
+  const n = sec.list.length;
+  return `<div class="hs" data-hs aria-label="${esc(sec.label)}">
+    <div class="hs-pin">
+      <p class="hs-bar mono" aria-hidden="true"><span class="hs-count"><b data-hs-n>01</b> / ${String(n).padStart(2, '0')}</span><span class="hs-name" data-hs-name></span><span class="hs-rule"><i data-hs-fill></i></span><span class="hs-hint"></span></p>
+      <div class="hs-track" data-hs-track>
+        ${sec.list.map((p, i) => projectCard(p, i, sec)).join('\n')}
+      </div>
+    </div>
+  </div>`;
+}
+
+const PROJECT_SEC = { key: 'projects', list: projects, first: 4, unit: 'Head', card: 'Model card', label: 'Projects, scroll sideways' };
+const PRODUCT_SEC = { key: 'products', list: products, first: LAYER.products, unit: 'Block', card: 'Product card', label: 'Products, scroll sideways' };
 
 function workSection() {
   return `<section class="work" id="work" aria-labelledby="work-h">
   <header class="layer-head work-head">
     <p class="layer-tag mono" data-lt-range="Attention heads">Layers 04–${L2(3 + NP)} · Attention heads</p>
     <h2 id="work-h" class="layer-title">${numWord(NP)[0].toUpperCase() + numWord(NP).slice(1)} heads, <em>${numWord(NP)} things</em> they learned.</h2>
-    <p class="layer-sub">Every project is documented like a model card: problem, approach, evaluation and limits. The header heatmap is real self-attention over that project's README, computed when the site builds.</p>
+    <p class="layer-sub">Every project is documented like a model card: problem, approach, evaluation and limits. The header heatmap is real self-attention over that project's README, computed when the site builds. Scroll to move sideways through them.</p>
   </header>
-  ${projects.map(projectCard).join('\n')}
+  ${hsTrack(PROJECT_SEC)}
+</section>`;
+}
+
+function productsSection() {
+  return `<section class="work products" id="products" aria-labelledby="products-h">
+  <header class="layer-head work-head">
+    <p class="layer-tag mono" data-lt-range="Feed-forward blocks">Layers ${L2(LAYER.products)}–${L2(LAYER.products + NPR - 1)} · Feed-forward blocks</p>
+    <h2 id="products-h" class="layer-title">${numWord(NPR)[0].toUpperCase() + numWord(NPR).slice(1)} things I <em>shipped</em>.</h2>
+    <p class="layer-sub">Projects are what I studied; products are what other people can run. Each is a working tool with its own users, installer or repo, described the same way: what it is for, how it works, what it can do and where it stops.</p>
+  </header>
+  ${hsTrack(PRODUCT_SEC)}
 </section>`;
 }
 
@@ -413,7 +456,7 @@ function milestones() {
     { d: '2024-08', t: 'AI/ML Core Committee, Encode PDEU', k: 'community' },
     { d: '2024-12', t: 'Freelance financial AI engineer: −37% false-positive signals', k: 'work' },
     { d: '2025-08', t: 'Lead Convener, IEEE AIMV 2025', k: 'community' },
-    ...projects.map((p) => ({ d: p.date || repoDate(p.repo) || `${p.year}-01`, t: `Shipped ${p.name}`, k: 'project', href: `#p-${p.id}` })),
+    ...portfolioAll.map((p) => ({ d: p.date || repoDate(p.repo) || `${p.year}-01`, t: `Shipped ${p.name}`, k: 'project', href: `#p-${p.id}` })),
     { d: '2026-05', t: 'Research & Innovation Intern, HNNOIX India', k: 'work' },
     { d: profile.education.end, t: 'Graduation (scheduled)', k: 'future' },
   ];
@@ -706,6 +749,7 @@ ${heroSection()}
 ${aboutSection()}
 ${mapSection()}
 ${workSection()}
+${productsSection()}
 ${skillsSection()}
 ${experienceSection()}
 ${evalSection()}
@@ -793,7 +837,7 @@ const outputs = {
   'sitemap.xml': sitemap(),
   'robots.txt': `User-agent: *\nAllow: /\nSitemap: ${SITE}/sitemap.xml\n`,
   'site.webmanifest': JSON.stringify({ name: 'Sahaj Saliya', short_name: 'Sahaj', start_url: '/', display: 'standalone', background_color: '#171715', theme_color: '#171715', icons: [{ src: '/assets/brand/icon-192.png?v=4', sizes: '192x192', type: 'image/png', purpose: 'any' }, { src: '/assets/brand/icon-512.png?v=4', sizes: '512x512', type: 'image/png', purpose: 'any' }, { src: '/assets/brand/icon-maskable-512.png?v=4', sizes: '512x512', type: 'image/png', purpose: 'maskable' }] }, null, 2) + '\n',
-  'resume/index.html': renderResume({ profile, projects, gwr, harvard, site: SITE }),
+  'resume/index.html': renderResume({ profile, projects, products, gwr, harvard, site: SITE }),
   'blog/index.html': blogRedirect(),
   'data/fit.json': fitData(),
   'data/site.json': { blog: `${BLOG}/` },
@@ -822,7 +866,7 @@ function fitData() {
   const terms = new Map();
   const add = (t, src) => { const k = t.toLowerCase(); if (!terms.has(k)) terms.set(k, { t, aliases: ALIAS[t] || [], src: [] }); const e = terms.get(k); if (!e.src.some((x) => x.url === src.url)) e.src.push(src); };
   for (const g of profile.skills) for (const s of g.items) add(s, { label: `${g.group} skills`, url: '#skills' });
-  for (const p of projects) for (const s of p.stack) add(s, { label: p.name, url: `#p-${p.id}` });
+  for (const p of portfolioAll) for (const s of p.stack) add(s, { label: p.name, url: `#p-${p.id}` });
   for (const r of profile.experience) for (const s of r.tags) add(s, { label: `${r.role} · ${r.org}`, url: `#x-${r.id}` });
   const first = (s) => (String(s).match(/^.*?[.!?](\s|$)/) || [s])[0].trim();
   return {
@@ -830,7 +874,7 @@ function fitData() {
     links: profile.links.map((l) => ({ label: l.label, url: l.url })),
     education: profile.education,
     terms: [...terms.values()],
-    projects: projects.map((p) => ({ id: p.id, name: p.name, kind: p.kind, year: p.year, metric: p.metric, stack: p.stack, summary: `${first(p.problem)} ${first(p.approach)}`, url: `#p-${p.id}`, repo: projectUrl(p) })),
+    projects: portfolioAll.map((p) => ({ id: p.id, name: p.name, kind: p.kind, year: p.year, metric: p.metric, stack: p.stack, summary: `${first(p.problem)} ${first(p.approach)}`, url: `#p-${p.id}`, repo: projectUrl(p) })),
     experience: profile.experience.map((r) => ({ id: r.id, role: r.role, org: r.org, kind: r.kind, when: fmtRange(r.start, r.end), points: r.points, url: `#x-${r.id}` })),
     certifications: profile.certifications,
     programs: harvardFit(),

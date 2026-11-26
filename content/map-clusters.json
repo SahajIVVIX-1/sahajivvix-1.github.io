@@ -1,6 +1,7 @@
 {
   "note": "Hand-tuned names for the embedding map clusters. The Action clusters the map automatically (k-means on the t-SNE layout) and names each cluster from its top keywords; an entry here replaces the automatic name when ANY of its 'match' words is among the cluster's top keywords. Edit freely: add, remove or reword entries. Check data/map.json > clusters to see each cluster's current keywords.",
   "names": [
+    { "match": ["vmix", "xml", "reminders", "relinking", "smaran", "automations"], "name": "Desktop products & tools" },
     { "match": ["lesion", "crohn", "lsgan", "grading"], "name": "Healthcare ML & GANs" },
     { "match": ["agent", "bedrock", "aws", "agentforge"], "name": "LLM agents & experience" },
     { "match": ["mongodb", "shard", "bigdata"], "name": "Data platforms & MLOps" },

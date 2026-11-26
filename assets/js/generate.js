@@ -9,7 +9,7 @@ import { setBusy } from './busy.js';
 const SEEN = 'sahaj:generated';
 const TEXT = [
   '.layer-tag', '.layer-title', '.contact-title', '.contact-lede', '.lead', '.about-text p', '.facts dt', '.facts dd',
-  '.card-kicker', '.card-title', '.card-task', '.card-body', '.metric-label', '.card-foot',
+  '.card-kicker', '.card-title', '.card-task', '.card-body', '.card-meta', '.metric-label', '.card-foot',
   '.sg-name', '.sg-items li', '.role-title', '.role-org', '.role-when', '.ck-t', '.ck-d',
   '.cert-name', '.cert-by', '.gh .sg-name', '.gh-sub', '.gh-recent li', '.lang-key li', '.contact-links li',
 ].join(',');

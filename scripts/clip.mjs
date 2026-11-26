@@ -6,13 +6,13 @@
 // Skips the work when the prompts did not change (hash in data/clip.json).
 import { createHash } from 'node:crypto';
 import { existsSync } from 'node:fs';
-import { readJSON, write, path } from './lib.mjs';
+import { readJSON, write, path, loadPortfolio } from './lib.mjs';
 
 export const CLIP_MODEL = 'Xenova/clip-vit-base-patch32';
 const DIM = 512;
 
 export async function clipAll({ force = process.argv.includes('--force') } = {}) {
-  const projects = readJSON('content/projects.json');
+  const projects = loadPortfolio().all;
   const map = readJSON('data/map.json');
   if (!map) { console.log('clip: no data/map.json yet, skipping'); return; }
 

@@ -51,7 +51,7 @@ try {
     await wait(2500);
     const s = await page.evaluate(() => ({
       overflow: document.documentElement.scrollWidth - innerWidth,
-      sections: ['top', 'about', 'map', 'work', 'skills', 'experience', 'certs', 'fit', 'contact'].filter((id) => !document.getElementById(id)),
+      sections: ['top', 'about', 'map', 'work', 'products', 'skills', 'experience', 'certs', 'fit', 'contact'].filter((id) => !document.getElementById(id)),
       bio: document.querySelector('#about')?.textContent.includes('B.Tech') || document.querySelector('#about')?.textContent.includes('PDEU'),
       trainlog: !!document.querySelector('.trainlog'),
       lens: !!document.querySelector('[data-lens]'),

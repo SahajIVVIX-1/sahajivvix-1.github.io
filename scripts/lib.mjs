@@ -8,8 +8,17 @@ export const path = (...p) => join(ROOT, ...p);
 
 // Where a project's code lives: its public GitHub repo, or the "link" in projects.json (a competition page) when the
 // repo is private or does not exist.
-export const projectUrl = (p) => p.link?.url || `https://github.com/SahajIVVIX-1/${p.repo}`;
+export const projectUrl = (p) => p.link?.url || p.links?.[0]?.url || `https://github.com/SahajIVVIX-1/${p.repo}`;
 export const projectCodeLabel = (p) => (p.link ? p.link.label : 'Code & README on GitHub');
+
+// Projects (content/projects.json) are the research and competition work; products (content/products.json) are the
+// things Sahaj shipped. Both are model-card-shaped and share one id space ("p-<id>" anchors), so the data pipelines
+// (knowledge base, Q&A bank, map, heat-maps, CLIP) read `all`; only the page renders them in two sections.
+export function loadPortfolio() {
+  const projects = readJSON('content/projects.json', []);
+  const products = readJSON('content/products.json', []).map((p) => ({ ...p, product: true }));
+  return { projects, products, all: [...projects, ...products] };
+}
 
 export function readJSON(rel, fallback = null) {
   const p = path(rel);

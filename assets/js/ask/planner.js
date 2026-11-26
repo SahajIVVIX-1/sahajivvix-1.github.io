@@ -29,6 +29,7 @@ const NAMED = [
   ['student-xai', /student|explainable/i], ['dcgan', /dcgan|\bgan\b/i],
   ['sleep-llm', /sleep|consolidat|dream|forgetting|continual/i], ['quantum-compilation', /quantum|qubit|toffoli|invsqrt|\bdqi\b/i],
   ['santa-elf-calculator', /santa|\belf\b|elf calculator/i],
+  ['smaran', /smaran|reminder app/i], ['vmix-manager', /v-?mix/i], ['sentinel-proxy', /sentinel|\bproxy\b|\bdns\b/i],
 ];
 
 export async function planRules(q, eng) {

@@ -4,7 +4,7 @@
   "tagline": "AI engineer and B.Tech ICT student at PDEU, working on LLMs, NLP, computer vision, generative AI and agents.",
   "about": [
     "I'm Sahaj, an AI engineer studying Information & Communication Technology at PDEU. I build systems that *read* text, *see* images and *act* through agents, and I measure them honestly.",
-    "Recent work: an ensemble that finds Crohn's lesions in capsule-endoscopy video, a multi-agent Corrective RAG orchestrator, and a reinforcement-learning environment where PPO and Llama agents learn to clean data, a language model that consolidates a day's notes into its weights overnight, and entries in two Kaggle competitions (quantum circuit compilation and Santa 2026). In 2026 I built LLM infrastructure (gateway, RAG runtime, memory layer) for 6G research at HNNOIX."
+    "Recent work: an ensemble that finds Crohn's lesions in capsule-endoscopy video, a multi-agent Corrective RAG orchestrator, and a reinforcement-learning environment where PPO and Llama agents learn to clean data, a language model that consolidates a day's notes into its weights overnight, entries in two Kaggle competitions (quantum circuit compilation and Santa 2026), and three shipped products (Smaran, vMix Manager and SentinelProxy). In 2026 I built LLM infrastructure (gateway, RAG runtime, memory layer) for 6G research at HNNOIX."
   ],
   "location": "Gandhinagar, Gujarat, India",
   "email": "sahajs7959@gmail.com",

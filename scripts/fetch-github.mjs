@@ -1,6 +1,6 @@
 // Fetches public GitHub data and the featured READMEs into data/.
 // On any failure the previous files are kept, so the site always has the last good data.
-import { readJSON, write } from './lib.mjs';
+import { readJSON, write, loadPortfolio } from './lib.mjs';
 
 const USER = 'SahajIVVIX-1';
 const API = 'https://api.github.com';
@@ -16,7 +16,7 @@ async function gh(url, raw = false) {
   return raw ? res.text() : res.json();
 }
 
-const projects = readJSON('content/projects.json');
+const projects = loadPortfolio().all;
 const previous = readJSON('data/github.json');
 
 try {
@@ -111,6 +111,7 @@ try {
   write('data/github.json', JSON.stringify(data, null, 1) + '\n');
 
   for (const p of projects) {
+    if (p.localReadme) continue; // its README is written by hand in data/readmes (the repo's own is a stub)
     try {
       const md = await gh(`/repos/${USER}/${p.repo}/readme`, true);
       write(`data/readmes/${p.repo}.md`, md);

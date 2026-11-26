@@ -17,7 +17,7 @@ function harvardLine(list = []) {
   return `<li>Harvard ManageMentor (Harvard Business Impact): ${list.length} programs, ${span}: ${names.map(esc).join(', ')}</li>`;
 }
 
-export function renderResume({ profile, projects, gwr, harvard = [], site }) {
+export function renderResume({ profile, projects, products = [], gwr, harvard = [], site }) {
   const links = [
     `<a href="mailto:${esc(profile.email)}">${esc(profile.email)}</a>`,
     `<a href="${site}">${bare(site)}</a>`,
@@ -83,6 +83,7 @@ li { margin: 1px 0; }
 ${section('Education', `<div class="item">${row(esc(ed.school), fmtRange(ed.start, ed.end), `${esc(ed.degree)} · CGPA ${esc(ed.cgpa)} · ${esc(ed.place)}`)}</div>`)}
 ${section('Experience', profile.experience.map((r) => `<div class="item">${row(`${esc(r.role)} · ${esc(r.org)}`, fmtRange(r.start, r.end), `${esc(r.kind)} · ${esc(r.place)}`)}<ul>${r.points.map((x) => `<li>${esc(x)}</li>`).join('')}</ul></div>`).join(''))}
 ${section('Projects', projects.map((p) => `<div class="item">${row(`${esc(p.name)} <span class="sub">· ${esc(p.kind)}</span>`, esc(p.year))}<p class="sub"><span class="metric">${esc(p.metric.value)}</span> ${esc(p.metric.label)}. ${esc(first(p.problem))} ${esc(first(p.approach))}</p><p class="stack">${p.stack.map(esc).join(' · ')} · ${esc(projectUrl(p).replace(/^https:\/\//, ''))}</p></div>`).join(''))}
+${section('Products', products.map((p) => `<div class="item">${row(`${esc(p.name)} <span class="sub">· ${esc(p.kind)}</span>`, esc(p.year))}<p class="sub"><span class="metric">${esc(p.metric.value)}</span> ${esc(p.metric.label)}. ${esc(first(p.problem))} ${esc(first(p.approach))}</p><p class="stack">${p.stack.map(esc).join(' · ')} · ${esc(projectUrl(p).replace(/^https:\/\//, ''))}</p></div>`).join(''))}
 ${section('Skills', `<dl class="skills">${profile.skills.map((g) => `<dt>${esc(g.group)}</dt><dd>${g.items.map(esc).join(', ')}</dd>`).join('')}</dl>`)}
 ${section('Certifications', `<ul>${profile.certifications.map((c) => `<li>${esc(c.name)} · ${esc(c.issuer)}${c.note ? ` (${esc(c.note)})` : ''}</li>`).join('')}${harvardLine(harvard)}</ul>`)}
 ${section('Achievements &amp; community', `<ul><li><b>${esc(gwr.title)} · ${esc(gwr.year)}</b>: ${esc(gwr.record)}, ${esc(gwr.where)}, ${esc(gwr.when)}.</li>${profile.community.map((c) => `<li>${esc(c.role)} · ${esc(c.org)} (${c.end === null ? `since ${c.start.slice(0, 4)}` : fmtRange(c.start, c.end)})</li>`).join('')}</ul>`)}
