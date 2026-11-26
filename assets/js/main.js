@@ -174,9 +174,9 @@ function initLazy() {
     else if (e.key === '/' && !/input|textarea/i.test(document.activeElement?.tagName || '') && !document.activeElement?.isContentEditable) { e.preventDefault(); window.__palette(); }
   });
 
-  // Attention lines: after the page is idle, only for fine pointers (hover does not exist on touch).
+  // Attention lines: after the page is idle. Hover draws them with a mouse; on a touch screen a tap pins them.
   const idle = window.requestIdleCallback || ((f) => setTimeout(f, 1200));
-  if (matchMedia('(hover: hover)').matches && !reducedMotion) {
+  if ((matchMedia('(hover: hover)').matches || matchMedia('(pointer: coarse)').matches) && !reducedMotion) {
     // Wrapping ~400 words in spans is DOM work; wait until the boot screen has finished so it cannot cause jank.
     const afterBoot = (fn) => (document.documentElement.classList.contains('booting')
       ? document.addEventListener('boot:done', () => setTimeout(fn, 1200), { once: true })
