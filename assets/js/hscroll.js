@@ -34,16 +34,23 @@ function setup(hs) {
     if (fill) fill.style.transform = `scaleX(${clamp(frac, 0, 1).toFixed(4)})`;
   };
 
-  // Cards have a fixed height (the pinned area), so text is scaled down a little (--fs, never below .78) on shorter
-  // screens until nothing is cut off. Only the cards that need it are touched.
+  // Cards have a fixed height (the pinned area), so text is scaled (--fs) per card: as large as it can be (up to 1.4)
+  // while nothing is cut off, so a short card is filled rather than left with empty space, and a long one on a short
+  // screen shrinks (never below .76).
   const fitCard = (c) => {
     const body = c.querySelector('.card-body'), side = c.querySelector('.card-side');
-    let fs = 1;
-    c.style.setProperty('--fs', '1');
-    while (fs > 0.76 && (body.scrollHeight > body.clientHeight + 1 || side.scrollHeight > side.clientHeight + 1)) {
-      fs = Math.round((fs - 0.03) * 100) / 100;
-      c.style.setProperty('--fs', String(fs));
+    const fits = () => body.scrollHeight <= body.clientHeight + 1 && side.scrollHeight <= side.clientHeight + 1;
+    let lo = 0.76, hi = 1.4, best = lo;
+    c.style.setProperty('--fs', String(hi));
+    if (fits()) best = hi;
+    else {
+      for (let k = 0; k < 7; k++) {
+        const mid = (lo + hi) / 2;
+        c.style.setProperty('--fs', mid.toFixed(3));
+        if (fits()) { best = mid; lo = mid; } else hi = mid;
+      }
     }
+    c.style.setProperty('--fs', (Math.floor(best * 100) / 100).toFixed(2));
   };
   const fit = () => cards().forEach(fitCard);
 
