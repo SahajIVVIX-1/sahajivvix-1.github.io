@@ -27,8 +27,8 @@
   --glow: 0 0 0 transparent;
   --grain-opacity: .055;
 
-  --gutter: clamp(16px, 4.2vw, 56px);
-  --maxw: 1320px;
+  --gutter: clamp(16px, 4.2vw, 72px);
+  --maxw: min(1880px, 100vw);
   --radius: 14px;
   --ease: cubic-bezier(.2, .7, .1, 1);
   --ease-out: cubic-bezier(.16, 1, .3, 1);
@@ -187,12 +187,12 @@ kbd { font: 500 11px/1 var(--mono); padding: 4px 6px; border-radius: 6px; backgr
 /* ---------- layout ---------- */
 main { position: relative; z-index: 1; }
 .layer { position: relative; max-width: var(--maxw); margin: 0 auto; padding: clamp(88px, 13vh, 160px) var(--gutter); }
-.layer-head { max-width: 900px; margin-bottom: clamp(36px, 6vw, 72px); }
+.layer-head { max-width: min(1100px, 78%); margin-bottom: clamp(36px, 6vw, 72px); }
 .layer-tag { display: inline-flex; align-items: center; gap: 8px; color: var(--accent); margin-bottom: 18px; font-size: 12px; text-transform: uppercase; letter-spacing: .08em; }
 .layer-tag::before { content: ""; width: 18px; height: 1px; background: currentColor; }
 .layer-title { font: 400 clamp(2.3rem, 6.2vw, 5.2rem)/1.0 var(--sans); letter-spacing: -.035em; text-wrap: balance; }
 .layer-title em { letter-spacing: -.02em; font-size: 1.08em; }
-.layer-sub { margin-top: 22px; max-width: 62ch; color: var(--ink-2); font-size: 1.04em; text-wrap: pretty; }
+.layer-sub { margin-top: 22px; max-width: 76ch; color: var(--ink-2); font-size: 1.04em; text-wrap: pretty; }
 
 /* Deeper layers are calmer: raw token scaffolding fades, type gets more editorial. */
 .layer[data-layer="1"] { --d: 0; }
@@ -278,7 +278,7 @@ main { position: relative; z-index: 1; }
 .tiles-cv { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; }
 .js .portrait-frame[data-tiles]:not(.tiles-on):not(.tiles-off) img { opacity: 0; animation: tilesFallback 0s 3s forwards; }
 @keyframes tilesFallback { to { opacity: 1; } }
-.about-text { display: grid; gap: 18px; max-width: 60ch; }
+.about-text { display: grid; gap: 18px; max-width: 72ch; }
 .about-text .lead { font-size: clamp(1.25rem, 2.2vw, 1.6rem); line-height: 1.38; letter-spacing: -.015em; }
 .about-text p:not(.lead) { color: var(--ink-2); }
 .facts { display: grid; gap: 0; border-top: 1px solid var(--rule); font-size: 13px; }
@@ -573,7 +573,7 @@ body.is-leaving main, body.is-leaving .site-foot { animation: softmaxOut .35s va
 @media (min-width: 900px) {
   .kbd-btn { display: inline-flex; }
   .site-nav { display: flex; }
-  .about-grid { grid-template-columns: 300px 1fr 280px; gap: 48px; align-items: start; }
+  .about-grid { grid-template-columns: minmax(260px, 22%) minmax(0, 1fr) minmax(300px, 27%); gap: clamp(32px, 3.4vw, 72px); align-items: start; }
   .portrait { width: 100%; }
   .facts { grid-column: auto; }
   .card-head { grid-template-columns: 240px 1fr; gap: 48px; }
@@ -1323,6 +1323,12 @@ html.plain .ad-plain, html[data-persona="recruiter"] .ad-plain { display: grid; 
 .hs-count { white-space: nowrap; }
 .hs-count b { color: var(--accent); font-weight: 500; }
 .hs-name { flex: 0 1 30ch; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: var(--ink-2); }
+.hs-tabs { display: flex; gap: 6px; flex: 0 1 auto; min-width: 0; max-width: 100%; overflow-x: auto; scrollbar-width: none; }
+.hs-tabs::-webkit-scrollbar { display: none; }
+.hs-tab { flex: none; padding: 6px 12px; border-radius: 999px; border: 1px solid transparent; background: transparent; color: var(--ink-3); font: 500 12px/1 var(--mono); white-space: nowrap; cursor: pointer; transition: color .2s, background .2s, border-color .2s; }
+.hs-tab:hover { color: var(--ink); border-color: var(--rule-2); }
+.hs-tab.is-on { color: var(--accent); background: var(--accent-soft); border-color: var(--accent-line); }
+.hs-tab:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
 .hs-rule { position: relative; flex: 1; height: 2px; border-radius: 2px; background: var(--rule); overflow: hidden; }
 .hs-rule i { position: absolute; inset: 0; background: var(--accent); transform: scaleX(0); transform-origin: left center; }
 .hs-hint { text-transform: uppercase; letter-spacing: .08em; white-space: nowrap; }
@@ -1346,7 +1352,7 @@ html.plain .ad-plain, html[data-persona="recruiter"] .ad-plain { display: grid; 
 .hs-track .card-meta { order: 2; display: grid; gap: 16px; margin: 0; border: 0; }
 .hs-track .card-foot { order: 3; margin: 0; }
 .heat { margin: 0; }
-.hs-track .heat { position: absolute; top: 0; right: 0; width: 52px; }
+.hs-track .heat { position: absolute; top: clamp(18px, 4.6vw, 32px); right: clamp(18px, 4.6vw, 32px); width: 52px; }
 .hs-track .heat svg { border-radius: 8px; outline: 1px solid color-mix(in srgb, var(--ink) 10%, transparent); }
 .hs-track .heat figcaption { display: none; }
 .hs-track .card-kicker { margin: 0; padding-right: 64px; font-size: 11.5px; letter-spacing: .06em; text-transform: uppercase; color: var(--ink-3); }
@@ -1388,7 +1394,7 @@ html.plain .ad-plain, html[data-persona="recruiter"] .ad-plain { display: grid; 
 /* phones: the counter stays under the header while a tall card is read */
 @media (max-width: 699px) {
   .hs-bar { position: sticky; top: 60px; z-index: 6; margin: 0 -2px 8px; padding: 8px 4px; background: color-mix(in srgb, var(--paper) 86%, transparent); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); border-bottom: 1px solid var(--rule); }
-  .hs-name { flex: 1 1 auto; }
+  .hs-tabs { flex: 1 1 auto; }
   .hs-rule, .hs-hint { display: none; }
   .hs-track > .card.layer { flex-basis: 90%; gap: 18px; border-radius: 20px; }
   .hs-track .cb-row dd { font-size: 15.5px; }
@@ -1402,11 +1408,15 @@ html.plain .ad-plain, html[data-persona="recruiter"] .ad-plain { display: grid; 
   .hs--on .hs-pin { position: sticky; top: 76px; height: calc(100svh - 92px); min-height: 508px; display: flex; flex-direction: column; overflow: clip; }
   .hs--on .hs-bar { position: static; margin: 0 0 10px; padding: 2px; background: none; backdrop-filter: none; border: 0; }
   .hs--on .hs-rule { display: block; }
+  .hs--on .hs-tabs { flex: 0 1 auto; }
+  .hs--on .hs-track > .card.layer { transition: opacity .45s var(--ease-out), filter .45s var(--ease-out); }
+  .hs--on .hs-track > .card.layer:not(.is-active) { opacity: .45; filter: saturate(.7); }
   .hs--on .hs-track { flex: 1; min-height: 0; overflow: visible; scroll-snap-type: none; padding: 0; gap: 20px; will-change: transform; }
   .hs--on .hs-track > .card.layer { flex: 0 0 calc(100% - 44px); height: 100%; min-height: 0; display: grid; grid-template-columns: minmax(260px, 32%) minmax(0, 1fr); grid-template-rows: minmax(0, 1fr) auto; column-gap: clamp(26px, 3vw, 46px); row-gap: 12px; padding: clamp(16px, 2.6vh, 28px) clamp(22px, 2.6vw, 36px); overflow: hidden; }
   .hs--on .card-side { display: flex; flex-direction: column; gap: calc(14px * var(--fs)); grid-column: 1; grid-row: 1; min-height: 0; overflow: hidden auto; scrollbar-width: none; }
-  .hs--on .card-head { flex: 1 1 auto; min-height: 0; gap: calc(11px * var(--fs)); }
+  .hs--on .card-head { flex: 0 0 auto; gap: calc(11px * var(--fs)); }
   .hs--on .card-kicker { font-size: calc(11.5px * var(--fs)); padding-right: 0; }
+  .hs--on .card-meta { flex: 0 0 auto; }
   .hs--on .card-chips { padding-right: 0; gap: calc(6px * var(--fs)); }
   .hs--on .chip { padding: calc(5px * var(--fs)) calc(10px * var(--fs)); font-size: calc(12px * var(--fs)); }
   .hs--on .card-title { font-size: calc(clamp(2rem, 2.9vw, 2.8rem) * var(--fs)); }
@@ -1442,3 +1452,6 @@ html.plain .ad-plain, html[data-persona="recruiter"] .ad-plain { display: grid; 
   .hs-track { display: block; overflow: visible; }
   .hs-track > .card.layer { break-inside: avoid; margin-bottom: 18px; box-shadow: none; }
 }
+
+/* big screens: the whole page scales up a little instead of leaving the sides empty */
+@media (min-width: 1500px) { html { font-size: clamp(16px, calc(16px + (100vw - 1500px) * .0055), 22px); } }

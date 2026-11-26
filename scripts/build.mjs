@@ -349,7 +349,7 @@ function heatmapSVG(id) {
   }
   const size = n * cell;
   return `<figure class="heat" title="Self-attention over this project's README, computed when the site builds">
-    <svg viewBox="0 0 ${size} ${size}" role="img" aria-label="Self-attention heatmap over ${n} key tokens from the ${esc(id)} README"><g class="heat-cells">${rects}</g></svg>
+    <svg viewBox="0 0 ${size} ${size}" preserveAspectRatio="none" role="img" aria-label="Self-attention heatmap over ${n} key tokens from the ${esc(id)} README"><g class="heat-cells">${rects}</g></svg>
     <figcaption class="mono"><span>attn(README)</span> ${h.tokens.slice(0, 8).map(esc).join(' · ')}</figcaption>
   </figure>`;
 }
@@ -367,13 +367,13 @@ function projectCard(p, i, sec) {
   return `<article class="card layer" id="p-${p.id}" data-default-index="${i}" data-layer="${sec.first + i}" data-layer-name="${sec.unit} ${n} · ${esc(p.name)}" aria-labelledby="p-${p.id}-h">
   <div class="card-side">
   <header class="card-head">
-    ${heatmapSVG(p.id)}
     <p class="mono card-kicker">${sec.card} · <span data-ci>${String(n).padStart(2, '0')}</span> / ${String(sec.list.length).padStart(2, '0')}</p>
     <p class="card-chips"><span class="chip chip-kind">${esc(p.kind)}</span><span class="chip">${esc(p.year)}</span><span class="chip chip-status" data-tone="${tone}">${esc(status)}</span></p>
     <h3 id="p-${p.id}-h" class="card-title">${esc(p.name)}</h3>
     <p class="card-task">${esc(p.task)}</p>
     <div class="card-metric"><span class="metric-val">${esc(p.metric.value)}</span><span class="metric-label">${esc(p.metric.label)}</span></div>
   </header>
+  ${heatmapSVG(p.id)}
   <dl class="card-meta" data-attend>
     <div class="cb-row cb-stack"><dt class="mono">Stack</dt><dd><ul class="stack">${p.stack.map((s) => `<li>${esc(s)}</li>`).join('')}</ul></dd></div>
     <div class="cb-row cb-team"><dt class="mono">Authors</dt><dd class="muted">${esc(p.team)}</dd></div>
@@ -400,7 +400,7 @@ function hsTrack(sec) {
   const n = sec.list.length;
   return `<div class="hs" data-hs aria-label="${esc(sec.label)}">
     <div class="hs-pin">
-      <p class="hs-bar mono" aria-hidden="true"><span class="hs-count"><b data-hs-n>01</b> / ${String(n).padStart(2, '0')}</span><span class="hs-name" data-hs-name></span><span class="hs-rule"><i data-hs-fill></i></span><span class="hs-hint"></span></p>
+      <p class="hs-bar mono"><span class="hs-count"><b data-hs-n>01</b> / ${String(n).padStart(2, '0')}</span><span class="hs-tabs" data-hs-tabs></span><span class="hs-rule"><i data-hs-fill></i></span><span class="hs-hint"></span></p>
       <div class="hs-track" data-hs-track>
         ${sec.list.map((p, i) => projectCard(p, i, sec)).join('\n')}
       </div>
