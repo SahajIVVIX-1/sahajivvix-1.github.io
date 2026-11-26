@@ -1,5 +1,5 @@
 {
- "fetched_at": "2026-11-26T08:17:05.673Z",
+ "fetched_at": "2026-11-26T21:31:34.788Z",
  "user": {
   "login": "SahajIVVIX-1",
   "public_repos": 21,
@@ -13,12 +13,12 @@
  },
  "languages": {
   "Python": 12345686,
-  "Batchfile": 8494,
-  "JavaScript": 1632788,
-  "HTML": 1947743,
-  "CSS": 213042,
+  "JavaScript": 1648216,
+  "HTML": 2050635,
+  "CSS": 227944,
   "Shell": 9251,
-  "TypeScript": 352440,
+  "TypeScript": 362370,
+  "Batchfile": 8494,
   "PowerShell": 11451,
   "Dockerfile": 10639,
   "Makefile": 827,
@@ -35,19 +35,7 @@
    "topics": [],
    "fork": false,
    "created_at": "2024-01-24T19:11:08Z",
-   "pushed_at": "2026-11-26T07:10:45Z"
-  },
-  {
-   "name": "Sleep-Consolidating-LLM",
-   "description": "",
-   "url": "https://github.com/SahajIVVIX-1/Sleep-Consolidating-LLM",
-   "language": "Python",
-   "stars": 0,
-   "forks": 0,
-   "topics": [],
-   "fork": false,
-   "created_at": "2026-11-23T19:14:18Z",
-   "pushed_at": "2026-11-26T00:42:42Z"
+   "pushed_at": "2026-11-26T21:00:53Z"
   },
   {
    "name": "sahajivvix-1.github.io",
@@ -63,7 +51,19 @@
    ],
    "fork": false,
    "created_at": "2026-04-25T07:43:48Z",
-   "pushed_at": "2026-11-25T21:42:58Z"
+   "pushed_at": "2026-11-26T20:24:37Z"
+  },
+  {
+   "name": "blogs",
+   "description": "",
+   "url": "https://github.com/SahajIVVIX-1/blogs",
+   "language": "JavaScript",
+   "stars": 0,
+   "forks": 0,
+   "topics": [],
+   "fork": false,
+   "created_at": "2026-10-29T17:44:16Z",
+   "pushed_at": "2026-11-26T18:13:49Z"
   },
   {
    "name": "Smaran-Studio",
@@ -75,7 +75,19 @@
    "topics": [],
    "fork": false,
    "created_at": "2026-11-22T16:43:52Z",
-   "pushed_at": "2026-11-22T19:48:03Z"
+   "pushed_at": "2026-11-26T16:01:39Z"
+  },
+  {
+   "name": "Sleep-Consolidating-LLM",
+   "description": "",
+   "url": "https://github.com/SahajIVVIX-1/Sleep-Consolidating-LLM",
+   "language": "Python",
+   "stars": 0,
+   "forks": 0,
+   "topics": [],
+   "fork": false,
+   "created_at": "2026-11-23T19:14:18Z",
+   "pushed_at": "2026-11-26T08:58:22Z"
   },
   {
    "name": "Reverse-Engineer",
@@ -88,18 +100,6 @@
    "fork": true,
    "created_at": "2026-11-18T05:21:20Z",
    "pushed_at": "2026-11-18T05:04:05Z"
-  },
-  {
-   "name": "blogs",
-   "description": "",
-   "url": "https://github.com/SahajIVVIX-1/blogs",
-   "language": "JavaScript",
-   "stars": 0,
-   "forks": 0,
-   "topics": [],
-   "fork": false,
-   "created_at": "2026-10-29T17:44:16Z",
-   "pushed_at": "2026-11-16T11:03:12Z"
   },
   {
    "name": "BDA-Analytics",
@@ -259,6 +259,53 @@
   {
    "type": "PushEvent",
    "repo": "Sleep-Consolidating-LLM",
+   "at": "2026-11-25T14:29:48Z",
+   "head": "df0c5a7ad86f84943d76fd48f037294a97c56330",
+   "commits": 1
+  },
+  {
+   "type": "PushEvent",
+   "repo": "Sleep-Consolidating-LLM",
+   "at": "2026-11-25T14:29:38Z",
+   "head": "686ee7288288971431e4c1b5eba6629fe753472f",
+   "commits": 1
+  },
+  {
+   "type": "PushEvent",
+   "repo": "Sleep-Consolidating-LLM",
+   "at": "2026-11-25T14:26:30Z",
+   "head": "a6d7f1064bc9d80caf7c840161ff6394d9b1f2f1",
+   "commits": 1
+  },
+  {
+   "type": "ReleaseEvent",
+   "repo": "Smaran-Studio",
+   "at": "2026-11-26T16:01:02Z"
+  },
+  {
+   "type": "PushEvent",
+   "repo": "Sleep-Consolidating-LLM",
+   "at": "2026-11-25T16:54:50Z",
+   "head": "cc7eb8bed91d99d6b583c16a016a64bd8f2a6bca",
+   "commits": 1
+  },
+  {
+   "type": "PushEvent",
+   "repo": "Sleep-Consolidating-LLM",
+   "at": "2026-11-24T19:33:51Z",
+   "head": "30d4ff1b8860c22be79111d286fca3aa8e706759",
+   "commits": 1
+  },
+  {
+   "type": "PushEvent",
+   "repo": "Sleep-Consolidating-LLM",
+   "at": "2026-11-25T14:30:03Z",
+   "head": "03042c53643505b1993a5802ad7fe5788b91ef7f",
+   "commits": 1
+  },
+  {
+   "type": "PushEvent",
+   "repo": "Sleep-Consolidating-LLM",
    "at": "2026-11-25T03:36:25Z",
    "head": "7d7d6668c6c863388ffbc747e1dd261e9cb6a8f2",
    "commits": 1
@@ -334,11 +381,6 @@
    "commits": 1
   },
   {
-   "type": "ReleaseEvent",
-   "repo": "Smaran-Studio",
-   "at": "2026-11-22T19:47:57Z"
-  },
-  {
    "type": "PushEvent",
    "repo": "Smaran-Studio",
    "at": "2026-11-22T18:32:50Z",
@@ -351,23 +393,6 @@
    "at": "2026-11-22T17:49:21Z",
    "head": "55c533376f9f8b35ed354dd1b2cd442f17f1fd12",
    "commits": 1
-  },
-  {
-   "type": "PushEvent",
-   "repo": "sahajivvix-1.github.io",
-   "at": "2026-11-22T17:25:15Z",
-   "head": "02fa4d408172d35dffcdf139d5041a24bd007870",
-   "commits": 1
-  },
-  {
-   "type": "CreateEvent",
-   "repo": "Smaran-Studio",
-   "at": "2026-11-22T16:57:36Z"
-  },
-  {
-   "type": "CreateEvent",
-   "repo": "Smaran-Studio",
-   "at": "2026-11-22T16:43:54Z"
   }
  ],
  "calendar": [
@@ -1845,7 +1870,7 @@
   ],
   [
    "2026-11-26",
-   1
+   15
   ]
  ],
  "work": {
