@@ -348,7 +348,7 @@ function heatmapSVG(id) {
     rects += `<rect x="${j * cell + pad}" y="${i * cell + pad}" width="${cell - 1}" height="${cell - 1}" fill-opacity="${Math.min(1, w * 1.6).toFixed(2)}"/>`;
   }
   const size = n * cell;
-  return `<figure class="heat">
+  return `<figure class="heat" title="Self-attention over this project's README, computed when the site builds">
     <svg viewBox="0 0 ${size} ${size}" role="img" aria-label="Self-attention heatmap over ${n} key tokens from the ${esc(id)} README"><g class="heat-cells">${rects}</g></svg>
     <figcaption class="mono"><span>attn(README)</span> ${h.tokens.slice(0, 8).map(esc).join(' · ')}</figcaption>
   </figure>`;
@@ -361,19 +361,21 @@ function projectCard(p, i, sec) {
   const gh = p.link ? null : github.repos.find((r) => r.name === p.repo);
   const links = p.links || [{ label: projectCodeLabel(p), url: projectUrl(p) }];
   const n = i + 1;
+  // where the code stands: stated in the data when it is not obvious from the links
+  const status = p.status || (p.link ? 'Kaggle competition' : gh ? 'Public on GitHub' : 'Private');
+  const tone = /private|closed/i.test(status) ? 'closed' : 'open';
   return `<article class="card layer" id="p-${p.id}" data-default-index="${i}" data-layer="${sec.first + i}" data-layer-name="${sec.unit} ${n} · ${esc(p.name)}" aria-labelledby="p-${p.id}-h">
   <div class="card-side">
   <header class="card-head">
     ${heatmapSVG(p.id)}
-    <div class="card-id">
-      <p class="mono card-kicker">${sec.card} · <span data-ci>${String(n).padStart(2, '0')}</span> / ${String(sec.list.length).padStart(2, '0')} · ${esc(p.kind)}</p>
-      <h3 id="p-${p.id}-h" class="card-title">${esc(p.name)}</h3>
-      <p class="mono card-task">${esc(p.task)}</p>
-      <div class="card-metric"><span class="metric-val">${esc(p.metric.value)}</span><span class="metric-label mono">${esc(p.metric.label)}</span></div>
-    </div>
+    <p class="mono card-kicker">${sec.card} · <span data-ci>${String(n).padStart(2, '0')}</span> / ${String(sec.list.length).padStart(2, '0')}</p>
+    <p class="card-chips"><span class="chip chip-kind">${esc(p.kind)}</span><span class="chip">${esc(p.year)}</span><span class="chip chip-status" data-tone="${tone}">${esc(status)}</span></p>
+    <h3 id="p-${p.id}-h" class="card-title">${esc(p.name)}</h3>
+    <p class="card-task">${esc(p.task)}</p>
+    <div class="card-metric"><span class="metric-val">${esc(p.metric.value)}</span><span class="metric-label">${esc(p.metric.label)}</span></div>
   </header>
   <dl class="card-meta" data-attend>
-    <div class="cb-row cb-stack"><dt class="mono">Stack</dt><dd><ul class="stack mono">${p.stack.map((s) => `<li>${esc(s)}</li>`).join('')}</ul></dd></div>
+    <div class="cb-row cb-stack"><dt class="mono">Stack</dt><dd><ul class="stack">${p.stack.map((s) => `<li>${esc(s)}</li>`).join('')}</ul></dd></div>
     <div class="cb-row cb-team"><dt class="mono">Authors</dt><dd class="muted">${esc(p.team)}</dd></div>
   </dl>
   </div>
@@ -381,12 +383,12 @@ function projectCard(p, i, sec) {
     <div class="cb-row cb-problem"><dt class="mono">Problem</dt><dd>${esc(p.problem)}</dd></div>
     <div class="cb-row cb-approach"><dt class="mono">Approach</dt><dd>${esc(p.approach)}</dd></div>
     ${p.features?.length ? `<div class="cb-row cb-features"><dt class="mono">Features</dt><dd><ul class="feat">${p.features.map((f) => `<li>${esc(f)}</li>`).join('')}</ul></dd></div>` : ''}
-    <div class="cb-row cb-eval"><dt class="mono">${prod ? 'Specs' : 'Evaluation'}</dt><dd><table class="evals"><tbody>${p.metrics.map(([k, v]) => `<tr><th scope="row">${esc(k)}</th><td class="mono">${esc(v)}</td></tr>`).join('')}</tbody></table></dd></div>
-    ${p.limits ? `<div class="cb-row cb-limits"><dt class="mono">Limits</dt><dd class="muted">${esc(p.limits)}</dd></div>` : ''}
+    <div class="cb-row cb-eval"><dt class="mono">${prod ? 'Specs' : 'Evaluation'}</dt><dd><ul class="specs">${p.metrics.map(([k, v]) => `<li><span class="sp-k">${esc(k)}</span><span class="sp-v">${esc(v)}</span></li>`).join('')}</ul></dd></div>
+    ${p.limits ? `<div class="cb-row cb-limits"><dt class="mono">Limits</dt><dd>${esc(p.limits)}</dd></div>` : ''}
   </dl>
-  <footer class="card-foot mono">
-    <span class="card-links">${links.map((l) => `<a class="tok-link card-repo" href="${l.url}" rel="noopener">${esc(l.label)} <span aria-hidden="true">↗</span></a>`).join('')}</span>
-    ${gh ? `<span class="card-gh">${gh.language ? esc(gh.language) + ' · ' : ''}★ ${gh.stars} · updated ${gh.pushed_at.slice(0, 10)}</span>` : ''}
+  <footer class="card-foot">
+    <span class="card-links">${links.map((l, k) => `<a class="card-repo${k ? '' : ' is-primary'}" href="${l.url}" rel="noopener">${esc(l.label)} <span aria-hidden="true">↗</span></a>`).join('')}</span>
+    ${gh ? `<span class="card-gh mono">${gh.language ? esc(gh.language) + ' · ' : ''}★ ${gh.stars} · updated ${gh.pushed_at.slice(0, 10)}</span>` : ''}
   </footer>
 </article>`;
 }

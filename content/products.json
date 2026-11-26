@@ -4,6 +4,7 @@
     "visual": ["a Windows desktop notification card", "a reminder app on a computer screen", "a screenshot of a settings window", "a task scheduler list", "a software landing page"],
     "repo": "Smaran-Studio",
     "localReadme": true,
+    "status": "App source private",
     "links": [
       {"label": "Product page & downloads", "url": "https://info.sahaj.si/Smaran-Studio/"},
       {"label": "GitHub", "url": "https://github.com/SahajIVVIX-1/Smaran-Studio"}

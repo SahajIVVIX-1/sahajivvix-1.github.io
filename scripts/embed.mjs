@@ -65,8 +65,10 @@ export async function embedAll({ force = process.argv.includes('--force') } = {}
   // ---------- 3. attention between words on the page ----------
   const pageText = [
     ...profile.about,
-    ...projects.flatMap((p) => [p.problem, p.approach, p.limits, ...p.metrics.flat()]),
-    ...profile.experience.flatMap((r) => r.points),
+    ...projects.flatMap((p) => [p.task, p.problem, p.approach, p.limits, ...(p.features || []), p.stack.join(', '), ...p.metrics.flat()]),
+    ...profile.experience.flatMap((r) => [...r.points, (r.tags || []).join(', ')]),
+    ...profile.community.map((c) => `${c.role} ${c.org}`),
+    ...profile.certifications.map((c) => c.name),
     ...profile.skills.flatMap((g) => g.items),
     ...posts.map((p) => p.body),
   ].join(' ').replace(/\*/g, '');
@@ -84,10 +86,10 @@ export async function embedAll({ force = process.argv.includes('--force') } = {}
     for (let j = 0; j < vocab.length; j++) {
       if (i === j || sameStem(vocab[i], vocab[j])) continue;
       const s = 0.75 * dot(vocabVecs[i], vocabVecs[j]) + 0.25 * together(vocab[i], vocab[j]);
-      if (s > 0.36) scored.push([vocab[j], s]);
+      if (s > 0.33) scored.push([vocab[j], s]);
     }
     scored.sort((a, b) => b[1] - a[1]);
-    if (scored.length) attention[vocab[i]] = scored.slice(0, 6).map(([w, s]) => [w, +s.toFixed(2)]);
+    if (scored.length) attention[vocab[i]] = scored.slice(0, 9).map(([w, s]) => [w, +s.toFixed(2)]);
   }
   write('data/attention.json', attention);
   console.log(`embed: attention over ${vocab.length} words, ${Object.keys(attention).length} with links`);
