@@ -22,12 +22,37 @@ function setup(hs) {
   if (!pin || !track) return null;
   const nEl = hs.querySelector('[data-hs-n]');
   const nameEl = hs.querySelector('[data-hs-name]');
+  const tabsEl = hs.querySelector('[data-hs-tabs]');
   const fill = hs.querySelector('[data-hs-fill]');
   const cards = () => [...track.children].filter((c) => c.classList.contains('card'));
   const st = { hs, track, on: false, step: 800, offsets: [0], index: -1, inBand: false, pos: 0 };
 
+  // One small tab per card: jump straight to it. The current one is marked, and so is its card.
+  let tabs = [];
+  const buildTabs = () => {
+    if (!tabsEl) return;
+    tabsEl.replaceChildren(...cards().map((c, i) => {
+      const b = document.createElement('button');
+      b.type = 'button'; b.className = 'hs-tab';
+      b.textContent = c.querySelector('.card-title')?.textContent || String(i + 1);
+      b.title = b.textContent;
+      b.addEventListener('click', () => { if (st.on) st.reveal(c, { behavior: 'smooth' }); else c.scrollIntoView({ behavior: 'smooth', inline: 'start', block: 'nearest' }); });
+      return b;
+    }));
+    tabs = [...tabsEl.children];
+  };
+  const mark = (i) => {
+    const cs = cards();
+    if (tabs.length !== cs.length) buildTabs();
+    tabs.forEach((t, k) => { t.classList.toggle('is-on', k === i); if (k === i) t.setAttribute('aria-current', 'true'); else t.removeAttribute('aria-current'); });
+    cs.forEach((c, k) => c.classList.toggle('is-active', k === i));
+    const on = tabs[i];
+    if (on && tabsEl.scrollWidth > tabsEl.clientWidth) tabsEl.scrollTo({ left: on.offsetLeft - tabsEl.clientWidth / 2 + on.offsetWidth / 2, behavior: 'auto' });
+  };
+
   const label = (i, frac) => {
     const cs = cards();
+    mark(clamp(i, 0, cs.length - 1));
     const card = cs[clamp(i, 0, cs.length - 1)];
     if (nEl) nEl.textContent = String(clamp(i, 0, cs.length - 1) + 1).padStart(2, '0');
     if (nameEl && card) nameEl.textContent = card.querySelector('.card-title')?.textContent || '';
@@ -40,7 +65,8 @@ function setup(hs) {
   const fitCard = (c) => {
     const body = c.querySelector('.card-body'), side = c.querySelector('.card-side');
     const fits = () => body.scrollHeight <= body.clientHeight + 1 && side.scrollHeight <= side.clientHeight + 1;
-    let lo = 0.76, hi = 1.4, best = lo;
+    // the ceiling follows the screen: on a wide monitor the text is allowed to get bigger, like everything else
+    let lo = 0.76, hi = Math.min(1.9, Math.max(1.4, innerWidth / 1100)), best = lo;
     c.style.setProperty('--fs', String(hi));
     if (fits()) best = hi;
     else {
