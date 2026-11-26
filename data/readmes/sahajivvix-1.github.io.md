@@ -13,4 +13,4 @@ npm run data     # fetch GitHub data, rebuild embeddings, then build
 npm run serve    # http://localhost:5173
 ```
 
-An hourly GitHub Action refreshes `data/` and writes `data/build.json`, the build manifest the footer checks.
+A GitHub Action (every 12 hours, or run by hand) refreshes `data/` and writes `data/build.json`, the build manifest the footer checks.
