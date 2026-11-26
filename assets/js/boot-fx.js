@@ -1,7 +1,7 @@
 /* Boot screen brains and visuals ("forward pass"). Loaded by the inline boot script; plain script, no modules.
    Holds the visitor context, the heuristic intent classifier, the greeting, the data loading and the canvas.
    What is real: the progress (B.p) that drives the build, every pulse (one per finished asset), the log numbers.
-   What is illustrative: the architecture (an MLP, a CNN or a transformer, picked per load; ?arch= forces one), its
+   What is illustrative: the architecture (an MLP or a CNN, picked per load; ?arch= forces one), its
    weights (seeded per load) and the attention matrix (seeded from the visitor's context). None is a trained model.
    The network is built as a forward pass: inputs light up, then every connection draws from its start to its end
    neuron one after another, layer by layer; a neuron activates when its last incoming connection lands, and the
@@ -319,7 +319,9 @@
   }
 
   /* ---------- the architecture of this load ---------- */
-  var ARCHS = ['mlp', 'cnn', 'transformer'];
+  // The transformer variant (it "predicted" the tagline's last word, "acts.") was removed: it guessed a word the
+  // visitor had no reason to expect. Only the MLP and the CNN, which show the visitor-intent guess, are picked.
+  var ARCHS = ['mlp', 'cnn'];
   var forced = (qs.get('arch') || '').toLowerCase();
   var loadSeed = (Date.now() ^ hash(tag + 'arch')) >>> 0;
   var R = rng(loadSeed);
