@@ -1,7 +1,7 @@
 /* Boot screen brains and visuals ("forward pass"). Loaded by the inline boot script; plain script, no modules.
    Holds the visitor context, the heuristic intent classifier, the greeting, the data loading and the canvas.
    What is real: the progress (B.p) that drives the build, every pulse (one per finished asset), the log numbers.
-   What is illustrative: the architecture (an MLP or a CNN, picked per load; ?arch= forces one), its
+   What is illustrative: the architecture (an MLP, a CNN or a transformer, picked per load; ?arch= forces one), its
    weights (seeded per load) and the attention matrix (seeded from the visitor's context). None is a trained model.
    The network is built as a forward pass: inputs light up, then every connection draws from its start to its end
    neuron one after another, layer by layer; a neuron activates when its last incoming connection lands, and the
@@ -319,17 +319,15 @@
   }
 
   /* ---------- the architecture of this load ---------- */
-  // The transformer variant (it "predicted" the tagline's last word, "acts.") was removed: it guessed a word the
-  // visitor had no reason to expect. Only the MLP and the CNN, which show the visitor-intent guess, are picked.
-  var ARCHS = ['mlp', 'cnn'];
+  var ARCHS = ['mlp', 'cnn', 'transformer'];
   var forced = (qs.get('arch') || '').toLowerCase();
   var loadSeed = (Date.now() ^ hash(tag + 'arch')) >>> 0;
   var R = rng(loadSeed);
   var kind = ARCHS.indexOf(forced) > -1 ? forced : ARCHS[Math.floor(R() * ARCHS.length)];
   B.arch = kind;
-  // The hero tagline, as tokens; the transformer reads them and predicts the last word.
-  var TAG = vertical ? ['I', 'build', 'AI', 'that', 'reads'] : ['I', 'build', 'AI', 'that', 'reads', ',', 'sees'];
-  var NEXT = [['acts.', 0.52], ['reasons', 0.24], ['decides', 0.16], ['plans', 0.08]];
+  // The transformer reads these tokens and predicts the next one: the site's address, which then flies to the logo.
+  var TAG = vertical ? ['Sahaj', 'Saliya', 'AI', 'engineer', 'email'] : ['Sahaj', 'Saliya', ',', 'AI', 'engineer', ',', 'email'];
+  var NEXT = [['info@sahaj.si', 0.52], ['sahaj.si', 0.24], ['info.sahaj.si', 0.16], ['blog.sahaj.si', 0.08]];
 
   if (B.mode !== 'mini') {
     window.__data = {
@@ -654,8 +652,8 @@
       var on0 = OUT[0];
       NEXT.forEach(function (c, i) {
         g.font = mono(FS, i === 0 ? '600 ' : ''); g.fillStyle = rgba(i === 0 ? C.ac : C.dim, 1);
-        if (vertical) { g.textAlign = 'center'; if (i < 3) g.fillText(c[0] + ' ' + c[1].toFixed(2), frame0.x0 + (frame0.x1 - frame0.x0) * (i + 0.5) / 3, on0.y + 30); }
-        else { g.textAlign = 'left'; g.fillText(c[0].padEnd(8) + ' ' + c[1].toFixed(2), on0.x + 42, on0.y - 24 + i * 16); }
+        if (vertical) { if (i < 3) { var cx = frame0.x0 + (frame0.x1 - frame0.x0) * (i + 0.5) / 3; g.textAlign = 'center'; g.fillText(c[0], cx, on0.y + 30); g.fillText(c[1].toFixed(2), cx, on0.y + 44); } }
+        else { g.textAlign = 'left'; g.fillText(c[0].padEnd(14) + ' ' + c[1].toFixed(2), on0.x + 42, on0.y - 24 + i * 16); }
       });
     }
   }
@@ -677,15 +675,11 @@
     cv = big; g = big.getContext('2d'); origin = [0, 0];
     var RETRACT = 520;
     fly = { t0: performance.now(), stagger: (RETRACT - 160) / Math.max(1, ORDER.length), retract: RETRACT, move: 640 };
-    if (kind === 'transformer') {
-      fly.node = OUT[0];
-      flyToken(OUT[0], RETRACT * 0.7);
-      return Math.round(RETRACT * 0.7 + 700);
-    }
     var bestI = B.probs.indexOf(Math.max.apply(null, B.probs));
-    fly.node = OUT[bestI];
-    // the output neuron flies into the centre of the header logo and is absorbed by it
-    var logo = document.querySelector('.brand-logo');
+    fly.node = kind === 'transformer' ? OUT[0] : OUT[bestI];
+    // the output neuron flies into the centre of the header logo and is absorbed by it; for the transformer the
+    // predicted token "info@sahaj.si" flies to the same words in the header's top-left corner and settles on them
+    var logo = document.querySelector(kind === 'transformer' ? '.brand-text .bt-cur' : '.brand-logo');
     var dr = logo && logo.getBoundingClientRect();
     if (!dr || !dr.width) { fly.node = null; return RETRACT; }
     fly.target = { x: dr.left + dr.width / 2, y: dr.top + dr.height / 2, r: 3 };
@@ -699,43 +693,24 @@
     var u = clamp((now - fly.t0 - fly.retract * 0.6) / fly.move, 0, 1), e = ease(u);
     var x = fly.from.x + (fly.target.x - fly.from.x) * e, y = fly.from.y + (fly.target.y - fly.from.y) * e;
     var r0 = 7 + (fly.target.r - 7) * e;
-    g.fillStyle = rgba(C.ac, 1); g.beginPath(); g.arc(x, y, Math.max(1, r0), 0, 6.2832); g.fill();
+    if (kind === 'transformer') {
+      g.save(); g.translate(x, y); g.scale(1 - 0.35 * e, 1 - 0.35 * e); g.globalAlpha = 1 - clamp((u - 0.7) / 0.3, 0, 1);
+      g.font = mono(12, '600 '); g.textAlign = 'center'; g.textBaseline = 'middle';
+      var tw2 = g.measureText(NEXT[0][0]).width + 12;
+      g.fillStyle = rgba(C.bg, 1); g.fillRect(-tw2 / 2, -10, tw2, 20);
+      g.strokeStyle = rgba(C.ac, 0.6); g.lineWidth = 1; g.strokeRect(-tw2 / 2, -10, tw2, 20);
+      g.fillStyle = rgba(C.ac, 1); g.fillText(NEXT[0][0], 0, 0.5);
+      g.restore();
+    } else { g.fillStyle = rgba(C.ac, 1); g.beginPath(); g.arc(x, y, Math.max(1, r0), 0, 6.2832); g.fill(); }
     if (u >= 1 && !fly.landed) {
       fly.landed = true;
       document.documentElement.classList.remove('boot-fly');
       g.clearRect(0, 0, VW, VH);
       cv.style.opacity = '0';
       var lg = document.querySelector('.brand-logo');
-      if (lg) { lg.classList.add('is-landed'); setTimeout(function () { lg.classList.remove('is-landed'); }, 600); }
+      if (lg && kind !== 'transformer') { lg.classList.add('is-landed'); setTimeout(function () { lg.classList.remove('is-landed'); }, 600); }
     }
   }
-  // The transformer's predicted token ("acts.") flies to where it belongs in the tagline and stays there until the
-  // hero has generated the tagline around it.
-  function flyToken(n, delay) {
-    var gen = document.querySelector('.hero-title .gen');
-    var tn = gen && document.createTreeWalker(gen, NodeFilter.SHOW_TEXT).nextNode();
-    var at = tn ? tn.nodeValue.lastIndexOf('acts') : -1;
-    if (at < 0) return;
-    var range = document.createRange();
-    range.setStart(tn, at); range.setEnd(tn, Math.min(tn.nodeValue.length, at + 5));
-    var target = range.getBoundingClientRect();
-    if (!target.width) return;
-    var k = gen.querySelector('.k');
-    var cs = getComputedStyle(k || gen.parentElement);
-    var span = document.createElement('span');
-    span.className = 'boot-flytok';
-    span.textContent = 'acts.';
-    span.setAttribute('aria-hidden', 'true');
-    span.style.cssText = 'position:fixed;left:' + target.left + 'px;top:' + target.top + 'px;height:' + target.height + 'px;font:italic 400 ' + cs.fontSize + '/' + target.height + 'px "Instrument Serif", Georgia, serif;color:' + getComputedStyle(document.documentElement).getPropertyValue('--accent') + ';z-index:2100;pointer-events:none;white-space:pre;transform-origin:0 50%';
-    document.body.appendChild(span);
-    var k0 = 12 / parseFloat(cs.fontSize);
-    var dx = n.x - target.left - 10, dy = n.y - (target.top + target.height / 2);
-    span.animate([{ transform: 'translate(' + dx + 'px,' + dy + 'px) scale(' + k0 + ')', opacity: 0.9 }, { transform: 'none', opacity: 1 }], { duration: 700, delay: delay, easing: 'cubic-bezier(.16,1,.3,1)', fill: 'backwards' });
-    var gone = function () { span.animate([{ opacity: 1 }, { opacity: 0 }], { duration: 260, fill: 'forwards' }).onfinish = function () { span.remove(); }; };
-    document.addEventListener('hero:ready', gone, { once: true });
-    setTimeout(gone, 15000);
-  }
-
   /* ---------- loop ---------- */
   var raf = 0;
   function frame(now) {
