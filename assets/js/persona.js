@@ -11,13 +11,13 @@ const RESUME = '/assets/resume/Sahaj-Saliya-Resume.pdf';
 // Section order below the hero, per persona. Ids are the section ids in index.html.
 const ORDER = {
   // "fit" is Recruiter mode (paste a job description): first for recruiters, just before contact for everyone else
-  recruiter: ['fit', 'about', 'experience', 'work', 'skills', 'certs', 'map', 'contact'],
-  developer: ['work', 'map', 'skills', 'about', 'experience', 'certs', 'fit', 'contact'],
-  researcher: ['work', 'about', 'certs', 'experience', 'skills', 'map', 'fit', 'contact'],
-  curious: ['about', 'map', 'work', 'skills', 'experience', 'certs', 'fit', 'contact'],
+  recruiter: ['fit', 'about', 'experience', 'work', 'products', 'skills', 'certs', 'map', 'contact'],
+  developer: ['products', 'work', 'map', 'skills', 'about', 'experience', 'certs', 'fit', 'contact'],
+  researcher: ['work', 'about', 'certs', 'experience', 'products', 'skills', 'map', 'fit', 'contact'],
+  curious: ['about', 'map', 'work', 'products', 'skills', 'experience', 'certs', 'fit', 'contact'],
 };
 // Researchers see the research-flavoured projects first; everyone else keeps the default project order.
-const CARD_ORDER = { researcher: ['crohnsight', 'openenv', 'sleep-llm', 'dcgan', 'agentic-rag', 'quantum-compilation', 'student-xai', 'santa-elf-calculator'] };
+const CARD_ORDER = { researcher: ['crohnsight', 'openenv', 'sleep-llm', 'dcgan', 'agentic-rag', 'quantum-compilation', 'student-xai', 'santa-elf-calculator'] }; // projects only; products keep their order
 
 // The hero's second button.
 const CTA = {
@@ -77,14 +77,16 @@ function apply(p, { first = false } = {}) {
 
   // 2. Project order inside the work section.
   const work = document.getElementById('work');
+  const track = work.querySelector('[data-hs-track]');
   const cardIds = CARD_ORDER[p];
-  const cards = [...work.querySelectorAll(':scope > .card')];
+  const cards = [...track.querySelectorAll(':scope > .card')];
   const sorted = cardIds
     ? cardIds.map((id) => cards.find((c) => c.id === `p-${id}`)).filter(Boolean)
     : cards.slice().sort((a, b) => Number(a.dataset.defaultIndex) - Number(b.dataset.defaultIndex));
-  for (const c of sorted) work.append(c);
+  for (const c of sorted) track.append(c);
 
   renumberLayers();
+  document.dispatchEvent(new CustomEvent('hs:reorder'));
 
 
   // 4. Hero button and the "personalised for" line.
@@ -111,27 +113,31 @@ function apply(p, { first = false } = {}) {
 }
 
 // Renumbers layers so the rail and tags always read 1..N in page order (also after an agent swaps two cards).
+// Projects are "Head n" layers and products "Block n" layers; each card counts within its own section.
 export function renumberLayers() {
   const main = document.querySelector('main');
-  const work = document.getElementById('work');
-  if (!main || !work) return;
+  if (!main || !document.getElementById('work')) return;
   const layers = [...main.querySelectorAll('.layer[data-layer]')];
-  let k = 0;
+  const count = new Map();
   layers.forEach((layer, i) => {
     const n = i + 1;
     layer.dataset.layer = String(n);
     const tag = layer.querySelector('.layer-tag[data-lt]');
     if (tag) tag.textContent = `Layer ${pad(n)} · ${tag.dataset.lt}`;
     if (layer.classList.contains('card')) {
-      k++;
-      layer.dataset.layerName = `Head ${k} · ${layer.querySelector('.card-title').textContent}`;
+      const sec = layer.closest('section');
+      const k = (count.get(sec) || 0) + 1;
+      count.set(sec, k);
+      layer.dataset.layerName = `${sec.id === 'products' ? 'Block' : 'Head'} ${k} · ${layer.querySelector('.card-title').textContent}`;
       const ci = layer.querySelector('[data-ci]');
       if (ci) ci.textContent = pad(k);
     }
   });
-  const nums = [...work.querySelectorAll(':scope > .card')].map((c) => Number(c.dataset.layer));
-  const rangeTag = work.querySelector('.layer-tag[data-lt-range]');
-  if (rangeTag && nums.length) rangeTag.textContent = `Layers ${pad(Math.min(...nums))}–${pad(Math.max(...nums))} · ${rangeTag.dataset.ltRange}`;
+  for (const sec of main.querySelectorAll('section:has(> .layer-head [data-lt-range])')) {
+    const nums = [...sec.querySelectorAll('[data-hs-track] > .card')].map((c) => Number(c.dataset.layer));
+    const rangeTag = sec.querySelector('.layer-tag[data-lt-range]');
+    if (rangeTag && nums.length) rangeTag.textContent = `Layers ${pad(Math.min(...nums))}–${pad(Math.max(...nums))} · ${rangeTag.dataset.ltRange}`;
+  }
 }
 
 function wireSwitch() {
@@ -171,7 +177,7 @@ function wireSwitch() {
     try { sessionStorage.setItem('personaPick', b.dataset.persona); } catch { /* storage blocked */ }
     place(b);
     const main = document.querySelector('main');
-    const move = [...main.querySelectorAll(':scope > section:not(#top), #work > .card')];
+    const move = [...main.querySelectorAll(':scope > section:not(#top)')];
     smoothChange(() => apply(b.dataset.persona), { move, ms: 420 }).then(() => setTimeout(close, 180));
   });
 }

@@ -15,6 +15,7 @@ export const SECTIONS = {
   '#about': ['About', 'about bio background education'],
   '#map': ['the embedding map', 'map embedding latent'],
   '#work': ['Work (model cards)', 'work projects model cards'],
+  '#products': ['Products', 'products shipped apps tools'],
   '#skills': ['Skills', 'skills stack parameters'],
   '#experience': ['Experience', 'experience training internships jobs'],
   '#certs': ['Certifications and evaluation', 'certifications certificates evaluation github stats'],

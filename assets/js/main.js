@@ -2,6 +2,7 @@
 import { initTheme } from './theme.js';
 import { initHero } from './hero.js';
 import { initRail } from './rail.js';
+import { initHScroll } from './hscroll.js';
 import { initLoss } from './loss.js';
 import { initPersona } from './persona.js';
 import { initThink } from './think.js';
@@ -41,6 +42,9 @@ initTheme();
 // Persona first: it reorders and renumbers the layers that the rail and hero then read.
 initPersona();
 initRail();
+// The projects and products tracks scroll sideways while the page scrolls down (hscroll.js); it also redirects every
+// jump to a card, so it has to be in place before anything can link to one.
+initHScroll();
 if (covered()) await pause();
 initHero();
 initThink();
