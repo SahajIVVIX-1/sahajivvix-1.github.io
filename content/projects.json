@@ -63,6 +63,78 @@
     "featured": true
   },
   {
+    "id": "sleep-llm",
+    "visual": ["a line chart of accuracy over several days", "a diagram of a neural network", "a screenshot of Python code", "a table of experiment results", "a notebook page of text notes"],
+    "repo": "Sleep-Consolidating-LLM",
+    "name": "Sleep-Consolidating LLM",
+    "kind": "Continual-learning research",
+    "year": "2026",
+    "task": "Memory consolidation · QLoRA · catastrophic forgetting",
+    "problem": "A language model learns nothing from what happens after training. An agent can keep notes, but the model itself either never absorbs them or, once fine-tuned on them, forgets older skills. Can it \"sleep\": turn a day's notes into weights without losing what it already knew?",
+    "approach": "Each simulated day a 4-bit Qwen2.5-0.5B-Instruct reads documents from a seeded synthetic world of names it cannot know (about 20% of facts are later updated) and writes atomic notes. At night it dreams: grounded question-answer pairs (answer-first), paraphrases and counterfactuals, de-duplicated and selected for diversity. One rank-16 QLoRA adapter is trained on a mix of 40% dreams from earlier nights, 20% ARC-Easy, HellaSwag and GSM8K train items and 40% new dreams, with a KL-to-base penalty on the replay part. QA is scored on held-out phrasings with no notebook.",
+    "stack": ["PyTorch", "Qwen2.5-0.5B", "QLoRA (NF4)", "PEFT", "bitsandbytes", "Transformers", "pytest"],
+    "metric": {"value": "0.325", "label": "recall of earlier days' facts after 5 nights, no notebook (naive training: 0.035)"},
+    "metrics": [
+      ["Today's facts, held-out phrasings", "0.38 (naive 0.11), mean of 3 seeds"],
+      ["Old-skill probe (ARC-Easy, HellaSwag, GSM8K)", "0.475 (base model 0.460, naive 0.392)"],
+      ["WikiText-2 perplexity", "39.6 (base model 26.6, naive 44.2)"],
+      ["Hardware", "4 GB laptop GPU (RTX 3050), 4-bit base model"]
+    ],
+    "limits": "Indicative only: 3 seeds, 5 nights, a 0.5B model and roughly 50 to 100 questions per cell. Training on dreams at all raises perplexity above the base model. Whether one rank-16 adapter holds about 1,500 facts is untested; a 30-night run is in progress. The earlier replay design forgot most earlier days (0.07 at day 5).",
+    "team": "Solo project",
+    "featured": true
+  },
+  {
+    "id": "quantum-compilation",
+    "visual": ["a diagram of a quantum circuit", "a table of numbers", "a line chart of a score", "a screenshot of Python code", "a competition leaderboard"],
+    "repo": "Google-Quantum-AI",
+    "link": {"url": "https://www.kaggle.com/competitions/google-verifiable-quantum-circuit-compilation", "label": "Kaggle competition page"},
+    "date": "2026-11",
+    "name": "Verifiable Quantum Circuit Compilation",
+    "kind": "Kaggle competition · quantum compilation",
+    "year": "2026",
+    "task": "Circuit optimisation · exact verification",
+    "problem": "Fault-tolerant quantum algorithms are priced in qubits and Toffoli gates. Google Quantum AI's Kaggle competition asks for smaller circuits for three workloads: a 1/√x phase for fusion energy, a Reed-Solomon decoder for optimisation and FeMoCo chemistry loaders. An official verifier checks every submission on fresh random inputs, and the score is the geometric mean of the three cost reductions.",
+    "approach": "Own circuits for two of the three tasks, built with kickmix and checked with the official verifier logic. invsqrt: a table-based piecewise-quadratic design (192-entry QROM, binary shift count, barrel normaliser), lazy register allocation, narrow-window multiplies, measurement-based lookup erase and dead-gate removal checked over all 3.13M inputs. dqi: a tower-field GF(2^12) inverse (315 to 91 Toffolis), a 54-AND multiplier and a statistical dead-gate remover. Multi-core verifier runners for Windows run the full checks.",
+    "stack": ["Python", "kickmix", "Qualtran", "NumPy", "GF(2^12) tower fields", "Kaggle"],
+    "metric": {"value": "6.43×", "label": "lower cost on invsqrt, own circuit (2,076,774 → 323,146)"},
+    "metrics": [
+      ["invsqrt, own v6", "136 qubits, 2,125 Toffolis; full 64-shot check on all 3.13M inputs passed"],
+      ["dqi, own v5", "1.64× (1,869 qubits; about 30 failures in 102,400 shots, R 1.276)"],
+      ["Own composite", "about 2.2 (6.43 × 1.64 × 1.0 for chemistry); not submitted"],
+      ["Own package scored on Kaggle", "1.628 (invsqrt v2 only), as predicted locally"]
+    ],
+    "limits": "The leaderboard's top scores come from public circuits of other participants. Re-verifying and submitting one such public stack scored 33.17 on Kaggle, but that is their work, credited in the repo, not mine. My own circuits reach about 2.2 and the chemistry task is untouched (1.0×). The dqi figure depends on a few decoder failures that vary with the grader's random draw. The code is not public.",
+    "code": "The code is not public; the project is documented on the Kaggle competition page.",
+    "team": "Solo entry · public work of other participants credited",
+    "featured": false
+  },
+  {
+    "id": "santa-elf-calculator",
+    "visual": ["a spreadsheet of large numbers", "a screenshot of Python code", "a table of results", "a Christmas scene with Santa Claus", "a competition leaderboard"],
+    "repo": "Santa-2026",
+    "link": {"url": "https://www.kaggle.com/competitions/santa-2026", "label": "Kaggle competition page"},
+    "date": "2026-11",
+    "name": "Santa 2026: Elf Calculator",
+    "kind": "Kaggle competition · program synthesis",
+    "year": "2026",
+    "task": "Shortest arithmetic programs · combinatorial search",
+    "problem": "For each of 1,000 puzzles a calculator with 48 registers starts from a few numbers and must produce every one of several huge targets (up to about 10^18) using + − × and exact division. The score is the total number of instructions across all puzzles, lower is better. The sample submission needs 1,490,379.",
+    "approach": "An exact referee re-implements the rules and replays every program. A Horner-style solver gives the baseline. A forward/backward dictionary beam search (meet-in-the-middle over 2 to 4M values), a value-DAG local search with register allocation and a C++ cone re-synthesiser then look for shorter programs, and a best-of merger replays banks of programs and keeps the shortest valid one per puzzle. A gap report shows about 80% of instructions build helper values and targets are mostly helper-op-helper.",
+    "stack": ["Python", "C++", "NumPy", "pytest", "Kaggle"],
+    "metric": {"value": "128,494", "label": "total instructions after merging public programs (sample: 1,490,379)"},
+    "metrics": [
+      ["Own Horner baseline", "629,025 (−58% vs the sample)"],
+      ["Merged with public program banks", "133,610, then 128,494 with newer public outputs"],
+      ["Own search after the baseline", "0 instructions saved (beam, DAG search, cone re-synthesis up to 4 helpers)"],
+      ["Trivial lower bound", "26,898"]
+    ],
+    "limits": "Nearly all of the gain over my own baseline comes from other participants' public programs, replayed through the exact referee and credited in the repo; my beam search, local search and cone re-synthesis found nothing shorter than the public frontier. The code is in a private repository.",
+    "code": "The repository is private; the project is documented on the Kaggle competition page.",
+    "team": "Solo entry · public programs of other participants credited",
+    "featured": false
+  },
+  {
     "id": "student-xai",
     "visual": ["students in a classroom","a bar chart explaining a model prediction","an analytics dashboard with charts","a graduation ceremony"],
     "repo": "student-performance-platform",

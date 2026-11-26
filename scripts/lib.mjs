@@ -6,6 +6,11 @@ import { fileURLToPath } from 'node:url';
 export const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
 export const path = (...p) => join(ROOT, ...p);
 
+// Where a project's code lives: its public GitHub repo, or the "link" in projects.json (a competition page) when the
+// repo is private or does not exist.
+export const projectUrl = (p) => p.link?.url || `https://github.com/SahajIVVIX-1/${p.repo}`;
+export const projectCodeLabel = (p) => (p.link ? p.link.label : 'Code & README on GitHub');
+
 export function readJSON(rel, fallback = null) {
   const p = path(rel);
   if (!existsSync(p)) return fallback;

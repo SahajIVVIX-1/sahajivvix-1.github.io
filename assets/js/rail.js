@@ -1,4 +1,4 @@
-// "Layer n / 12" rail: tracks which section (layer) is in the middle of the viewport.
+// "Layer n / N" rail: tracks which section (layer) is in the middle of the viewport.
 // Layers can be reordered by persona.js, so the rail re-reads them on "persona:change".
 export function initRail() {
   const rail = document.querySelector('[data-rail]');

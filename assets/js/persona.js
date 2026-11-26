@@ -17,7 +17,7 @@ const ORDER = {
   curious: ['about', 'map', 'work', 'skills', 'experience', 'certs', 'fit', 'contact'],
 };
 // Researchers see the research-flavoured projects first; everyone else keeps the default project order.
-const CARD_ORDER = { researcher: ['crohnsight', 'openenv', 'dcgan', 'agentic-rag', 'student-xai'] };
+const CARD_ORDER = { researcher: ['crohnsight', 'openenv', 'sleep-llm', 'dcgan', 'agentic-rag', 'quantum-compilation', 'student-xai', 'santa-elf-calculator'] };
 
 // The hero's second button.
 const CTA = {
@@ -110,7 +110,7 @@ function apply(p, { first = false } = {}) {
   document.dispatchEvent(new CustomEvent('persona:change', { detail: { persona: p } }));
 }
 
-// Renumbers layers so the rail and tags always read 1..12 in page order (also after an agent swaps two cards).
+// Renumbers layers so the rail and tags always read 1..N in page order (also after an agent swaps two cards).
 export function renumberLayers() {
   const main = document.querySelector('main');
   const work = document.getElementById('work');

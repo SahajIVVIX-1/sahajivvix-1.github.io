@@ -8,7 +8,7 @@
 // Skips the work when no input changed since the last run (hash in data/meta.json).
 import { createHash, createHmac } from 'node:crypto';
 import { existsSync, readdirSync, readFileSync } from 'node:fs';
-import { readJSON, readText, write, tokenizeWords, STOP, parseFrontMatter, fmtMonth, fmtRange, slug, path } from './lib.mjs';
+import { readJSON, readText, write, tokenizeWords, STOP, parseFrontMatter, fmtMonth, fmtRange, slug, path, projectUrl } from './lib.mjs';
 
 const MODEL = 'Xenova/all-MiniLM-L6-v2';
 const DIM = 384;
@@ -242,14 +242,14 @@ function buildChunks({ profile, projects, github, aboutMd, readmes, posts, harva
   add('Links and contact', `Email ${profile.email}. ${profile.links.map((l) => `${l.label}: ${l.url}`).join('. ')}. No phone number is shared.`, '/#contact', 'Contact');
   for (const p of projects) {
     add(`${p.name}: overview`, `${p.name} (${p.kind}, ${p.year}). Problem: ${p.problem} Approach: ${p.approach}`, `/#p-${p.id}`, p.name);
-    add(`${p.name}: results and stack`, `Key result: ${p.metric.value} ${p.metric.label}. ${p.metrics.map(([k, v]) => `${k}: ${v}`).join('. ')}. Stack: ${p.stack.join(', ')}. ${p.limits} ${p.team}. Code: https://github.com/SahajIVVIX-1/${p.repo}`, `/#p-${p.id}`, p.name);
+    add(`${p.name}: results and stack`, `Key result: ${p.metric.value} ${p.metric.label}. ${p.metrics.map(([k, v]) => `${k}: ${v}`).join('. ')}. Stack: ${p.stack.join(', ')}. ${p.limits} ${p.team}. ${p.link ? `Competition page: ${p.link.url}` : `Code: ${projectUrl(p)}`}`, `/#p-${p.id}`, p.name);
     const md = readmes[p.repo];
     if (md) {
       for (const sec of md.split(/\n(?=#{1,3} )/)) {
         const head = (sec.match(/^#{1,3} (.+)/) || [, 'README'])[1].replace(/[^\w\s&/().,-]/g, '').trim();
         const body = stripMd(sec.replace(/^#{1,3} .+/, ''));
         if (body.split(' ').length < 12) continue;
-        for (const part of splitWords(body)) add(`${p.name} README: ${head}`, part, `https://github.com/SahajIVVIX-1/${p.repo}`, `${p.name} README`);
+        for (const part of splitWords(body)) add(`${p.name} README: ${head}`, part, projectUrl(p), `${p.name} README`);
       }
     }
   }
@@ -285,13 +285,13 @@ function buildQA({ profile, projects, github, aboutMd, harvard = [] }) {
   // Projects: eight questions each.
   for (const p of projects) {
     const url = `/#p-${p.id}`;
-    const repo = `https://github.com/SahajIVVIX-1/${p.repo}`;
+    const repo = projectUrl(p);
     add([`What is ${p.name}?`, `Tell me about ${p.name}`, `Explain the ${p.name} project`], `${p.name} is ${aOrAn(p.kind)} ${p.kind.toLowerCase()} project (${p.year}). ${p.problem} ${p.approach.split('. ')[0]}.`, url);
     add([`What problem does ${p.name} solve?`, `Why did Sahaj build ${p.name}?`], p.problem, url);
     add([`How does ${p.name} work?`, `What is the approach in ${p.name}?`], p.approach, url);
     add([`What tech stack does ${p.name} use?`, `What tools were used in ${p.name}?`], `${p.name} uses ${p.stack.join(', ')}.`, url);
     add([`What results did ${p.name} get?`, `What are the metrics for ${p.name}?`, `How accurate is ${p.name}?`], `Headline: ${p.metric.value} ${p.metric.label}. ${p.metrics.map(([k, v]) => `${k}: ${v}`).join('; ')}.`, url);
-    add([`Where is the code for ${p.name}?`, `GitHub link for ${p.name}`], `The code and README are public at ${repo}.`, repo);
+    add([`Where is the code for ${p.name}?`, `GitHub link for ${p.name}`], p.link ? `${p.name} is a Kaggle competition entry. ${p.link.label}: ${repo}. ${p.code || ''}`.trim() : `The code and README are public at ${repo}.`, repo);
     add([`Who built ${p.name}?`, `Was ${p.name} a team project?`], `${p.team}.`, url);
     if (p.limits) add([`What are the limitations of ${p.name}?`], p.limits, url);
   }

@@ -3,7 +3,7 @@
 import { readdirSync, readFileSync } from 'node:fs';
 import { createHash } from 'node:crypto';
 import { execSync } from 'node:child_process';
-import { readJSON, readText, write, esc, fmtMonth, fmtRange, slug, path } from './lib.mjs';
+import { readJSON, readText, write, esc, fmtMonth, fmtRange, slug, path, projectUrl } from './lib.mjs';
 import { renderResume, RESUME_PDF } from './resume.mjs';
 
 if (process.argv.includes('--embed')) {
@@ -42,6 +42,15 @@ const harvard = readJSON('content/harvard.json', { programs: [] }).programs;
 // toggle can cross-fade them; the scroll-progress ring and the ticks are drawn around it
 const LOGO_MARK = '<image class="logo-img logo-l" href="/assets/brand/logo-light.webp?v=4" x="3" y="3" width="34" height="34"/><image class="logo-img logo-d" href="/assets/brand/logo-dark.webp?v=4" x="3" y="3" width="34" height="34"/>';
 const projects = readJSON('content/projects.json');
+// The page is one layer per section; each project is one attention-head layer, so the count follows projects.json.
+// persona.js renumbers the same way in the browser.
+const NP = projects.length;
+const LAYER = { skills: 4 + NP, experience: 5 + NP, certs: 6 + NP, contact: 7 + NP };
+const LAYERS = LAYER.contact;
+const L2 = (n) => String(n).padStart(2, '0');
+const NUM_WORDS = ['zero', 'one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine', 'ten', 'eleven', 'twelve'];
+const numWord = (n) => NUM_WORDS[n] || String(n);
+
 const mapData = readJSON('data/map.json', null);
 const github = readJSON('data/github.json', { repos: [], languages: {}, events: [], user: {} });
 const heatmaps = readJSON('data/heatmaps.json', {});
@@ -69,6 +78,7 @@ function head({ title, description, url, image = '/assets/img/og.png', type = 'w
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="project-count" content="${NP}">
 <title>${esc(title)}</title>
 <meta name="description" content="${esc(description)}">
 <link rel="canonical" href="${SITE}${url}">
@@ -340,8 +350,8 @@ function heatmapSVG(id) {
 }
 
 function projectCard(p, i) {
-  const repo = `https://github.com/SahajIVVIX-1/${p.repo}`;
-  const gh = github.repos.find((r) => r.name === p.repo);
+  const repo = projectUrl(p);
+  const gh = p.link ? null : github.repos.find((r) => r.name === p.repo);
   return `<article class="card layer" id="p-${p.id}" data-default-index="${i}" data-layer="${4 + i}" data-layer-name="Head ${i + 1} · ${esc(p.name)}" aria-labelledby="p-${p.id}-h">
   <header class="card-head">
     ${heatmapSVG(p.id)}
@@ -361,7 +371,7 @@ function projectCard(p, i) {
     <div class="cb-row"><dt class="mono">Authors</dt><dd class="muted">${esc(p.team)}</dd></div>
   </dl>
   <footer class="card-foot mono">
-    <a class="tok-link card-repo" href="${repo}" rel="noopener">Code &amp; README on GitHub <span aria-hidden="true">↗</span></a>
+    <a class="tok-link card-repo" href="${repo}" rel="noopener">${p.link ? esc(p.link.label) : 'Code &amp; README on GitHub'} <span aria-hidden="true">↗</span></a>
     ${gh ? `<span class="card-gh">${gh.language ? esc(gh.language) + ' · ' : ''}★ ${gh.stars} · updated ${gh.pushed_at.slice(0, 10)}</span>` : ''}
   </footer>
 </article>`;
@@ -370,8 +380,8 @@ function projectCard(p, i) {
 function workSection() {
   return `<section class="work" id="work" aria-labelledby="work-h">
   <header class="layer-head work-head">
-    <p class="layer-tag mono" data-lt-range="Attention heads">Layers 04–08 · Attention heads</p>
-    <h2 id="work-h" class="layer-title">Five heads, <em>five things</em> they learned.</h2>
+    <p class="layer-tag mono" data-lt-range="Attention heads">Layers 04–${L2(3 + NP)} · Attention heads</p>
+    <h2 id="work-h" class="layer-title">${numWord(NP)[0].toUpperCase() + numWord(NP).slice(1)} heads, <em>${numWord(NP)} things</em> they learned.</h2>
     <p class="layer-sub">Every project is documented like a model card: problem, approach, evaluation and limits. The header heatmap is real self-attention over that project's README, computed when the site builds.</p>
   </header>
   ${projects.map(projectCard).join('\n')}
@@ -380,9 +390,9 @@ function workSection() {
 
 function skillsSection() {
   let n = 0;
-  return `<section class="layer skills" id="skills" data-layer="9" data-layer-name="Parameters" aria-labelledby="skills-h">
+  return `<section class="layer skills" id="skills" data-layer="${LAYER.skills}" data-layer-name="Parameters" aria-labelledby="skills-h">
   <header class="layer-head">
-    <p class="layer-tag mono" data-lt="Parameters">Layer 09 · Parameters</p>
+    <p class="layer-tag mono" data-lt="Parameters">Layer ${L2(LAYER.skills)} · Parameters</p>
     <h2 id="skills-h" class="layer-title">The weights I <em>reach for</em>.</h2>
   </header>
   <div class="skill-groups" data-attend>
@@ -403,7 +413,7 @@ function milestones() {
     { d: '2024-08', t: 'AI/ML Core Committee, Encode PDEU', k: 'community' },
     { d: '2024-12', t: 'Freelance financial AI engineer: −37% false-positive signals', k: 'work' },
     { d: '2025-08', t: 'Lead Convener, IEEE AIMV 2025', k: 'community' },
-    ...projects.map((p) => ({ d: repoDate(p.repo) || `${p.year}-01`, t: `Shipped ${p.name}`, k: 'project', href: `#p-${p.id}` })),
+    ...projects.map((p) => ({ d: p.date || repoDate(p.repo) || `${p.year}-01`, t: `Shipped ${p.name}`, k: 'project', href: `#p-${p.id}` })),
     { d: '2026-05', t: 'Research & Innovation Intern, HNNOIX India', k: 'work' },
     { d: profile.education.end, t: 'Graduation (scheduled)', k: 'future' },
   ];
@@ -454,9 +464,9 @@ function monthIndex(ym) { const [y, m] = ym.split('-').map(Number); return y * 1
 
 function experienceSection() {
   const { ms, svg } = lossCurve();
-  return `<section class="layer training" id="experience" data-layer="10" data-layer-name="Training run" aria-labelledby="exp-h">
+  return `<section class="layer training" id="experience" data-layer="${LAYER.experience}" data-layer-name="Training run" aria-labelledby="exp-h">
   <header class="layer-head">
-    <p class="layer-tag mono" data-lt="Training run">Layer 10 · Training run</p>
+    <p class="layer-tag mono" data-lt="Training run">Layer ${L2(LAYER.experience)} · Training run</p>
     <h2 id="exp-h" class="layer-title">Loss goes down. <em>Checkpoints</em> stay.</h2>
     <p class="layer-sub">My time at PDEU drawn as a training run. The checkpoint dates are real. The curve itself is illustrative, with a smoothed line over noisy raw loss as in TensorBoard.</p>
   </header>
@@ -558,9 +568,9 @@ function evalSection() {
   const langs = Object.entries(github.languages || {}).sort((a, b) => b[1] - a[1]).slice(0, 6);
   const total = langs.reduce((s, [, v]) => s + v, 0) || 1;
   const recent = (github.repos || []).slice().sort((a, b) => b.pushed_at.localeCompare(a.pushed_at)).slice(0, 5);
-  return `<section class="layer eval" id="certs" data-layer="11" data-layer-name="Evaluation" aria-labelledby="eval-h">
+  return `<section class="layer eval" id="certs" data-layer="${LAYER.certs}" data-layer-name="Evaluation" aria-labelledby="eval-h">
   <header class="layer-head">
-    <p class="layer-tag mono" data-lt="Evaluation">Layer 11 · Evaluation</p>
+    <p class="layer-tag mono" data-lt="Evaluation">Layer ${L2(LAYER.certs)} · Evaluation</p>
     <h2 id="eval-h" class="layer-title">Held-out <em>benchmarks</em>.</h2>
   </header>
   ${guinnessCard()}
@@ -626,7 +636,7 @@ function adaptersBlock() {
 }
 
 // Recruiter mode: paste a job description, get a match report from Sahaj's own data (assets/js/fit.js). It is a
-// probe, not one of the 12 layers, so the rail keeps counting 12.
+// probe, not one of the layers, so the rail does not count it.
 function fitSection() {
   return `<section class="layer probe fit" id="fit" aria-labelledby="fit-h" data-fit>
   <header class="layer-head">
@@ -648,8 +658,8 @@ function fitSection() {
 }
 
 function contactSection() {
-  return `<section class="layer contact" id="contact" data-layer="12" data-layer-name="Output head" aria-labelledby="contact-h">
-  <p class="layer-tag mono" data-lt="Output">Layer 12 · Output</p>
+  return `<section class="layer contact" id="contact" data-layer="${LAYER.contact}" data-layer-name="Output head" aria-labelledby="contact-h">
+  <p class="layer-tag mono" data-lt="Output">Layer ${L2(LAYER.contact)} · Output</p>
   <h2 id="contact-h" class="contact-title">The next token<br><em>is yours.</em></h2>
   <p class="contact-lede">Open to AI/ML internships, research collaborations and roles after May 2027. Email is the fastest way to reach me.</p>
   <a class="contact-mail shimmer" href="mailto:${profile.email}">${esc(profile.email)}</a>
@@ -659,8 +669,8 @@ function contactSection() {
 
 function railNav() {
   return `<nav class="rail" aria-label="Layer progress" data-rail>
-  <p class="rail-label mono"><span data-rail-n>Layer 01</span> <span class="muted">/ 12</span></p>
-  <ol class="rail-ticks">${Array.from({ length: 12 }, (_, i) => `<li><a href="#" data-rail-tick="${i + 1}" aria-label="Go to layer ${i + 1}"></a></li>`).join('')}</ol>
+  <p class="rail-label mono"><span data-rail-n>Layer 01</span> <span class="muted">/ ${LAYERS}</span></p>
+  <ol class="rail-ticks">${Array.from({ length: LAYERS }, (_, i) => `<li><a href="#" data-rail-tick="${i + 1}" aria-label="Go to layer ${i + 1}"></a></li>`).join('')}</ol>
   <p class="rail-name mono" data-rail-name>Tokenizer</p>
 </nav>`;
 }
@@ -820,7 +830,7 @@ function fitData() {
     links: profile.links.map((l) => ({ label: l.label, url: l.url })),
     education: profile.education,
     terms: [...terms.values()],
-    projects: projects.map((p) => ({ id: p.id, name: p.name, kind: p.kind, year: p.year, metric: p.metric, stack: p.stack, summary: `${first(p.problem)} ${first(p.approach)}`, url: `#p-${p.id}`, repo: `https://github.com/SahajIVVIX-1/${p.repo}` })),
+    projects: projects.map((p) => ({ id: p.id, name: p.name, kind: p.kind, year: p.year, metric: p.metric, stack: p.stack, summary: `${first(p.problem)} ${first(p.approach)}`, url: `#p-${p.id}`, repo: projectUrl(p) })),
     experience: profile.experience.map((r) => ({ id: r.id, role: r.role, org: r.org, kind: r.kind, when: fmtRange(r.start, r.end), points: r.points, url: `#x-${r.id}` })),
     certifications: profile.certifications,
     programs: harvardFit(),

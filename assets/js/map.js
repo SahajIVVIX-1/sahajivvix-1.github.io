@@ -1,6 +1,6 @@
 // The embedding map: ~400 real chunks of my work, laid out by a real t-SNE run that the visitor scrolls through
 // (noise -> clusters), then queried with semantic search that is visible on the map.
-// Data: /data/map.json (points, 30 layout keyframes, KL loss per epoch, clusters, keyword index, 5 projects)
+// Data: /data/map.json (points, 30 layout keyframes, KL loss per epoch, clusters, keyword index, projects)
 //       /data/map-vectors.json (int8 vectors, loaded lazily for semantic search).
 import { decodeVec, cosineInt8, placeLabels, stem } from './map-core.js';
 import { checkOrigin } from './origin.js';

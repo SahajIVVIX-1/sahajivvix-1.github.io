@@ -1,7 +1,7 @@
 // The resume as a print-styled page (/resume/), built only from content/ (profile, projects, Guinness entry).
 // scripts/resume-pdf.mjs prints it to /assets/resume/Sahaj-Saliya-Resume.pdf. No phone number and no street
 // address: location is the city only. Asset URLs are relative so the same file renders over http and file://.
-import { esc, fmtMonth, fmtRange } from './lib.mjs';
+import { esc, fmtMonth, fmtRange, projectUrl } from './lib.mjs';
 
 export const RESUME_PDF = '/assets/resume/Sahaj-Saliya-Resume.pdf';
 const first = (s) => (String(s).match(/^.*?[.!?](\s|$)/) || [s])[0].trim();
@@ -82,7 +82,7 @@ li { margin: 1px 0; }
 </header>
 ${section('Education', `<div class="item">${row(esc(ed.school), fmtRange(ed.start, ed.end), `${esc(ed.degree)} · CGPA ${esc(ed.cgpa)} · ${esc(ed.place)}`)}</div>`)}
 ${section('Experience', profile.experience.map((r) => `<div class="item">${row(`${esc(r.role)} · ${esc(r.org)}`, fmtRange(r.start, r.end), `${esc(r.kind)} · ${esc(r.place)}`)}<ul>${r.points.map((x) => `<li>${esc(x)}</li>`).join('')}</ul></div>`).join(''))}
-${section('Projects', projects.map((p) => `<div class="item">${row(`${esc(p.name)} <span class="sub">· ${esc(p.kind)}</span>`, esc(p.year))}<p class="sub"><span class="metric">${esc(p.metric.value)}</span> ${esc(p.metric.label)}. ${esc(first(p.problem))} ${esc(first(p.approach))}</p><p class="stack">${p.stack.map(esc).join(' · ')} · github.com/SahajIVVIX-1/${esc(p.repo)}</p></div>`).join(''))}
+${section('Projects', projects.map((p) => `<div class="item">${row(`${esc(p.name)} <span class="sub">· ${esc(p.kind)}</span>`, esc(p.year))}<p class="sub"><span class="metric">${esc(p.metric.value)}</span> ${esc(p.metric.label)}. ${esc(first(p.problem))} ${esc(first(p.approach))}</p><p class="stack">${p.stack.map(esc).join(' · ')} · ${esc(projectUrl(p).replace(/^https:\/\//, ''))}</p></div>`).join(''))}
 ${section('Skills', `<dl class="skills">${profile.skills.map((g) => `<dt>${esc(g.group)}</dt><dd>${g.items.map(esc).join(', ')}</dd>`).join('')}</dl>`)}
 ${section('Certifications', `<ul>${profile.certifications.map((c) => `<li>${esc(c.name)} · ${esc(c.issuer)}${c.note ? ` (${esc(c.note)})` : ''}</li>`).join('')}${harvardLine(harvard)}</ul>`)}
 ${section('Achievements &amp; community', `<ul><li><b>${esc(gwr.title)} · ${esc(gwr.year)}</b>: ${esc(gwr.record)}, ${esc(gwr.where)}, ${esc(gwr.when)}.</li>${profile.community.map((c) => `<li>${esc(c.role)} · ${esc(c.org)} (${c.end === null ? `since ${c.start.slice(0, 4)}` : fmtRange(c.start, c.end)})</li>`).join('')}</ul>`)}

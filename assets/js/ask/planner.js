@@ -27,6 +27,8 @@ function pickBest(s, ranked) {
 const NAMED = [
   ['crohnsight', /crohn/i], ['agentic-rag', /\b(agentic|rag|orchestrator)\b/i], ['openenv', /open ?env|data.?cleaning/i],
   ['student-xai', /student|explainable/i], ['dcgan', /dcgan|\bgan\b/i],
+  ['sleep-llm', /sleep|consolidat|dream|forgetting|continual/i], ['quantum-compilation', /quantum|qubit|toffoli|invsqrt|\bdqi\b/i],
+  ['santa-elf-calculator', /santa|\belf\b|elf calculator/i],
 ];
 
 export async function planRules(q, eng) {

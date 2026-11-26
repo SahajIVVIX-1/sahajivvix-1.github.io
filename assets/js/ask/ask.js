@@ -65,7 +65,7 @@ export function initAsk() {
   let stepAside = false;
   const agent = createTools({
     projects: [...document.querySelectorAll('article.card[id^="p-"]')].map((el) => ({ id: el.id.slice(2), name: el.querySelector('.card-title')?.textContent || el.id }))
-      .concat(document.querySelector('article.card[id^="p-"]') ? [] : ['crohnsight', 'agentic-rag', 'openenv', 'student-xai', 'dcgan'].map((id) => ({ id, name: id }))),
+      .concat(document.querySelector('article.card[id^="p-"]') ? [] : ['crohnsight', 'agentic-rag', 'openenv', 'sleep-llm', 'quantum-compilation', 'santa-elf-calculator', 'student-xai', 'dcgan'].map((id) => ({ id, name: id }))),
     onPhoneAction: () => { if (stepAside && matchMedia('(max-width: 699px)').matches) { stepAside = false; setTimeout(close, 450); } },
   });
 
