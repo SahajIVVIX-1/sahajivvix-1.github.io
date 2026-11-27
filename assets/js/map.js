@@ -5,7 +5,7 @@
 import { decodeVec, cosineInt8, placeLabels, stem } from './map-core.js';
 import { checkOrigin } from './origin.js';
 
-const TRANSFORMERS = 'https://cdn.jsdelivr.net/npm/@huggingface/transformers@4.3.0';
+import { loadTF } from './tf.js'; // Transformers.js and MiniLM from this site (assets/vendor, assets/models)
 const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
 const smooth = (t) => t * t * (3 - 2 * t);
 const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]);
@@ -447,9 +447,8 @@ export async function initMap(root, { lowPower = false, reducedMotion = false } 
     modelState = 'loading'; status('loading semantic model…');
     modelP = (async () => {
       try {
-        const [vj, tf] = await Promise.all([fetch('/data/map-vectors.json').then((r) => r.json()), import(/* @vite-ignore */ TRANSFORMERS)]);
+        const [vj, tf] = await Promise.all([fetch('/data/map-vectors.json').then((r) => r.json()), loadTF()]);
         vectors = vj.v.map(decodeVec);
-        tf.env.allowLocalModels = false;
         extractor = await tf.pipeline('feature-extraction', data.model, { dtype: 'q8', progress_callback: (p) => { if (p.status === 'progress' && p.progress != null) status(`loading semantic model… ${Math.round(p.progress)}%`); } });
         modelState = 'ready'; status('semantic search on');
         if (lastQ) ask(lastQ, true); // redo the last question with real semantics

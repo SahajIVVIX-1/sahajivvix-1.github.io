@@ -341,8 +341,8 @@
 
     B.log(kind === 'mlp' ? 'model config · MLP · 4 layers' : kind === 'cnn' ? 'model config · CNN · 2 conv blocks + dense' : 'model config · transformer · 1 block · 4 heads');
     setTimeout(function () { B.log('theme: ' + theme); }, 120);
-    // the IP is looked up by the head script (api.ipify.org); show it, or say honestly that the lookup failed
-    (window.__ipPromise || Promise.resolve(null)).then(function (ip) { B.log('visitor ip · ' + (ip || 'lookup unavailable')); });
+    // no IP lookup: the site makes no third-party requests
+    B.log('visitor ip · not looked up · no third-party calls');
     // Input features are "read" one by one; each one lights an input.
     var featEl = document.getElementById('boot-feat');
     B.feat.forEach(function (f, i) {

@@ -1,8 +1,8 @@
 // "Show it an image": CLIP ViT-B/32 embeds a dropped image on this device and compares it with the CLIP text
 // embeddings of the visual descriptions of his projects and skills (data/clip.json, computed at build time).
 // Loaded only when a visitor picks, drops or pastes an image. The image is never uploaded: Transformers.js runs the
-// model here, and the only downloads are the model weights (once, then cached) and data/clip.json.
-const TRANSFORMERS = 'https://cdn.jsdelivr.net/npm/@huggingface/transformers@4.3.0';
+// model here (served by this site, assets/models/), and the only downloads are its weights and data/clip.json.
+import { loadTF } from './tf.js'; // Transformers.js and CLIP from this site (assets/vendor, assets/models)
 const DTYPE = 'q8';
 const SIZE = '≈88 MB';
 // CLIP's own logit scale: turns cosine similarities into a distribution over the candidates.
@@ -12,8 +12,7 @@ let ready = null;
 function load(status) {
   return (ready ||= (async () => {
     status(`loading CLIP vision model (${SIZE}, once)…`);
-    const [tf, clip] = await Promise.all([import(/* @vite-ignore */ TRANSFORMERS), fetch('/data/clip.json').then((r) => r.json())]);
-    tf.env.allowLocalModels = false;
+    const [tf, clip] = await Promise.all([loadTF(), fetch('/data/clip.json').then((r) => r.json())]);
     const progress = (p) => { if (p.status === 'progress' && p.progress != null && /onnx/.test(p.file || '')) status(`loading CLIP vision model… ${Math.round(p.progress)}%`); };
     const [proc, model] = await Promise.all([
       tf.AutoProcessor.from_pretrained(clip.model),

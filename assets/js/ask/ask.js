@@ -1,11 +1,10 @@
 // "Ask my portfolio" panel. Loaded only when first opened.
 import { createEngine, uniqSources } from './engine.js';
-import { webgpuSupport, loadLLM } from './llm.js';
 import { checkOrigin } from '../origin.js';
 import { setBusy } from '../busy.js';
 import { createTools } from './tools.js';
 import { setLoading, loader } from '../loading.js';
-import { ACTION, NEAR, planRules, planLLM } from './planner.js';
+import { ACTION, NEAR, planRules } from './planner.js';
 
 const STARTERS = [
   'Show me your best CV project',
@@ -32,7 +31,6 @@ export function initAsk() {
       </div>
       <button class="ask-x" type="button" aria-label="Close chat" data-close><svg class="ico" viewBox="0 0 16 16" aria-hidden="true" focusable="false"><path d="M4 4l8 8M12 4l-8 8"/></svg></button>
     </header>
-    <div class="ask-llm mono" data-llm hidden><span data-llm-text></span><span class="ask-bar"><i data-llm-bar></i></span><button type="button" class="ask-llm-btn" data-llm-btn hidden></button></div>
     <ol class="ask-log" aria-live="polite" data-log>
       <li class="msg bot"><p>Hi! I answer questions about Sahaj from his own data: projects, skills, experience, education and contact. Every answer links its source.</p></li>
     </ol>
@@ -50,12 +48,8 @@ export function initAsk() {
   const input = root.querySelector('#ask-in');
   const form = root.querySelector('[data-form]');
   const status = root.querySelector('[data-status]');
-  const llmBox = root.querySelector('[data-llm]');
-  const llmText = root.querySelector('[data-llm-text]');
-  const llmBar = root.querySelector('[data-llm-bar]');
-  const llmBtn = root.querySelector('[data-llm-btn]');
   const send = root.querySelector('.ask-send');
-  let opener = null, llm = null, llmLoading = false, history = [];
+  let opener = null, history = [];
 
   // Agent: the bot can act on the page. On phones the panel covers the page, so it steps aside after the first
   // visible action of a plan; actions are announced in a live region outside the panel so that still works.
@@ -79,26 +73,6 @@ export function initAsk() {
     idle(() => eng.loadEmbedder().then((ok) => { if (ok) status.textContent = `semantic search on · MiniLM-L6 · ${eng.chunks.length} passages`; }));
     return eng;
   }).catch(() => { status.textContent = 'could not load the index, try again later'; return null; });
-
-  // Offer the local LLM only where WebGPU exists. Auto-start on unmetered desktops, otherwise ask.
-  webgpuSupport().then((kind) => {
-    if (!kind) return;
-    llmBox.hidden = false;
-    // Never automatic: downloading and compiling ≈1 GB on the GPU made the whole page stutter. One click starts it.
-    const start = () => {
-      if (llmLoading) return;
-      llmLoading = true;
-      llmBtn.hidden = true;
-      llmText.textContent = 'downloading Qwen2.5-1.5B (≈1 GB, cached after the first time)…';
-      loadLLM(kind, (p) => { llmBar.style.width = `${Math.round(p * 100)}%`; llmText.textContent = `loading Qwen2.5-1.5B · ${Math.round(p * 100)}%`; })
-        .then((m) => { llm = m; llmText.textContent = 'Qwen2.5-1.5B running on your GPU · conversational answers on'; llmBox.classList.add('is-ready'); })
-        .catch(() => { llmText.textContent = 'local model unavailable, using retrieval answers'; llmBox.classList.add('is-ready'); });
-    };
-    llmText.textContent = 'Optional: a local LLM on your GPU for conversational answers.';
-    llmBtn.textContent = 'Load (≈1 GB)';
-    llmBtn.hidden = false;
-    llmBtn.onclick = start;
-  });
 
   let closeTimer = 0;
   const fab = document.querySelector('.ask-fab');
@@ -157,30 +131,17 @@ export function initAsk() {
     if (!eng) { finish(bubble, 'The index failed to load. Please email sahajs7959@gmail.com.', []); return; }
 
     if (ACTION.test(q)) {
-      const plan = (llm && await planLLM(q, eng, llm, agent.check, agent.docs)) || await planRules(q, eng);
+      const plan = await planRules(q, eng);
       if (plan.steps.length) {
         const out = await act(bubble, plan);
         history.push({ role: 'user', content: q }, { role: 'assistant', content: out.text });
-        finish(bubble, out.text, out.sources, plan.by === 'llm' ? 'agent · Qwen2.5-1.5B plan' : 'agent · rule-based plan');
+        finish(bubble, out.text, out.sources, 'agent · rule-based plan');
         return;
       }
     }
     const res = await eng.answer(q);
     let text = res.text, sources = res.sources, by = res.kind === 'bank' ? 'answer bank' : res.kind === 'retrieval' ? 'retrieved passage' : '';
 
-    // Retrieval answers get rewritten conversationally by the local LLM when it is ready.
-    if (llm && res.kind === 'retrieval') {
-      const passages = res.hits.kb.slice(0, 4).map((s) => s.x);
-      bubble.classList.remove('is-thinking'); setLoading('ask', false);
-      const p = bubble.querySelector('p');
-      p.textContent = '';
-      let out = '';
-      try {
-        stageTo('ffn');
-        for await (const piece of llm.stream(q, passages, history)) { out += piece; p.textContent = out; }
-        if (out.trim()) { text = out.trim(); by = 'Qwen2.5-1.5B + retrieval'; sources = uniqSources(passages.slice(0, 2)); }
-      } catch { /* keep the retrieval answer */ }
-    }
     history.push({ role: 'user', content: q }, { role: 'assistant', content: text });
     finish(bubble, text, sources, by);
   }
