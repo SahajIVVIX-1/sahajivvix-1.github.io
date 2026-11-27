@@ -26,8 +26,19 @@ export async function initAttention({ lowPower = false } = {}) {
 
   // Text blocks are wrapped when they come near the screen (a few thousand words, so not all at once), and again when
   // generate.js has finished sampling a block in.
+  // wrapping happens in small slices while the browser is idle, so it never stalls a scroll
+  const queue = [];
+  let busy = false;
+  const later = (fn) => (window.requestIdleCallback ? requestIdleCallback(fn, { timeout: 500 }) : setTimeout(fn, 60));
+  const pump = () => {
+    const t0 = performance.now();
+    while (queue.length && performance.now() - t0 < 6) wrapRegion(queue.shift());
+    busy = queue.length > 0;
+    if (busy) later(pump);
+  };
+  const enqueue = (el) => { queue.push(el); if (!busy) { busy = true; later(pump); } };
   const near = new IntersectionObserver((entries) => {
-    for (const e of entries) if (e.isIntersecting) { wrapRegion(e.target); near.unobserve(e.target); }
+    for (const e of entries) if (e.isIntersecting) { enqueue(e.target); near.unobserve(e.target); }
   }, { rootMargin: '900px 500px' });
   const watch = (root) => { for (const el of root.querySelectorAll(CONTENT)) if (!el.closest(NOT_TEXT)) near.observe(el); };
   watch(document.querySelector('main') || document.body);

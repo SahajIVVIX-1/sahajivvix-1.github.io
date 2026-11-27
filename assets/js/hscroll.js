@@ -41,9 +41,12 @@ function setup(hs) {
     }));
     tabs = [...tabsEl.children];
   };
+  let lastMark = -1, lastName = '';
   const mark = (i) => {
     const cs = cards();
-    if (tabs.length !== cs.length) buildTabs();
+    if (tabs.length !== cs.length) { buildTabs(); lastMark = -1; }
+    if (i === lastMark) return;
+    lastMark = i;
     tabs.forEach((t, k) => { t.classList.toggle('is-on', k === i); if (k === i) t.setAttribute('aria-current', 'true'); else t.removeAttribute('aria-current'); });
     cs.forEach((c, k) => c.classList.toggle('is-active', k === i));
     const on = tabs[i];
@@ -54,9 +57,11 @@ function setup(hs) {
     const cs = cards();
     mark(clamp(i, 0, cs.length - 1));
     const card = cs[clamp(i, 0, cs.length - 1)];
-    if (nEl) nEl.textContent = String(clamp(i, 0, cs.length - 1) + 1).padStart(2, '0');
-    if (nameEl && card) nameEl.textContent = card.querySelector('.card-title')?.textContent || '';
-    if (fill) fill.style.transform = `scaleX(${clamp(frac, 0, 1).toFixed(4)})`;
+    const num = String(clamp(i, 0, cs.length - 1) + 1).padStart(2, '0');
+    if (nEl && nEl.textContent !== num) nEl.textContent = num;
+    const name = card?.querySelector('.card-title')?.textContent || '';
+    if (nameEl && name !== lastName) { nameEl.textContent = name; lastName = name; }
+    if (fill) fill.style.transform = `scaleX(${clamp(frac, 0, 1).toFixed(3)})`;
   };
 
   // Cards have a fixed height (the pinned area), so text is scaled (--fs) per card: as large as it can be (up to 1.4)
@@ -89,9 +94,8 @@ function setup(hs) {
     hs.style.height = `${pin.offsetHeight + Math.max(0, cs.length - 1) * st.step}px`;
   };
 
-  const announce = (i, force) => {
+  const announce = (i, rect, force) => {
     const cs = cards();
-    const rect = hs.getBoundingClientRect();
     const inBand = rect.top < innerHeight * 0.55 && rect.bottom > innerHeight * 0.45;
     if (inBand && (i !== st.index || !st.inBand || force) && cs[i]) {
       document.dispatchEvent(new CustomEvent('hs:active', { detail: { card: cs[i], index: i, track } }));
@@ -103,7 +107,8 @@ function setup(hs) {
     const cs = cards();
     if (!cs.length) return;
     if (st.on) {
-      const f = clamp((TOP - hs.getBoundingClientRect().top) / st.step, 0, cs.length - 1);
+      const rect = hs.getBoundingClientRect();
+      const f = clamp((TOP - rect.top) / st.step, 0, cs.length - 1);
       const i = Math.min(Math.floor(f), cs.length - 2 >= 0 ? cs.length - 2 : 0);
       const t = f - i;
       const e = cs.length > 1 ? smooth(clamp((t - HOLD) / (1 - 2 * HOLD), 0, 1)) : 0;
@@ -112,16 +117,70 @@ function setup(hs) {
       st.pos = i + e;
       const idx = Math.round(st.pos);
       label(idx, cs.length > 1 ? st.pos / (cs.length - 1) : 1);
-      // text sampling and late fonts can change a card's height after it was fitted: check the one coming into view
-      if (idx !== st.index && cs[idx]) fitCard(cs[idx]);
-      announce(idx);
+      announce(idx, rect);
     } else {
       const w = (cs[1] ? cs[1].offsetLeft - cs[0].offsetLeft : cs[0].offsetWidth) || 1;
       const max = track.scrollWidth - track.clientWidth;
       const idx = clamp(Math.round(track.scrollLeft / w), 0, cs.length - 1);
       label(idx, max > 0 ? track.scrollLeft / max : 1);
-      announce(idx);
+      // the row is only as tall as the card in view, so shorter cards do not leave empty space under them
+      const h = Math.ceil(cs[idx].offsetHeight + 18);
+      if (h > 60 && Math.abs((parseFloat(track.style.height) || 0) - h) > 1) track.style.height = `${h}px`;
+      announce(idx, hs.getBoundingClientRect());
     }
+  };
+
+  // ---- stepping: one flick moves one card, forwards or back; the track settles on a card when scrolling stops ----
+  const absTop = () => hs.getBoundingClientRect().top + scrollY - TOP; // scrollY at which the pin starts
+  const yFor = (i) => Math.round(absTop() + i * st.step);
+  const pos = () => (TOP - hs.getBoundingClientRect().top) / st.step; // card position, fractional
+  st.animating = false; st.cooldown = 0; st.lastWheel = 0; st.used = false; st.raf = 0;
+  const animateTo = (y, ms) => {
+    const y0 = scrollY, d = y - y0;
+    cancelAnimationFrame(st.raf);
+    if (!d) { st.animating = false; return; }
+    const t0 = performance.now();
+    st.animating = true;
+    const tick = (now) => {
+      const t = Math.min(1, (now - t0) / ms);
+      const e = t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2; // ease in and out
+      scrollTo({ top: Math.round(y0 + d * e), behavior: 'instant' });
+      if (t < 1) st.raf = requestAnimationFrame(tick);
+      else { st.animating = false; st.cooldown = performance.now() + 160; }
+    };
+    st.raf = requestAnimationFrame(tick);
+  };
+  // true when the event was used for a step (or absorbed), false when the page should scroll as usual
+  st.wheel = (e) => {
+    const n = cards().length;
+    if (n < 2) return false;
+    const f = pos();
+    const dir = e.deltaY > 0 ? 1 : -1;
+    if (f < -0.02 || f > n - 1 + 0.02) return false;       // not pinned: the page scrolls
+    if (dir > 0 && f >= n - 1 - 0.02) return false;         // on the last card, scrolling down: let the page go on
+    if (dir < 0 && f <= 0.02) return false;                 // on the first card, scrolling up: let the page go back
+    e.preventDefault();
+    const now = performance.now();
+    if (now - st.lastWheel >= 120) st.used = false;         // a new flick, not the tail of the last one
+    st.lastWheel = now;
+    if (st.animating || now < st.cooldown || st.used || Math.abs(e.deltaY) < 2) return true;
+    st.used = true;
+    const target = clamp(dir > 0 ? Math.floor(f + 0.001) + 1 : Math.ceil(f - 0.001) - 1, 0, n - 1);
+    animateTo(yFor(target), 560);
+    return true;
+  };
+  // after a drag of the scroll bar, a key press or a stray scroll: settle on the nearest card
+  let settleT = 0;
+  st.settle = () => {
+    clearTimeout(settleT);
+    if (!st.on) return;
+    settleT = setTimeout(() => {
+      if (st.animating) return;
+      const n = cards().length, f = pos();
+      if (f < 0 || f > n - 1) return;
+      const k = Math.round(f);
+      if (Math.abs(f - k) > 0.03) animateTo(yFor(k), 360);
+    }, 170);
   };
 
   // Brings a card to the middle of its stretch of scroll (or, in the plain row, scrolls the row to it).
@@ -130,11 +189,11 @@ function setup(hs) {
     const i = cs.indexOf(card);
     if (i < 0) return false;
     document.documentElement.classList.add('cv-off'); // lay the whole page out first so the position is exact
-    const behavior = opts && typeof opts === 'object' && opts.behavior === 'smooth' && !matchMedia('(prefers-reduced-motion: reduce)').matches ? 'smooth' : 'auto';
+    const smoothly = opts && typeof opts === 'object' && opts.behavior === 'smooth' && !matchMedia('(prefers-reduced-motion: reduce)').matches;
     if (st.on) {
       measure();
-      const top = hs.getBoundingClientRect().top + scrollY - TOP + i * st.step;
-      scrollTo({ top: Math.max(0, Math.round(top)), behavior });
+      const top = Math.max(0, yFor(i));
+      if (smoothly) animateTo(top, 700); else scrollTo({ top, behavior: 'instant' });
       return true;
     }
     return false;
@@ -144,7 +203,7 @@ function setup(hs) {
     if (on === st.on) { if (on) { measure(); update(); } return; }
     st.on = on;
     hs.classList.toggle('hs--on', on);
-    if (on) { track.scrollLeft = 0; measure(); } else { hs.style.height = ''; track.style.transform = ''; cards().forEach((c) => c.style.removeProperty('--fs')); }
+    if (on) { track.scrollLeft = 0; track.style.height = ''; measure(); } else { hs.style.height = ''; track.style.transform = ''; cards().forEach((c) => c.style.removeProperty('--fs')); }
     update();
   };
 
@@ -157,6 +216,8 @@ function setup(hs) {
     if (card && cs.indexOf(card) !== Math.round(st.pos)) st.reveal(card, 'auto');
   });
   st.update = update; st.measure = measure; st.fitCard = fitCard;
+  // a card changes height when its text finishes loading or the screen turns: keep the row's height in step
+  if (window.ResizeObserver) { const ro = new ResizeObserver(() => { if (!st.on) update(); }); cards().forEach((c) => ro.observe(c)); }
   byTrack.set(track, st);
   return st;
 }
@@ -174,7 +235,12 @@ export function initHScroll() {
   let raf = 0;
   const tick = () => { raf = 0; all.forEach((s) => s.update()); };
   const queue = () => { if (!raf) raf = requestAnimationFrame(tick); };
-  addEventListener('scroll', queue, { passive: true });
+  addEventListener('scroll', () => { queue(); all.forEach((s) => s.settle?.()); }, { passive: true });
+  // while a track is pinned, a wheel or trackpad flick steps one card (see st.wheel); the page scrolls at either end
+  addEventListener('wheel', (e) => {
+    if (e.ctrlKey || e.defaultPrevented || Math.abs(e.deltaY) <= Math.abs(e.deltaX)) return;
+    for (const s of all) if (s.on && s.wheel(e)) return;
+  }, { passive: false });
   let rt = 0;
   addEventListener('resize', () => { clearTimeout(rt); rt = setTimeout(() => { all.forEach((s) => { if (s.on) s.measure(); s.update(); }); }, 120); });
   // fonts and the order of the cards both change the offsets

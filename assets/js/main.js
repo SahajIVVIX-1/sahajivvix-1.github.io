@@ -44,7 +44,7 @@ initPersona();
 initRail();
 // The projects and products tracks scroll sideways while the page scrolls down (hscroll.js); it also redirects every
 // jump to a card, so it has to be in place before anything can link to one.
-initHScroll();
+try { initHScroll(); } catch (e) { console.error('hscroll', e); }
 if (covered()) await pause();
 initHero();
 initThink();
@@ -63,7 +63,7 @@ initTiles({ reducedMotion, lowPower });
 initLoss();
 await pause();
 initHeader();
-initMenu();
+try { initMenu(); } catch (e) { console.error('menu', e); }
 initResume();
 initContext({ reducedMotion });
 initAnchors();
