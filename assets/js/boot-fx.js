@@ -685,7 +685,9 @@
     fly.target = { x: dr.left + dr.width / 2, y: dr.top + dr.height / 2, r: 3 };
     fly.from = { x: fly.node.x, y: fly.node.y };
     root.classList.add('boot-fly');
-    return RETRACT * 0.6 + fly.move;
+    // The hero starts as the neuron sets off, not when it lands: its first token (after the hero's own short delay
+    // and sampling) arrives about when the neuron reaches the logo, so the screen is never empty in between.
+    return RETRACT * 0.6;
   }
   function drawFlight(now) {
     var n = fly.node;

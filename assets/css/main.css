@@ -137,7 +137,9 @@ ul, ol { margin: 0; padding: 0; list-style: none; }
 /* brand: see the "header brand" block at the end of this file */
 .site-nav { display: none; gap: 22px; margin-left: auto; font-size: 15px; }
 .head-tools { display: flex; align-items: center; gap: 10px; margin-left: auto; }
-.site-nav + .head-tools { margin-left: 18px; }
+/* the nav is hidden below 900px, so only push the tools right with it when it is shown (else they stop short of the edge) */
+@media (min-width: 900px) { .site-nav + .head-tools { margin-left: 18px; } }
+.kbd-btn { white-space: nowrap; }
 .kbd-btn {
   display: none; align-items: center; gap: 10px; min-height: 36px; padding: 0 8px 0 12px;
   border: 1px solid var(--rule-2); border-radius: 999px; background: transparent; cursor: pointer; color: var(--ink-2);
@@ -583,8 +585,9 @@ main { position: relative; z-index: 1; }
 /* ---------- page transition: softmax from noise to sharp ---------- */
 /* Animated on main/footer, never body: a filter on body would break position: fixed. */
 /* Plays as the boot screen dissolves (html.boot-reveal is set by the inline boot script). */
-.boot-reveal main, .boot-reveal .site-foot { animation: softmaxIn .7s var(--ease-out) backwards; }
-@keyframes softmaxIn { from { filter: blur(14px) contrast(1.6); opacity: 0; } to { filter: blur(0); opacity: 1; } }
+/* Opacity only: a blur filter on the whole of <main> (thousands of pixels tall) cost several dropped frames on phones. */
+.boot-reveal main, .boot-reveal .site-foot { animation: softmaxIn .6s var(--ease-out) backwards; }
+@keyframes softmaxIn { from { opacity: 0; } to { opacity: 1; } }
 body.is-leaving main, body.is-leaving .site-foot { animation: softmaxOut .35s var(--ease) forwards; }
 @keyframes softmaxOut { to { filter: blur(12px) contrast(1.5); opacity: 0; } }
 
@@ -1455,7 +1458,8 @@ html.plain .ad-plain, html[data-persona="recruiter"] .ad-plain { display: grid; 
   .hs--on .cb-row dt { font-size: calc(11px * var(--fs)); }
   .hs--on .cb-row dd { font-size: calc(15px * var(--fs)); line-height: 1.5; }
   .hs--on .cb-limits dd { font-size: calc(14px * var(--fs)); padding: calc(9px * var(--fs)) calc(13px * var(--fs)); }
-  .hs--on .specs { grid-template-columns: repeat(4, minmax(0, 1fr)); gap: calc(8px * var(--fs)); }
+  /* one row, as many equal tiles as there are results (3 or 4), so three never leave an empty fourth slot */
+  .hs--on .specs { grid-template-columns: none; grid-auto-flow: column; grid-auto-columns: minmax(0, 1fr); gap: calc(8px * var(--fs)); }
   .hs--on .specs li { padding: calc(9px * var(--fs)) calc(11px * var(--fs)); gap: calc(3px * var(--fs)); }
   .hs--on .sp-k { font-size: calc(12px * var(--fs)); }
   .hs--on .sp-v { font-size: calc(12.5px * var(--fs)); line-height: 1.4; }
