@@ -75,16 +75,15 @@ html[data-theme="dark"] #boot { --bg: #0B1020; --fg: #ECE8DE; --dim: #8F8C84; --
 /* Flicker with visibility, not opacity: text is never caught half transparent. */
 @keyframes bootflick { 0% { visibility: hidden; } 16% { visibility: visible; } 32% { visibility: hidden; } 48% { visibility: visible; } 64% { visibility: hidden; } 80%, 100% { visibility: visible; } }
 
-/* Dissolve: the text box vanishes at once, the noise and backdrop fade while a blur resolves to sharp (softmax).
+/* Dissolve: the text box vanishes at once and the backdrop fades. Opacity only: a full-screen backdrop blur here
+   stalled the GPU for a few frames on phones, which showed as a freeze and a jump right at the hand-off.
    The canvas stays so the neurons can fly into the hero. */
-#boot.out { pointer-events: none; animation: bootblur .7s cubic-bezier(.16, 1, .3, 1) forwards; }
+#boot.out { pointer-events: none; }
 #boot.out .boot-box { display: none; }
-#boot.out::after { animation: bootfade .7s cubic-bezier(.16, 1, .3, 1) forwards; }
-@keyframes bootblur { from { backdrop-filter: blur(18px); -webkit-backdrop-filter: blur(18px); } to { backdrop-filter: blur(0); -webkit-backdrop-filter: blur(0); } }
+#boot.out::after { will-change: opacity; animation: bootfade .6s cubic-bezier(.33, 1, .68, 1) forwards; }
 @keyframes bootfade { to { opacity: 0; } }
 
 @media (prefers-reduced-motion: reduce) {
-  #boot.out { animation: none; }
   #boot.out::after { animation-duration: .2s; }
   #boot-log li.flick { animation: none; }
 }

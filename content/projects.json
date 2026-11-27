@@ -9,12 +9,14 @@
     "task": "Image classification · severity grading",
     "problem": "Reading a capsule-endoscopy study means checking tens of thousands of small-bowel frames by eye. Crohn's lesions are small and easy to miss.",
     "approach": "An ensemble of 10 EfficientNet-B2 models (5 folds × 2 seeds) at the native 320 px finds lesions in 7 classes, grades severity in 4 tiers and draws a heat-map over each lesion. It is exported to ONNX and runs offline on an ordinary CPU. Add-ons cover ulcerative-colitis Mayo grading and flare-risk forecasting.",
+    "features": ["Lesion Analyzer: 7 lesion classes, a severity tier, a heat-map and how many of the 10 models agree","Study Triage: a folder or .zip of frames ranked most suspicious first, with a Balanced or Screening cut-off","Video Scan of your own capsule video, plus 43 Kvasir studies already scanned offline","Ulcerative-colitis grader (Mayo 0–3) and a flare-risk forecaster on HMP2 patient timelines","Tested untouched on Kvasir-Capsule (Norway, 47,238 frames) and SEE-AI (Japan)","FastAPI and onnxruntime on CPU with a pre-built Next.js UI and Docker: no GPU or PyTorch needed"],
     "stack": ["PyTorch", "EfficientNet-B2", "ONNX Runtime", "FastAPI", "Next.js", "Docker"],
     "metric": { "value": "0.992", "label": "AUROC, lesion vs normal (CrohnIPI)" },
     "metrics": [
       ["Lesion vs normal accuracy", "96.7% (best published 94.6%)"],
       ["Severity, quadratic weighted κ", "0.94"],
-      ["External test, Kvasir-Capsule", "AUROC 0.944, no retraining"]
+      ["External test, Kvasir-Capsule", "AUROC 0.944, no retraining"],
+      ["7-class accuracy, CrohnIPI", "91.1% (balanced 84.0%)"]
     ],
     "limits": "Research prototype, not a medical device. Telling a whole lesion video from a lesion-free one is near chance (study AUROC 0.57). The README reports this openly.",
     "team": "With Hil Kalathiya and Chetan Gadhiya · PDEU minor project, guided by Prof. Dr. Babalu Kumar Singh",
@@ -30,6 +32,7 @@
     "task": "Retrieval-augmented generation · agent routing",
     "problem": "Enterprise questions mix document lookups, database queries and actions such as sending email. A single RAG chain answers them badly or unsafely.",
     "approach": "A LangGraph Supervisor → Worker → Validator graph routes each query to Corrective RAG, NL-to-SQL, a human-in-the-loop email tool or chat. Retrieval is hybrid (Qdrant dense + BM25), reranked with a CrossEncoder and expanded from 200- to 800-token parent chunks, with an LLM grader that rewrites weak queries. A semantic cache, prompt-injection guards and Fernet encryption protect it.",
+    "features": ["A Supervisor picks one of four routes: Corrective RAG, NL-to-SQL, an email tool or chat","A Validation agent re-grounds every answer as {answer, source, confidence}","An LLM grades each retrieved chunk and rewrites weak queries, at most 2 rounds","Semantic cache in Qdrant (cosine ≥ 0.96) answers repeated questions without the pipeline","Email only through Draft → Confirm → Execute, with a domain allow-list and an hourly cap","Groq, OpenAI, Anthropic or Bedrock with automatic failover; read-only SQL; 15 pytest tests"],
     "stack": ["LangGraph", "LangChain", "FastAPI", "Qdrant", "BM25", "Redis", "Next.js", "RAGAS"],
     "metric": { "value": "0.81", "label": "RAGAS faithfulness" },
     "metrics": [
@@ -51,12 +54,14 @@
     "task": "Sequential decision-making · data quality",
     "problem": "Cleaning a messy table takes many small, ordered decisions. Can an agent learn them, and can its score be checked honestly?",
     "approach": "An OpenEnv environment over pandas tables with reproducible (task, seed) episodes and a hidden clean ground truth. Potential-based reward shaping makes going in circles worthless, and a separate grader scores the final table. The benchmark compares a PPO agent (400k steps, exported to NumPy), a zero-shot Llama 3.1 8B agent and rule-based baselines, served over FastAPI and WebSocket with a Gradio demo.",
+    "features": ["Three tasks: easy (40 rows), medium (60 rows + duplicates), hard (100 rows, every kind of mess)","Nine actions: fill, dedupe, standardise categories, cast types, fix dates, clip outliers and more","Invalid actions are not applied: the agent gets the reason in last_error and a small penalty","Grader: 0.6 cell accuracy + 0.2 row fidelity + 0.2 schema, revealed only when the episode ends","PPO on 8 parallel workers, validated on seeds 50–59 and tested on unseen seeds 0–9","97 tests, Ruff linting and a live Gradio demo on Hugging Face Spaces"],
     "stack": ["OpenEnv", "Stable-Baselines3 PPO", "Llama 3.1 8B", "Pydantic", "FastAPI", "Docker", "HF Spaces"],
     "metric": { "value": "0.967", "label": "PPO grader score on hard-clean" },
     "metrics": [
       ["Improvement over doing nothing", "+0.917 on hard-clean"],
       ["Invalid-action rate (PPO)", "0.0%"],
-      ["Llama 3.1 8B zero-shot", "0.838 on hard-clean"]
+      ["Llama 3.1 8B zero-shot", "0.838 on hard-clean"],
+      ["Rule-based baseline", "0.968 on hard-clean"]
     ],
     "limits": "The data is synthetic, and Q is only a proxy for quality, which is why a separate grader exists.",
     "team": "With Chetan Gadhiya and Hil Kalathiya",
@@ -144,6 +149,7 @@
     "task": "Tabular classification · XAI",
     "problem": "A model that predicts which students will struggle is only useful if teachers can see why it made each prediction.",
     "approach": "Pandera-validated data and a ColumnTransformer pipeline feed a benchmark of 9 models: linear, tree ensembles, XGBoost, CatBoost, LightGBM, a PyTorch MLP, a PyTorch LSTM and FLAML AutoML. SHAP and LIME explain each prediction, and Spearman rank correlation measures how far the two explanations agree. MLflow tracks runs, FastAPI serves the model and Streamlit shows it.",
+    "features": ["FastAPI routes: /health, /models, /predict, /predict/{model} and /explain","SHAP beeswarm, bar and waterfall plots, with a Tree, Linear or Kernel explainer per model","LIME explanations saved as HTML and as normalised JSON","Pandera schema checks run before any cleaning or feature engineering","Metrics, training time and inference latency of every model logged to MLflow and a CSV","CI on GitHub Actions: Ruff, 17 pytest tests with coverage and a Docker build"],
     "stack": ["scikit-learn", "XGBoost", "CatBoost", "LightGBM", "PyTorch", "SHAP", "LIME", "MLflow", "Docker"],
     "metric": { "value": "9", "label": "models benchmarked, explained with SHAP + LIME" },
     "metrics": [
@@ -165,6 +171,7 @@
     "task": "Image generation · interpretability",
     "problem": "The 2015 DCGAN is famously unstable, and most re-implementations show only a grid of blurry samples, never what the networks learned inside.",
     "approach": "Keeps Radford et al.'s all-convolutional architecture but swaps in an LSGAN loss, Spectral Normalization, a Xavier/Kaiming initialisation, discriminator dropout and label smoothing. A custom GANAnalyzer hooks into the layers to show learned filters, mid-layer feature maps and the separation of D(x) from D(G(z)).",
+    "features": ["Paper settings kept: 64×64 images, a 100-dim z, batch 128, Adam 2e-4 with β₁ 0.5, LeakyReLU 0.2","Label smoothing [0.1, 0.9] and discriminator dropout 0.3 keep D from getting over-confident","Sample grids every 5 epochs and latent-space walks between random z vectors","A 4-panel dashboard: loss curves, D filters, feature maps and real-vs-fake score histograms","Two notebooks: one trains, the other analyses the saved model without retraining","PAPER_COMPARISON.md explains every change from the 2015 paper and why it was made"],
     "stack": ["PyTorch", "LSGAN", "Spectral Norm", "Matplotlib", "Jupyter"],
     "metric": { "value": "5", "label": "stability fixes over the 2015 paper, each documented" },
     "metrics": [

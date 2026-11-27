@@ -83,12 +83,40 @@ function setup(hs) {
     }
     c.style.setProperty('--fs', (Math.floor(best * 100) / 100).toFixed(2));
   };
-  const fit = () => cards().forEach(fitCard);
+  // Each try forces a layout (up to 8 per card, ~35 ms a card on a laptop), so fitting every card at start-up stalled
+  // the loading animation for half a second. Cards are fitted only once the track is near the screen, one card per
+  // idle moment, and a card about to be shown by a jump is fitted at once (st.reveal).
+  const dirty = new Set();
+  st.near = false;
+  let fitJob = 0;
+  const idle = window.requestIdleCallback ? (f) => requestIdleCallback(f, { timeout: 250 }) : (f) => setTimeout(f, 30);
+  const pump = () => {
+    fitJob = 0;
+    if (!st.on || !st.near) return;
+    const c = dirty.values().next().value;
+    if (!c) return;
+    dirty.delete(c);
+    fitCard(c);
+    if (dirty.size) fitJob = idle(pump);
+  };
+  const fitLater = (list) => {
+    for (const c of list) dirty.add(c);
+    if (!fitJob && st.on && st.near && dirty.size) fitJob = idle(pump);
+  };
+  const fitNow = (c) => { if (dirty.delete(c)) fitCard(c); };
+  if (window.IntersectionObserver) {
+    new IntersectionObserver((es) => {
+      const was = st.near;
+      st.near = es[es.length - 1].isIntersecting;
+      fitLater([]);
+      if (st.near && !was && !st.on) update();
+    }, { rootMargin: '150% 0px' }).observe(hs);
+  } else st.near = true;
 
   // Scroll distance of one card: about a screen, so a card is read before the next one slides in.
   const measure = () => {
     const cs = cards();
-    fit();
+    fitLater(cs);
     st.step = clamp(Math.round(innerHeight * 0.95), 600, 1000);
     st.offsets = cs.map((c) => c.offsetLeft - (cs[0]?.offsetLeft || 0));
     hs.style.height = `${pin.offsetHeight + Math.max(0, cs.length - 1) * st.step}px`;
@@ -129,6 +157,9 @@ function setup(hs) {
       label(idx, cs.length > 1 ? st.pos / (cs.length - 1) : 1);
       announce(idx, rect);
     } else {
+      // far from the screen the section is skipped by content-visibility; measuring it here would force its whole
+      // layout (~0.2 s on a phone, under the loading animation). The observer calls update() once it comes near.
+      if (!st.near) return;
       const w = (cs[1] ? cs[1].offsetLeft - cs[0].offsetLeft : cs[0].offsetWidth) || 1;
       const max = track.scrollWidth - track.clientWidth;
       const idx = clamp(Math.round(track.scrollLeft / w), 0, cs.length - 1);
@@ -201,6 +232,7 @@ function setup(hs) {
     const smoothly = opts && typeof opts === 'object' && opts.behavior === 'smooth' && !matchMedia('(prefers-reduced-motion: reduce)').matches;
     if (st.on) {
       measure();
+      fitNow(card);
       const top = Math.max(0, yFor(i));
       if (smoothly) animateTo(top, 950); else scrollTo({ top, behavior: 'instant' });
       return true;
@@ -213,6 +245,7 @@ function setup(hs) {
     st.on = on;
     hs.classList.toggle('hs--on', on);
     if (on) { track.scrollLeft = 0; track.style.height = ''; measure(); } else {
+      dirty.clear();
       hs.style.height = ''; track.style.transform = '';
       cards().forEach((c) => { c.style.removeProperty('--fs'); c.style.opacity = ''; c.style.transform = ''; for (const part of Object.values(c._parts || {})) if (part) part.style.transform = ''; });
     }
@@ -227,7 +260,7 @@ function setup(hs) {
     const cs = cards();
     if (card && cs.indexOf(card) !== Math.round(st.pos)) st.reveal(card, 'auto');
   });
-  st.update = update; st.measure = measure; st.fitCard = fitCard;
+  st.update = update; st.measure = measure; st.fitLater = fitLater;
   // a card changes height when its text finishes loading or the screen turns: keep the row's height in step
   if (window.ResizeObserver) { const ro = new ResizeObserver(() => { if (!st.on) update(); }); cards().forEach((c) => ro.observe(c)); }
   byTrack.set(track, st);
@@ -267,7 +300,7 @@ export function initHScroll() {
     const st = card && byTrack.get(card.parentElement);
     if (!st?.on) return;
     clearTimeout(refit.get(card));
-    refit.set(card, setTimeout(() => st.fitCard(card), 120));
+    refit.set(card, setTimeout(() => st.fitLater([card]), 120));
   });
 
   // Every jump to an element inside a sideways track goes through here (links, rail, palette, chat tools, map).
