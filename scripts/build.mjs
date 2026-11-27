@@ -147,8 +147,9 @@ function header({ home = false } = {}) {
       <button class="ctx-chip mono" type="button" data-ctx hidden aria-expanded="false" aria-controls="ctx-tip" aria-label="ctx, you and the layer in view: show your address and the privacy note"><span class="ctx-k">ctx</span><span class="ctx-who" data-ctx-who>…</span><span class="ctx-layer" data-ctx-layer></span></button>
       <span class="ctx-tip" id="ctx-tip" role="note" hidden>${PRIVACY}</span>
     </span>
-    <button class="kbd-btn" type="button" data-palette-open>
-      <span class="mono">Search or ask</span><kbd>Ctrl K</kbd>
+    <button class="kbd-btn" type="button" data-palette-open aria-label="Search the site or ask a question">
+      <svg class="kbd-ico" viewBox="0 0 16 16" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" aria-hidden="true"><circle cx="6.8" cy="6.8" r="4.6"/><path d="M10.2 10.2 14 14"/></svg>
+      <span class="mono kbd-txt">Search or ask</span><kbd>Ctrl K</kbd>
     </button>
     ${home ? `<button class="lens-btn mono" type="button" data-lens aria-pressed="false" title="Lens: point at any word to see which parts of the page it attends to">
       <svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true" focusable="false"><circle cx="6.8" cy="6.8" r="4.6"/><path d="M10.2 10.2 14 14"/><circle class="lens-pupil" cx="6.8" cy="6.8" r="1.6"/></svg><span>lens</span>
@@ -158,6 +159,20 @@ function header({ home = false } = {}) {
       <span class="temp-track" aria-hidden="true"><span class="temp-knob"></span></span>
       <span class="temp-val mono" data-theme-val>auto</span>
     </button>
+    <button class="menu-btn" type="button" data-menu aria-expanded="false" aria-controls="mobile-menu" aria-label="Open menu">
+      <svg class="burger" viewBox="0 0 16 16" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" aria-hidden="true"><path class="burger-1" d="M2.5 5h11"/><path class="burger-2" d="M2.5 11h11"/></svg>
+    </button>
+  </div>
+  <div id="mobile-menu" class="mm" aria-hidden="true" inert>
+    <div class="mm-clip">
+      <div class="mm-inner">
+        <nav class="mm-nav" aria-label="Menu">
+          ${nav.map(([l, h], i) => `<a class="mm-item" style="--i:${i}" href="${h}"><span>${l}</span><span class="mm-arrow mono" aria-hidden="true">${h.startsWith('http') ? '↗' : '→'}</span></a>`).join('\n          ')}
+          <a class="mm-item" style="--i:${nav.length}" href="/resume/"><span>Resume</span><span class="mm-arrow mono" aria-hidden="true">→</span></a>
+        </nav>
+        <p class="mm-item mm-ctx mono" style="--i:${nav.length + 1}"><span class="mm-dot" aria-hidden="true"></span><b>ctx</b><span aria-hidden="true">·</span><span data-mm-ctx>you</span></p>
+      </div>
+    </div>
   </div>
 </header>`;
 }

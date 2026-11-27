@@ -4,6 +4,11 @@
 // same word occurs. Relatedness comes from data/attention.json (MiniLM cosine, blended with sentence co-occurrence,
 // computed at build time). Line width ∝ attention weight.
 const NS = 'http://www.w3.org/2000/svg';
+// Every word of the running text can be pointed at (headings, titles, links and buttons are left alone).
+const CONTENT = 'p, li, dd, dt, td, th, figcaption, blockquote, .lead, .layer-sub, .card-task, .metric-label, .chip, .sp-k, .sp-v';
+const NOT_TEXT = 'a, button, input, textarea, select, .w-tok, .gt, script, style, svg, h1, h2, h3, h4, h5, h6, .layer-title, .card-title, .hero-title, .layer-tag, .metric-val, .brand, kbd, .hs-bar, .rail, .rail-mobile, .site-head, .palette, #ask-root, .mm, .attn-layer, [data-no-attn]';
+// words that are only glue: a word can be hovered, but these are not picked as the other end of a context line
+const GLUE = new Set('a an the and or but of to in on at by for with from into as is are was were be been it its this that these those i my me we you your he she they them their our not no so if then than also'.split(' '));
 
 export async function initAttention({ lowPower = false } = {}) {
   const svg = document.querySelector('[data-attn-layer]');
@@ -19,13 +24,22 @@ export async function initAttention({ lowPower = false } = {}) {
   const hop2From = lowPower ? 2 : 3; // how many first-hop words are followed a second hop
   const hop2Max = lowPower ? 3 : 7;
 
-  for (const region of document.querySelectorAll('[data-attend]')) wrapRegion(region);
-  document.addEventListener('gen:text-done', (e) => { const r = e.detail.el.closest('[data-attend]'); if (r) wrapRegion(r); });
+  // Text blocks are wrapped when they come near the screen (a few thousand words, so not all at once), and again when
+  // generate.js has finished sampling a block in.
+  const near = new IntersectionObserver((entries) => {
+    for (const e of entries) if (e.isIntersecting) { wrapRegion(e.target); near.unobserve(e.target); }
+  }, { rootMargin: '900px 500px' });
+  const watch = (root) => { for (const el of root.querySelectorAll(CONTENT)) if (!el.closest(NOT_TEXT)) near.observe(el); };
+  watch(document.querySelector('main') || document.body);
+  document.addEventListener('gen:text-done', (e) => {
+    const el = e.detail.el;
+    if (el.matches?.(CONTENT)) wrapRegion(el); else for (const c of el.querySelectorAll?.(CONTENT) || []) wrapRegion(c);
+  });
 
   function wrapRegion(root) {
     const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT, {
       // .gt pieces are parts of words still being generated; they are wrapped once the block is plain text again
-      acceptNode: (n) => (n.parentElement.closest('a, button, .w-tok, .gt, script, style') || !n.nodeValue.trim() ? NodeFilter.FILTER_REJECT : NodeFilter.FILTER_ACCEPT),
+      acceptNode: (n) => (n.parentElement.closest(NOT_TEXT) || !n.nodeValue.trim() ? NodeFilter.FILTER_REJECT : NodeFilter.FILTER_ACCEPT),
     });
     const nodes = [];
     while (walker.nextNode()) nodes.push(walker.currentNode);
@@ -35,11 +49,10 @@ export async function initAttention({ lowPower = false } = {}) {
       let m, last = 0, frag = null;
       while ((m = re.exec(text))) {
         const w = m[0].toLowerCase();
-        if (!keys.has(w) && !targets.has(w)) continue;
         frag ||= document.createDocumentFragment();
         frag.append(text.slice(last, m.index));
         const span = document.createElement('span');
-        span.className = 'w-tok' + (keys.has(w) ? ' has-attn' : '');
+        span.className = 'w-tok has-attn';
         span.dataset.w = w;
         span.textContent = m[0];
         frag.append(span);
@@ -115,7 +128,7 @@ export async function initAttention({ lowPower = false } = {}) {
     const used = new Set([w0]);
 
     // every other place the same word is used on screen
-    for (const el of byWord.get(w0) || []) {
+    for (const el of GLUE.has(w0) ? [] : byWord.get(w0) || []) {
       if (el === q || !onScreen(el.getBoundingClientRect())) continue;
       el.classList.add('is-echo');
       lit.push(el);
@@ -129,6 +142,28 @@ export async function initAttention({ lowPower = false } = {}) {
       used.add(w);
       links.push({ w, a, ...c });
       if (links.length >= maxLines) break;
+    }
+
+    // A word the index does not know (a short word, a number, a name used once) or that has few neighbours on screen
+    // attends to the words around it in its own sentence, nearer ones more strongly.
+    if (links.length < Math.min(4, maxLines)) {
+      const block = q.closest(CONTENT);
+      const toks = block ? [...block.querySelectorAll('.w-tok')] : [];
+      const qi = toks.indexOf(q);
+      const cand = [];
+      toks.forEach((t, i) => {
+        const w = t.dataset.w;
+        if (t === q || used.has(w) || GLUE.has(w) || w === w0) return;
+        const r = t.getBoundingClientRect();
+        if (!onScreen(r)) return;
+        cand.push({ w, el: t, r, d: Math.abs(i - qi) });
+      });
+      cand.sort((A, B) => A.d - B.d);
+      for (const c of cand) {
+        if (links.length >= Math.min(4, maxLines) || used.has(c.w)) continue;
+        used.add(c.w);
+        links.push({ w: c.w, a: +(0.58 / (1 + c.d * 0.28)).toFixed(2), el: c.el, r: c.r });
+      }
     }
 
     const amin = Math.min(...links.map((l) => l.a)), amax = Math.max(...links.map((l) => l.a));

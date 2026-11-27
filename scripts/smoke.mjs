@@ -62,14 +62,21 @@ try {
     check(s.bio && s.trainlog && s.lens, `${name}: bio, training log and lens toggle rendered`);
     check(!s.booting, `${name}: loading screen finished`);
 
-    // The lens turns on, draws for a word and turns off with Escape.
-    await page.click('[data-lens]');
-    await wait(800);
-    const lensOn = await page.evaluate(() => document.documentElement.classList.contains('lens-on'));
-    await page.keyboard.press('Escape');
-    await wait(200);
-    const lensOff = await page.evaluate(() => !document.documentElement.classList.contains('lens-on'));
-    check(lensOn && lensOff, `${name}: lens toggles on and off`);
+    // The lens turns on, draws for a word and turns off with Escape. It needs a pointer to hover with, so on a phone it
+    // is hidden; there the header has a search button and the menu instead.
+    const lensShown = await page.evaluate(() => { const b = document.querySelector('[data-lens]'); return !!b && b.offsetParent !== null; });
+    if (lensShown) {
+      await page.click('[data-lens]');
+      await wait(800);
+      const lensOn = await page.evaluate(() => document.documentElement.classList.contains('lens-on'));
+      await page.keyboard.press('Escape');
+      await wait(200);
+      const lensOff = await page.evaluate(() => !document.documentElement.classList.contains('lens-on'));
+      check(lensOn && lensOff, `${name}: lens toggles on and off`);
+    } else {
+      const ui = await page.evaluate(() => { const v = (s) => { const b = document.querySelector(s); return !!b && b.offsetParent !== null; }; return { search: v('[data-palette-open]'), menu: v('[data-menu]') }; });
+      check(ui.search && ui.menu, `${name}: search button and menu button are shown (the lens is desktop-only)`);
+    }
 
     // Harvard ManageMentor adapters: all badges, certificate images and PDFs load, and the block ends merged.
     const ad = await page.evaluate(async () => {
