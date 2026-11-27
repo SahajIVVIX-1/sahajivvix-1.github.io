@@ -104,11 +104,11 @@ function lightbox(card, data, reducedMotion) {
     }).join('');
     el.innerHTML = `
       <div class="gwr-lb-bar">
-        <button type="button" data-zoom="-1" aria-label="Zoom out">−</button>
-        <button type="button" data-zoom="1" aria-label="Zoom in">+</button>
+        <button type="button" data-zoom="-1" aria-label="Zoom out"><svg class="ico" viewBox="0 0 16 16" aria-hidden="true" focusable="false"><path d="M3 8h10"/></svg></button>
+        <button type="button" data-zoom="1" aria-label="Zoom in"><svg class="ico" viewBox="0 0 16 16" aria-hidden="true" focusable="false"><path d="M8 3v10M3 8h10"/></svg></button>
         <button type="button" data-zoom="0">Reset</button>
         <button type="button" data-ocr-toggle aria-pressed="false">Show what the model sees</button>
-        <button type="button" class="sp" data-close>Close <span aria-hidden="true">✕</span></button>
+        <button type="button" class="sp" data-close>Close <svg class="ico" viewBox="0 0 16 16" aria-hidden="true" focusable="false"><path d="M4 4l8 8M12 4l-8 8"/></svg></button>
       </div>
       <div class="gwr-lb-main">
         <div class="gwr-stage" data-stage>

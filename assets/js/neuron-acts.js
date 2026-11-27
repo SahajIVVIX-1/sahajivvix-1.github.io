@@ -74,7 +74,7 @@ const DEF = [
   ['about-bio', 3, (c) => c.section === 'about', (b) => b.say('Layer 2: the bio. Short and real.')],
   ['about-pdeu', 2, (c) => c.section === 'about', (b) => b.say('B.Tech ICT at PDEU, Gandhinagar.')],
   ['about-photo', 2, (c) => c.section === 'about', async (b) => { await b.emote('shy'); await b.say("That's Sahaj. I'm the small one."); }],
-  ['about-card', 3, (c) => c.section === 'about', async (b) => { if (await b.hopTo('.pc-name')) { await b.emote('point'); await b.say('His CV, live on the photo. The CV button downloads the PDF.'); } }],
+  ['about-card', 3, (c) => c.section === 'about', async (b) => { if (await b.hopTo('.pc-links')) { await b.emote('point'); await b.say('CV downloads his resume. Watch the photo turn, cube by cube.'); } }],
   ['about-status', 2, (c) => c.section === 'about' && !!document.querySelector('.pc-status'), (b) => b.say(`Status: ${document.querySelector('.pc-status').textContent.trim()}.`)],
 
   // ---- map ----

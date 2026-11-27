@@ -251,11 +251,11 @@ function lightbox(root, data) {
       box.setAttribute('aria-modal', 'true');
       box.setAttribute('aria-labelledby', 'ad-lb-t');
       box.innerHTML = `<div class="ad-lb-panel">
-        <div class="ad-lb-bar"><p class="ad-lb-t" id="ad-lb-t" data-t></p><button type="button" data-close>Close <span aria-hidden="true">✕</span></button></div>
+        <div class="ad-lb-bar"><p class="ad-lb-t" id="ad-lb-t" data-t></p><button type="button" data-close>Close <svg class="ico" viewBox="0 0 16 16" aria-hidden="true" focusable="false"><path d="M4 4l8 8M12 4l-8 8"/></svg></button></div>
         <figure class="ad-lb-fig"><img alt="" decoding="async"></figure>
         <p class="ad-lb-q" data-q></p>
         <p class="ad-lb-issuer mono">Presented by Harvard Business Impact in collaboration with HBI Education · Harvard ManageMentor® · a short online program, not a degree</p>
-        <div class="ad-lb-actions"><a class="ad-lb-dl" data-dl>Download certificate (PDF)</a><span class="sp"></span><button type="button" data-step="-1" aria-label="Previous certificate">←</button><span class="mono ad-lb-pos" data-pos aria-live="polite"></span><button type="button" data-step="1" aria-label="Next certificate">→</button></div>
+        <div class="ad-lb-actions"><a class="ad-lb-dl" data-dl>Download certificate (PDF)</a><span class="sp"></span><button type="button" data-step="-1" aria-label="Previous certificate"><svg class="ico" viewBox="0 0 16 16" aria-hidden="true" focusable="false"><path d="M13 8H3.2M7.4 3.6 3 8l4.4 4.4"/></svg></button><span class="mono ad-lb-pos" data-pos aria-live="polite"></span><button type="button" data-step="1" aria-label="Next certificate"><svg class="ico" viewBox="0 0 16 16" aria-hidden="true" focusable="false"><path d="M3 8h9.8M8.6 3.6 13 8l-4.4 4.4"/></svg></button></div>
       </div>`;
       box.addEventListener('click', (e) => {
         if (e.target === box || e.target.closest('[data-close]')) { close(); return; }
