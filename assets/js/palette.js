@@ -1,6 +1,7 @@
-// Search palette (Ctrl+K or /): type any word and it finds every place on the page that uses it (with the sentence
-// around it); choosing a result scrolls there smoothly and lights up the words. It also jumps to any section, project
-// or link, and sends a question to the chatbot.
+// Search (Ctrl+K or /), laid out like the search on blog.sahaj.si: a blurred overlay with one panel, a large input with
+// Clear and Esc, a status line, live results (title, meta line, highlighted excerpt) and key hints. Type any word and it
+// finds every place on the page that uses it; choosing a result scrolls there smoothly and lights up the words. It also
+// jumps to any section, project or link, and sends a question to the chatbot.
 let api;
 export function initPalette() {
   if (api) return api;
@@ -32,17 +33,24 @@ export function initPalette() {
   ];
 
   const wrap = document.createElement('div');
-  wrap.className = 'palette';
+  wrap.className = 'palette sp-backdrop';
   wrap.hidden = true;
-  wrap.innerHTML = `<div class="pal-box" role="dialog" aria-modal="true" aria-label="Command palette">
-    <div class="pal-in-wrap"><span class="mono pal-caret" aria-hidden="true">›</span>
-      <input class="pal-in" type="text" role="combobox" aria-expanded="true" aria-controls="pal-list" aria-autocomplete="list" placeholder="Search anything on this site, or ask a question" autocomplete="off" enterkeyhint="search"><button class="pal-close" type="button" aria-label="Close search">Esc</button></div>
-    <ul class="pal-list" id="pal-list" role="listbox"></ul>
-    <p class="pal-foot mono"><span><kbd>↑</kbd><kbd>↓</kbd> move</span><span><kbd>Enter</kbd> open</span><span><kbd>Esc</kbd> close</span></p>
+  wrap.innerHTML = `<div class="sp-panel" role="dialog" aria-modal="true" aria-label="Search this site">
+    <div class="sp-input-row">
+      <svg class="sp-ico" viewBox="0 0 16 16" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" aria-hidden="true"><circle cx="6.8" cy="6.8" r="4.6"/><path d="M10.2 10.2 14 14"/></svg>
+      <input class="sp-input" type="text" role="combobox" aria-expanded="true" aria-controls="sp-list" aria-autocomplete="list" placeholder="Search any word, a project, a skill or a link" aria-label="Search" autocomplete="off" autocapitalize="off" spellcheck="false" enterkeyhint="search">
+      <button class="sp-clear" type="button" aria-label="Clear search" hidden>Clear</button>
+      <button class="sp-esc" type="button" aria-label="Close search">Esc</button>
+    </div>
+    <div class="sp-status" aria-live="polite"></div>
+    <ul class="sp-list" id="sp-list" role="listbox"></ul>
+    <div class="sp-foot"><span><kbd>↑</kbd><kbd>↓</kbd> move</span><span><kbd>Enter</kbd> open</span><span><kbd>Esc</kbd> close</span><span class="sp-foot-r">Searches every word on this site, plus sections, projects and links</span></div>
   </div>`;
   document.body.append(wrap);
-  const input = wrap.querySelector('.pal-in');
-  const list = wrap.querySelector('.pal-list');
+  const input = wrap.querySelector('.sp-input');
+  const list = wrap.querySelector('.sp-list');
+  const status = wrap.querySelector('.sp-status');
+  const clearBtn = wrap.querySelector('.sp-clear');
   let sel = 0, shown = [], opener = null;
 
   // Subsequence match with a bonus for word starts (a tiny fuzzy ranker).
@@ -58,18 +66,39 @@ export function initPalette() {
   // ---- full-text search over what is actually on the page ----
   const SECTION_NAMES = { top: 'Home', about: 'About', map: 'Embedding map', work: 'Projects', products: 'Products', skills: 'Skills', experience: 'Experience', certs: 'Certifications', fit: 'Recruiter mode', contact: 'Contact', adapters: 'Harvard badges', guinness: 'Guinness record' };
   const BLOCKS = 'h1, h2, h3, h4, p, li, dd, dt, td, th, figcaption, blockquote, .lead, .layer-sub, .card-task, .metric-label, .chip, .sp-k, .sp-v';
-  const SKIP = '.palette, #ask-root, .site-head, .rail, .rail-mobile, .sr, noscript, script, style, [hidden], [aria-hidden="true"], .attn-layer, .hs-bar, .mm, .ad-plain';
+  const SKIP = '.palette, .sp-backdrop, #ask-root, .site-head, .rail, .rail-mobile, .sr, noscript, script, style, [hidden], [aria-hidden="true"], .attn-layer, .hs-bar, .mm, .ad-plain';
   let index = [], indexAt = 0;
+  // The text of a block, with a space where two separate elements meet (a number and a name, a label and its value) but
+  // not between the pieces of one phrase (the word spans the attention lines add, emphasis, links).
+  const PHRASE = /^(w-tok|gt)$/;
+  const INLINE = new Set(['EM', 'I', 'B', 'STRONG', 'A', 'MARK', 'SUP', 'SUB', 'CODE', 'SMALL', 'ABBR', 'TIME']);
+  const phrasal = (e) => !e || INLINE.has(e.tagName) || [...e.classList].some((c) => PHRASE.test(c));
+  // the nearest ancestor that is a real element of its own (not a word span, emphasis or link)
+  const ownerOf = (e) => { while (e && phrasal(e)) e = e.parentElement; return e; };
+  function textOf(el) {
+    const walker = document.createTreeWalker(el, NodeFilter.SHOW_TEXT);
+    let out = '', prev = null;
+    while (walker.nextNode()) {
+      const n = walker.currentNode;
+      const owner = ownerOf(n.parentElement);
+      if (prev && owner !== prev && !/\s$/.test(out) && !/^\s/.test(n.data)) out += ' ';
+      out += n.data;
+      prev = owner;
+    }
+    return out.replace(/\s+/g, ' ').trim();
+  }
   function buildIndex() {
     const out = [];
     for (const el of document.querySelectorAll(`main :is(${BLOCKS})`)) {
       if (el.closest(SKIP) || el.querySelector(BLOCKS)) continue;
-      const text = el.textContent.replace(/\s+/g, ' ').trim();
+      const text = textOf(el);
       if (text.length < 3) continue;
       const sec = el.closest('section[id]');
       const card = el.closest('.card');
-      const where = [SECTION_NAMES[sec?.id] || sec?.getAttribute('aria-label') || '', card?.querySelector('.card-title')?.textContent || ''].filter(Boolean);
-      out.push({ el, text, lower: text.toLowerCase(), where: where.join(' · '), head: /^H[1-4]$/.test(el.tagName) || el.classList.contains('card-title') });
+      const secName = SECTION_NAMES[sec?.id] || sec?.getAttribute('aria-label') || '';
+      const cardName = card?.querySelector('.card-title')?.textContent || '';
+      const label = el.closest('.cb-row')?.querySelector('dt')?.textContent || '';
+      out.push({ el, text, lower: text.toLowerCase(), title: cardName || secName || 'Page', meta: [cardName ? secName : '', label].filter(Boolean).join(' · '), head: /^H[1-4]$/.test(el.tagName) || el.classList.contains('card-title') });
     }
     index = out; indexAt = Date.now();
   }
@@ -106,6 +135,11 @@ export function initPalette() {
     for (const t of toks) out = out.replace(new RegExp(esc(t).replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'gi'), (m) => `<mark>${m}</mark>`);
     return `${from > 0 ? '… ' : ''}${out}${to < text.length ? ' …' : ''}`;
   };
+  const mark = (text, toks) => {
+    let out = esc(text);
+    for (const t of toks.filter((x) => x.length > 1)) out = out.replace(new RegExp(esc(t).replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'gi'), (m) => `<mark>${m}</mark>`);
+    return out;
+  };
   // the words themselves, as ranges, so they can be lit up after the scroll
   function rangesIn(el, toks) {
     const ranges = [];
@@ -136,28 +170,43 @@ export function initPalette() {
     setTimeout(fin, reduced ? 100 : 1700);
   }
 
+  const arrow = '<svg class="sp-go" viewBox="0 0 16 16" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 8h10M9 4l4 4-4 4"/></svg>';
+  const EXAMPLES = ['quantum', 'dns', 'agents', 'kaggle', 'rag'];
   function render() {
     const q = input.value.trim();
-    const cmds = items.map((it) => ({ it, s: score(q, `${it.label} ${it.hint}`) })).filter((x) => x.s > 0).sort((a, b) => b.s - a.s).map((x) => x.it).slice(0, q ? 5 : 8);
+    clearBtn.hidden = !q;
+    const low = q.toLowerCase();
+    const scored = items.map((it) => ({ it, s: score(q, `${it.label} ${it.hint}`) })).filter((x) => x.s > 0).sort((a, b) => b.s - a.s).map((x) => x.it);
     const pages = q ? searchPage(q) : [];
-    shown = [...cmds, ...pages.slice(0, 14)];
-    if (q.length > 2) shown.push({ label: `Ask: “${q}”`, hint: 'chatbot', ask: q });
-    sel = Math.min(sel, shown.length - 1);
-    const head = (t) => `<li class="pal-h mono" role="presentation">${t}</li>`;
-    let html = '';
-    shown.forEach((it, i) => {
-      if (i === 0 && !it.block) html += q ? head('Jump to') : '';
-      if (it.block && !(shown[i - 1]?.block)) html += head(`On this site · ${pages.length}${pages.length > 14 ? '+' : ''} match${pages.length === 1 ? '' : 'es'}`);
-      const cls = `${i === sel ? 'is-sel' : ''}${it.ask ? ' is-ask' : ''}${it.block ? ' is-hit' : ''}`;
-      html += it.block
-        ? `<li role="option" id="pal-${i}" aria-selected="${i === sel}" class="${cls}" data-i="${i}"><span class="pal-path mono">${esc(it.block.where || 'Page')}</span><span class="pal-snip">${snippet(it.block.text, it.toks)}</span></li>`
-        : `<li role="option" id="pal-${i}" aria-selected="${i === sel}" class="${cls}" data-i="${i}"><span>${esc(it.label)}</span><span class="mono muted">${esc(it.hint)}</span></li>`;
-    });
-    if (q && !pages.length && home && q.length > 1) html = html.replace(/(<li class="[^"]*is-ask")/, '<li class="pal-h mono" role="presentation">Nothing on the page matches</li>$1');
-    list.innerHTML = html;
-    input.setAttribute('aria-activedescendant', `pal-${sel}`);
-    list.querySelector('.is-sel')?.scrollIntoView({ block: 'nearest' });
+    const strong = q ? scored.filter((it) => it.label.toLowerCase().includes(low)).slice(0, 3) : [];
+    const rest = scored.filter((it) => !strong.includes(it)).slice(0, q ? 4 : 12);
+    shown = [...strong, ...pages, ...rest];
+    if (q.length > 2) shown.push({ label: `Ask the chatbot: “${q}”`, hint: 'answers from this site', ask: q });
+    sel = Math.min(sel, Math.max(0, shown.length - 1));
+    if (!q) status.innerHTML = `Jump anywhere, or type to search every word. Try ${EXAMPLES.map((w) => `<button type="button" data-ex="${w}">${w}</button>`).join(', ')}`;
+    else if (!home) status.textContent = `${shown.length} result${shown.length === 1 ? '' : 's'}`;
+    else status.textContent = `${pages.length.toLocaleString()} match${pages.length === 1 ? '' : 'es'} on this site${strong.length + rest.length ? ` · ${strong.length + rest.length} link${strong.length + rest.length === 1 ? '' : 's'}` : ''}`;
+    const toks = tokensOf(q);
+    list.innerHTML = shown.map((it, i) => {
+      const on = i === sel;
+      if (it.block) {
+        return `<li role="option" id="sp-${i}" aria-selected="${on}" data-active="${on}" data-i="${i}" class="sp-item"><div class="sp-item-main"><span class="sp-title">${mark(it.block.title, toks)}</span>${it.block.meta ? `<span class="sp-meta">${esc(it.block.meta)}</span>` : ''}<span class="sp-exc">${snippet(it.block.text, it.toks)}</span></div>${arrow}</li>`;
+      }
+      return `<li role="option" id="sp-${i}" aria-selected="${on}" data-active="${on}" data-i="${i}" class="sp-item${it.ask ? ' is-ask' : ''}"><div class="sp-item-main"><span class="sp-title">${mark(it.label, toks)}</span><span class="sp-meta">${esc(it.hint)}</span></div>${arrow}</li>`;
+    }).join('') + (q && !pages.length && home && q.length > 1 ? `<li class="sp-none" role="presentation">Nothing on the page matches “${esc(q)}”. Try fewer words, or ask the chatbot below.</li>` : '');
+    input.setAttribute('aria-activedescendant', `sp-${sel}`);
   }
+  const setActive = (i, scroll) => {
+    if (i === sel || !shown.length) return;
+    list.querySelector('[data-active="true"]')?.setAttribute('data-active', 'false');
+    sel = i;
+    const el = list.querySelector(`[data-i="${i}"]`);
+    el?.setAttribute('data-active', 'true');
+    list.querySelectorAll('[aria-selected="true"]').forEach((n) => n.setAttribute('aria-selected', 'false'));
+    el?.setAttribute('aria-selected', 'true');
+    input.setAttribute('aria-activedescendant', `sp-${i}`);
+    if (scroll) el?.scrollIntoView({ block: 'nearest' });
+  };
   function run(it) {
     close();
     if (!it) return;
@@ -170,21 +219,33 @@ export function initPalette() {
   function open() {
     opener = document.activeElement;
     wrap.hidden = false;
+    document.documentElement.style.overflow = 'hidden';
     input.value = ''; sel = 0; render();
+    list.scrollTop = 0;
     requestAnimationFrame(() => { wrap.classList.add('is-open'); input.focus(); });
   }
-  function close() { wrap.classList.remove('is-open'); wrap.hidden = true; opener?.focus?.(); }
+  function close() {
+    wrap.classList.remove('is-open');
+    wrap.hidden = true;
+    document.documentElement.style.overflow = '';
+    opener?.focus?.();
+  }
 
-  input.addEventListener('input', () => { sel = 0; render(); });
+  // live: the list follows every keystroke
+  input.addEventListener('input', () => { sel = 0; render(); list.scrollTop = 0; });
   input.addEventListener('keydown', (e) => {
-    if (e.key === 'ArrowDown') { e.preventDefault(); sel = (sel + 1) % shown.length; render(); }
-    else if (e.key === 'ArrowUp') { e.preventDefault(); sel = (sel - 1 + shown.length) % shown.length; render(); }
+    if (e.key === 'ArrowDown') { e.preventDefault(); setActive(Math.min(shown.length - 1, sel + 1), true); }
+    else if (e.key === 'ArrowUp') { e.preventDefault(); setActive(Math.max(0, sel - 1), true); }
     else if (e.key === 'Enter') { e.preventDefault(); run(shown[sel]); }
-    else if (e.key === 'Escape') close();
+    else if (e.key === 'Escape') { e.preventDefault(); close(); }
   });
-  list.addEventListener('click', (e) => { const li = e.target.closest('li'); if (li) run(shown[Number(li.dataset.i)]); });
-  wrap.addEventListener('click', (e) => { if (e.target === wrap) close(); });
-  wrap.querySelector('.pal-close').addEventListener('click', close);
+  list.addEventListener('click', (e) => { const li = e.target.closest('[data-i]'); if (li) run(shown[Number(li.dataset.i)]); });
+  list.addEventListener('mousemove', (e) => { const li = e.target.closest('[data-i]'); if (li) setActive(Number(li.dataset.i), false); });
+  status.addEventListener('click', (e) => { const b = e.target.closest('[data-ex]'); if (b) { input.value = b.dataset.ex; sel = 0; render(); input.focus(); } });
+  clearBtn.addEventListener('click', () => { input.value = ''; sel = 0; render(); input.focus(); });
+  wrap.querySelector('.sp-esc').addEventListener('click', close);
+  wrap.addEventListener('mousedown', (e) => { if (e.target === wrap) close(); });
+  addEventListener('keydown', (e) => { if (e.key === 'Escape' && !wrap.hidden) close(); });
 
   api = { open, close };
   return api;
