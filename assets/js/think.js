@@ -31,7 +31,7 @@ export function initThink() {
   const sr = root.querySelector('.think-sr');
   const trace = document.querySelector('[data-trace]');
   const calm = matchMedia('(prefers-reduced-motion: reduce)').matches;
-  const wide = matchMedia('(min-width: 1280px)');
+  const wide = matchMedia('(min-width: 1px)'); // the next-verb row now shows at every width, under the tagline
   const bag = createBag(HERO_VERBS);
 
   let live = 0;            // tokens streamed by the verb line so far

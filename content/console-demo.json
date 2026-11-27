@@ -1,0 +1,17 @@
+{
+  "_note": "Real runs recorded on 2026-11-27 for the hero console's idle demo (assets/js/rsa.js), replayed until the visitor tries it. reads: engine.rankProjects with MiniLM + BM25 (score). sees: see.js embedImage, CLIP ViT-B/32 (p = share among his work). acts: planner.js planRules (search_projects ranking, then the tool calls). Re-record when projects change.",
+  "reads": [
+    { "q": "computer vision in healthcare", "top": [["crohnsight", "CrohnSight", 0.57], ["dcgan", "DCGAN Reproducibility+", 0.27], ["smaran", "Smaran", 0.13]] },
+    { "q": "LLM agents and RAG", "top": [["agentic-rag", "Enterprise Agentic RAG Orchestrator", 0.65], ["sleep-llm", "Sleep-Consolidating LLM", 0.33], ["openenv", "OpenEnv Data-Cleaning Agent", 0.2]] },
+    { "q": "reinforcement learning", "top": [["openenv", "OpenEnv Data-Cleaning Agent", 0.56], ["sleep-llm", "Sleep-Consolidating LLM", 0.31], ["agentic-rag", "Enterprise Agentic RAG Orchestrator", 0.14]] }
+  ],
+  "sees": [
+    { "img": "/assets/achievements/harvard/team-management/certificate-thumb.webp", "what": "one of his certificates", "ms": 979, "top": [["Harvard ManageMentor badges", "#adapters", 0.99], ["OCR", "#skills", 0.01], ["Image Processing", "#skills", 0.0]] },
+    { "img": "/assets/img/profile-260.webp", "what": "his portrait", "ms": 927, "top": [["DCGAN Reproducibility+", "#p-dcgan", 0.48], ["Computer Vision", "#skills", 0.19], ["ComfyUI", "#skills", 0.14]] }
+  ],
+  "acts": [
+    { "q": "show me his best agent project", "ranked": [["agentic-rag", 0.5], ["openenv", 0.37], ["dcgan", 0.34]], "focus": "agentic-rag" },
+    { "q": "take me to his computer vision work", "ranked": [["crohnsight", 0.41], ["dcgan", 0.28], ["quantum-compilation", 0.14]], "focus": "crohnsight" },
+    { "q": "show me the quantum project", "ranked": [["quantum-compilation", 0.48], ["dcgan", 0.37], ["student-xai", 0.22]], "focus": "quantum-compilation" }
+  ]
+}

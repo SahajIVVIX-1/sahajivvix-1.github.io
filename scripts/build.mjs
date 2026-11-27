@@ -221,6 +221,45 @@ const HERO = {
   ],
 };
 
+// The hero console: "reads · sees · acts", the tagline as three things to try. Without JavaScript (and until the
+// visitor tries it) it shows real runs recorded in content/console-demo.json; assets/js/rsa.js replays them and runs
+// the real models (MiniLM ranking, CLIP, the agent) when the visitor types, adds an image or picks a task.
+const DEMO = readJSON('content/console-demo.json');
+function rsaRows(rows) {
+  const top = Math.max(...rows.map((r) => r[2])) || 1;
+  return rows.map(([key, name, s], i) => {
+    const href = key.startsWith('#') ? key : `#p-${key}`;
+    return `<li><a class="rsa-row" href="${esc(href)}"><span class="rsa-n mono">${i + 1}</span><span class="rsa-name">${esc(name)}</span><span class="rsa-bar" aria-hidden="true"><i style="--p:${Math.round((s / top) * 100)}%"></i></span><span class="rsa-p mono">${s.toFixed(2)}</span></a></li>`;
+  }).join('');
+}
+function rsaPanel() {
+  const r = DEMO.reads[0], s = DEMO.sees[0], a = DEMO.acts[0];
+  const names = Object.fromEntries(projects.map((p) => [p.id, p.name]));
+  return `<aside class="rsa" data-rsa aria-label="Try it: the AI reads, sees and acts, in your browser">
+      <p class="rsa-head mono"><span class="rsa-dot" aria-hidden="true"></span><span>try it · runs in your browser</span><span class="rsa-mode" data-rsa-mode>recorded run</span></p>
+      <div class="rsa-tabs mono" role="tablist" aria-label="Reads, sees, acts">
+        <button type="button" role="tab" id="rsa-t-reads" aria-controls="rsa-reads" aria-selected="true" data-rsa-tab="reads">reads</button><button type="button" role="tab" id="rsa-t-sees" aria-controls="rsa-sees" aria-selected="false" tabindex="-1" data-rsa-tab="sees">sees</button><button type="button" role="tab" id="rsa-t-acts" aria-controls="rsa-acts" aria-selected="false" tabindex="-1" data-rsa-tab="acts">acts</button>
+      </div>
+      <div class="rsa-pane" id="rsa-reads" role="tabpanel" aria-labelledby="rsa-t-reads" data-rsa-pane="reads">
+        <form class="rsa-form" data-rsa-read><label class="sr" for="rsa-in">A topic or a job post to rank his projects against</label><input id="rsa-in" class="rsa-in" name="q" type="text" maxlength="2000" autocomplete="off" placeholder="a topic or a job post…"><button class="rsa-go mono" type="submit">rank</button></form>
+        <p class="rsa-q mono" data-rsa-q>› ${esc(r.q)}</p>
+        <ol class="rsa-rows" data-rsa-rows>${rsaRows(r.top.map(([id, name, sc]) => [id, name, sc]))}</ol>
+      </div>
+      <div class="rsa-pane" id="rsa-sees" role="tabpanel" aria-labelledby="rsa-t-sees" data-rsa-pane="sees" hidden>
+        <label class="rsa-drop" data-rsa-drop><input class="sr" type="file" accept="image/*" data-rsa-file><img class="rsa-img" data-rsa-img src="${esc(s.img)}" alt="${esc(s.what)}" width="64" height="64" loading="lazy" decoding="async"><span class="rsa-drop-t"><b>Drop, paste or pick an image</b><span class="mono">CLIP runs on this device; the image is never uploaded</span></span></label>
+        <p class="rsa-q mono" data-rsa-q>› ${esc(s.what)}</p>
+        <ol class="rsa-rows" data-rsa-rows>${rsaRows(s.top)}</ol>
+      </div>
+      <div class="rsa-pane" id="rsa-acts" role="tabpanel" aria-labelledby="rsa-t-acts" data-rsa-pane="acts" hidden>
+        <p class="rsa-tasks">${DEMO.acts.map((t) => `<button type="button" class="rsa-task mono" data-rsa-task="${esc(t.q)}">${esc(t.q)}</button>`).join('')}</p>
+        <p class="rsa-q mono" data-rsa-q>› ${esc(a.q)}</p>
+        <ol class="rsa-steps mono" data-rsa-steps><li>search_projects → ${a.ranked.map(([id, sc]) => `${esc(id)} ${sc.toFixed(2)}`).join(' · ')}</li><li>scroll_to #p-${esc(a.focus)}</li><li>highlight #p-${esc(a.focus)}</li><li class="is-hit">open_project ${esc(names[a.focus] || a.focus)}</li></ol>
+      </div>
+      <p class="rsa-foot mono" role="status"><span data-rsa-status>recorded run · nothing downloads until you try</span></p>
+      <script type="application/json" data-rsa-demo>${JSON.stringify({ ...DEMO, names, _note: undefined }).replace(/</g, '\\u003c')}</script>
+    </aside>`;
+}
+
 function heroSection() {
   const enc = (rows) => esc(JSON.stringify(rows));
   return `<section class="layer hero" id="top" data-layer="1" data-layer-name="Tokenizer" aria-label="Introduction">
@@ -263,9 +302,40 @@ function heroSection() {
       <span class="hb-text"><span class="hb-name">Guinness World Records</span><span class="hb-sub mono">participant · 2022</span></span>
       <span class="hb-ph" aria-hidden="true"></span>
     </a>
+    ${rsaPanel()}
   </div>
   <a class="scroll-cue mono" href="#about" aria-label="forward pass, scroll to layer 2"><span>forward pass</span><span class="cue-line" aria-hidden="true"></span></a>
 </section>`;
+}
+
+// The About photo as Sahaj's animated CV card (content/profile-card.json; assets/js/profile-card.js animates it).
+// Everything is in the HTML: without JavaScript, with reduced motion or in plain view it is a still, complete card.
+const CARD = readJSON('content/profile-card.json');
+function profileCard() {
+  const gh = (profile.links || []).find((l) => /github/i.test(l.url || l.label || ''))?.url || 'https://github.com/SahajIVVIX-1';
+  const [first, ...rest] = profile.name.split(' ');
+  const data = { roles: CARD.roles, skills: CARD.skills, cv: CARD.cv };
+  return `<figure class="portrait pc" data-pc>
+      <div class="pc-border" aria-hidden="true"></div>
+      <div class="pc-photo">
+        <picture>
+          <source type="image/avif" srcset="/assets/img/profile-260.avif 260w, /assets/img/profile-340.avif 340w, /assets/img/profile-520.avif 520w" sizes="(min-width: 1200px) 340px, (min-width: 900px) 300px, (min-width: 640px) 280px, 92vw">
+          <img src="/assets/img/profile-520.webp" srcset="/assets/img/profile-260.webp 260w, /assets/img/profile-340.webp 340w, /assets/img/profile-520.webp 520w" sizes="(min-width: 1200px) 340px, (min-width: 900px) 300px, (min-width: 640px) 280px, 92vw" width="520" height="650" alt="Portrait of Sahaj Saliya by a lake lined with palm trees, wearing glasses and a white polo shirt" loading="lazy" decoding="async">
+        </picture>
+      </div>
+      <div class="pc-scan" aria-hidden="true"></div>
+      <div class="pc-hud" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
+      <div class="pc-face" aria-hidden="true"><i></i><i></i><i></i><i></i><b class="mono">PROFILE · VERIFIED</b></div>
+      <p class="pc-status mono"><i aria-hidden="true"></i>${esc(CARD.status)}</p>
+      <div class="pc-skills" aria-hidden="true">${CARD.skills.slice(0, 6).map(([t, c], i) => `<span class="pc-skill s${i} is-on" style="--c:var(--pc-${esc(c)})">${esc(t)}</span>`).join('')}</div>
+      <figcaption class="pc-panel">
+        <p class="pc-name"><span>${esc(first)}</span> ${esc(rest.join(' '))}</p>
+        <p class="pc-role mono"><b class="pc-typed">${esc(CARD.roles[0])}</b><span class="pc-caret" aria-hidden="true"></span></p>
+        <ul class="pc-lines mono" aria-label="CV summary">${CARD.cv.slice(0, 4).map(([k, v]) => `<li class="pc-line is-on"><span class="ok" aria-hidden="true">✓</span><span class="k">${esc(k)}</span><span class="v">${esc(v)}</span></li>`).join('')}</ul>
+        <p class="pc-links mono"><a class="is-primary" href="${RESUME_PDF}" download="Sahaj-Saliya-Resume.pdf" data-resume><span data-resume-label>CV</span> <span aria-hidden="true">↓</span></a><a href="${esc(gh)}" target="_blank" rel="me noopener">GitHub <span aria-hidden="true">↗</span></a></p>
+      </figcaption>
+      <script type="application/json" data-pc-data>${JSON.stringify(data).replace(/</g, '\\u003c')}</script>
+    </figure>`;
 }
 
 function aboutSection() {
@@ -276,14 +346,7 @@ function aboutSection() {
     <h2 id="about-h" class="layer-title">A dense vector of <em>one person</em>.</h2>
   </header>
   <div class="about-grid">
-    <figure class="portrait">
-      <div class="portrait-frame" data-tiles>
-        <picture>
-          <source type="image/avif" srcset="/assets/img/profile-260.avif 260w, /assets/img/profile-340.avif 340w, /assets/img/profile-520.avif 520w" sizes="(min-width: 1200px) 340px, (min-width: 900px) 300px, (min-width: 640px) 280px, 260px">
-          <img src="/assets/img/profile-520.webp" srcset="/assets/img/profile-260.webp 260w, /assets/img/profile-340.webp 340w, /assets/img/profile-520.webp 520w" sizes="(min-width: 1200px) 340px, (min-width: 900px) 300px, (min-width: 640px) 280px, 260px" width="520" height="650" alt="Portrait of Sahaj Saliya by a lake, wearing glasses and a white polo shirt" loading="lazy" decoding="async">
-        </picture>
-      </div>
-    </figure>
+    ${profileCard()}
     <div class="about-text" data-attend>
       ${profile.about.map((p, i) => `<p${i === 0 ? ' class="lead"' : ''}>${esc(p).replace(/\*([^*]+)\*/g, '<em>$1</em>')}</p>`).join('\n      ')}
     </div>
@@ -811,7 +874,8 @@ function render404() {
     kicker: 'Error 404 · <unk>',
     heading: `<span class="unk mono">&lt;unk&gt;</span><br><em>Token not in vocabulary.</em>`,
     noindex: true,
-    body: `<p class="solo-lede">The model has never seen this address, so it cannot predict anything useful here.</p>
+    body: `<s-loader class="nf-loader" variant="sway" size="88" aria-hidden="true"></s-loader><script type="module">import('/assets/js/s-loader.js');</script>
+    <p class="solo-lede">The model has never seen this address, so it cannot predict anything useful here.</p>
     <p class="solo-dist mono" aria-hidden="true"><span style="--p:.31">/</span><span style="--p:.24">/#work</span><span style="--p:.19">/#contact</span><span style="--p:.14">/#map</span><span style="--p:.12">/resume/</span></p>
     <p class="solo-actions"><a class="btn shimmer" href="/">Back to the home page</a> <button class="btn btn-ghost" type="button" data-ask-open>Ask my portfolio</button></p>`,
   });

@@ -52,12 +52,16 @@
   if (!fresh && !bounce) return;
   try { history.scrollRestoration = 'manual'; } catch (e) { }
   if (fresh) {
-    // what survives: the plain-view choice, and the last greeting line, so a reload never shows the same one twice
-    var keep = null;
+    // what survives: the plain-view choice, Neuron's nap (also the visitor's own choice), and the last greeting
+    // line, so a reload never shows the same one twice
+    var keep = null, nap = null;
     try { keep = sessionStorage.getItem('greetLast'); } catch (e) { }
+    var hue = null;
+    try { nap = localStorage.getItem('neuron'); hue = localStorage.getItem('neuron-hue'); } catch (e) { }
     try { localStorage.clear(); } catch (e) { }
     try { sessionStorage.clear(); } catch (e) { }
     try { if (keep) sessionStorage.setItem('greetLast', keep); } catch (e) { }
+    try { if (nap) localStorage.setItem('neuron', nap); if (hue) localStorage.setItem('neuron-hue', hue); } catch (e) { }
     savePlain();
   }
   try { if (location.hash) history.replaceState(history.state, '', location.pathname + location.search); } catch (e) { }
