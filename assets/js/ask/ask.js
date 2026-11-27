@@ -30,7 +30,7 @@ export function initAsk() {
         <h2 id="ask-h" class="ask-title">Ask my <em>portfolio</em></h2>
         <p class="ask-status mono" data-status>loading index…</p>
       </div>
-      <button class="ask-x" type="button" aria-label="Close chat" data-close>×</button>
+      <button class="ask-x" type="button" aria-label="Close chat" data-close><svg class="ico" viewBox="0 0 16 16" aria-hidden="true" focusable="false"><path d="M4 4l8 8M12 4l-8 8"/></svg></button>
     </header>
     <div class="ask-llm mono" data-llm hidden><span data-llm-text></span><span class="ask-bar"><i data-llm-bar></i></span><button type="button" class="ask-llm-btn" data-llm-btn hidden></button></div>
     <ol class="ask-log" aria-live="polite" data-log>
@@ -41,7 +41,7 @@ export function initAsk() {
       <label class="sr" for="ask-in">Your question</label>
       <input id="ask-in" class="ask-in" type="text" autocomplete="off" maxlength="300" placeholder="Ask about projects, skills, experience…" required>
       <button class="ask-google mono" type="button" data-google title="Search Google for what you typed, in a new tab">Google <span aria-hidden="true">↗</span></button>
-      <button class="ask-send shimmer" type="submit" aria-label="Send question"><span aria-hidden="true">↑</span></button>
+      <button class="ask-send shimmer" type="submit" aria-label="Send question"><svg class="ico" viewBox="0 0 16 16" aria-hidden="true" focusable="false"><path d="M8 13V3.2M3.6 7.4 8 3l4.4 4.4"/></svg></button>
     </form>
   </div>`;
 

@@ -7,8 +7,8 @@ import { path } from './lib.mjs';
 const u = (f) => pathToFileURL(path(f)).href;
 const html = `<!doctype html><meta charset="utf-8"><style>
 @font-face{font-family:IS;src:url(${u('assets/fonts/instrument-serif-latin-400-italic.woff2')});font-style:italic}
-@font-face{font-family:IT;src:url(${u('assets/fonts/inter-tight-latin-wght-normal.woff2')});font-weight:100 900}
-@font-face{font-family:JB;src:url(${u('assets/fonts/jetbrains-mono-latin-wght-normal.woff2')});font-weight:100 800}
+@font-face{font-family:IT;src:url(${u('assets/fonts/pagio/pagio.ttf')});font-weight:100 900}
+@font-face{font-family:JB;src:url(${u('assets/fonts/botera/botera-regular-stencil.otf')});font-weight:100 800}
 *{margin:0;box-sizing:border-box}body{width:1200px;height:630px;background:#171715;color:#ECE8DE;padding:0 80px 0 70px;display:flex;align-items:center;gap:64px;position:relative;overflow:hidden}
 .logo{flex:none;width:400px;height:400px}
 h1{font:italic 400 132px/.9 IS;letter-spacing:-.03em}

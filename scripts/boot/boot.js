@@ -44,7 +44,7 @@
     if (msg) log(msg);
   }
 
-  var faces = ['italic 400 1em "Instrument Serif"', '400 1em "Inter Tight"', '400 1em "JetBrains Mono"'];
+  var faces = ['italic 400 1em "Instrument Serif"', '400 1em "Pagio"', '400 1em "Botera Stencil"'];
   var loaded = 0;
   var fontDone = function () {
     complete('f' + loaded, null);

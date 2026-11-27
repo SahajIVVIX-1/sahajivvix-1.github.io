@@ -4,10 +4,11 @@ html { background: #F6F2EA; }
 @media (prefers-color-scheme: dark) { html:not([data-theme="light"]) { background: #0B1020; } }
 html[data-theme="dark"] { background: #0B1020; }
 
+@font-face { font-family: "Botera Stencil"; src: url("/assets/fonts/botera/botera-regular-stencil.otf") format("opentype"); size-adjust: 128%; font-display: swap; }
 #boot {
   --bg: #F6F2EA; --fg: #16140F; --dim: #6A6458; --ac: #B23E0E; --rule: #D9D0BF;
   display: none; position: fixed; inset: 0; z-index: 2000; isolation: isolate; place-items: center; overflow: hidden;
-  color: var(--fg); font: 500 12px/1.5 ui-monospace, "JetBrains Mono", Consolas, monospace;
+  color: var(--fg); font: 500 12px/1.5 "Botera Stencil", ui-monospace, Consolas, monospace;
 }
 @media (prefers-color-scheme: dark) {
   html:not([data-theme="light"]) #boot { --bg: #0B1020; --fg: #ECE8DE; --dim: #8F8C84; --ac: #FF8A5B; --rule: #1E2742; }

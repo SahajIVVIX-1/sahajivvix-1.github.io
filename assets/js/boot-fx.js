@@ -512,7 +512,7 @@
 
   /* ---------- drawing ---------- */
   var fly = null; // set by handoff()
-  var mono = function (px, w) { return (w || '') + px + 'px "JetBrains Mono", ui-monospace, monospace'; };
+  var mono = function (px, w) { return (w || '') + px + 'px "Botera Stencil", ui-monospace, monospace'; };
   var FS = vertical ? 12 : 11;
   function seg(e, from, to) { segOn(g, e, from, to); }
   function segOn(g, e, from, to) {

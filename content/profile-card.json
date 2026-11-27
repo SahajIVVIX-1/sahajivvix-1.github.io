@@ -1,19 +1,18 @@
 {
-  "_note": "The animated CV card on the About photo (assets/js/profile-card.js). Written by Sahaj; edit freely. Skills show 6 at a time, CV lines 4 at a time.",
+  "_note": "The animated card on the About photo (assets/js/profile-card.js): status pill, skill chips (6 at a time) and the CV and GitHub buttons; the photo turns through its four versions (assets/img/card/) as a grid of rotating cubes.",
   "status": "Open to AI/ML roles",
-  "roles": ["AI Engineer", "LLM & RAG Builder", "Agentic Systems Developer", "ML Researcher"],
   "skills": [
-    ["LLMs", "rust"], ["RAG", "green"], ["AI Agents", "gold"], ["Python", "green"], ["Machine Learning", "rust"], ["AI Infra", "gold"],
-    ["Cybersecurity", "rust"], ["TypeScript", "green"], ["React", "gold"], ["Electron", "green"], ["PyQt6", "rust"], ["6G R&D", "gold"]
-  ],
-  "cv": [
-    ["education", "B.Tech ICT · PDEU · 2027"],
-    ["experience", "R&I Intern @ HNNOIX"],
-    ["worked on", "AI agents & LLMs for 6G"],
-    ["focus", "LLMs · Agents · RAG"],
-    ["projects", "YT-DLP Studio · Smaran"],
-    ["building", "Semantic scripture search"],
-    ["interests", "AI infra · Cybersecurity"],
-    ["status", "Open to AI/ML roles ✔"]
+    ["LLMs", "rust"],
+    ["RAG", "green"],
+    ["AI Agents", "gold"],
+    ["Python", "green"],
+    ["Machine Learning", "rust"],
+    ["AI Infra", "gold"],
+    ["Cybersecurity", "rust"],
+    ["TypeScript", "green"],
+    ["React", "gold"],
+    ["Electron", "green"],
+    ["PyQt6", "rust"],
+    ["6G R&D", "gold"]
   ]
 }

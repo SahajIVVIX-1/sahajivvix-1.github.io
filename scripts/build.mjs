@@ -105,8 +105,8 @@ function head({ title, description, url, image = '/assets/img/og.png', type = 'w
 <link rel="apple-touch-icon" href="/assets/brand/apple-touch-icon.png?v=4">
 <link rel="manifest" href="/site.webmanifest?v=4">
 <link rel="preload" href="/assets/fonts/instrument-serif-latin-400-italic.woff2" as="font" type="font/woff2" crossorigin>
-<link rel="preload" href="/assets/fonts/anthropic-serif/anthropic-serif-text-500-italic.woff2" as="font" type="font/woff2" crossorigin>
-<link rel="preload" href="/assets/fonts/inter-tight-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="/assets/fonts/anthropic-serif/AnthropicSerif-Display-BoldItalic-Static.otf" as="font" type="font/otf" crossorigin>
+<link rel="preload" href="/assets/fonts/pagio/pagio.woff" as="font" type="font/woff" crossorigin>
 <script>${BOOT_FRESH}</script>
 <script>${THEME_BOOT}</script>
 <style>${BOOT_CSS}</style>
@@ -313,8 +313,8 @@ function heroSection() {
 const CARD = readJSON('content/profile-card.json');
 function profileCard() {
   const gh = (profile.links || []).find((l) => /github/i.test(l.url || l.label || ''))?.url || 'https://github.com/SahajIVVIX-1';
-  const [first, ...rest] = profile.name.split(' ');
-  const data = { roles: CARD.roles, skills: CARD.skills, cv: CARD.cv };
+  // the four versions of the photo the card turns through, cube by cube (assets/img/card/, made from his originals)
+  const data = { skills: CARD.skills, images: [1, 2, 3, 4].map((i) => `/assets/img/card/sahaj-${i}.webp`) };
   return `<figure class="portrait pc" data-pc>
       <div class="pc-border" aria-hidden="true"></div>
       <div class="pc-photo">
@@ -329,9 +329,7 @@ function profileCard() {
       <p class="pc-status mono"><i aria-hidden="true"></i>${esc(CARD.status)}</p>
       <div class="pc-skills" aria-hidden="true">${CARD.skills.slice(0, 6).map(([t, c], i) => `<span class="pc-skill s${i} is-on" style="--c:var(--pc-${esc(c)})">${esc(t)}</span>`).join('')}</div>
       <figcaption class="pc-panel">
-        <p class="pc-name"><span>${esc(first)}</span> ${esc(rest.join(' '))}</p>
-        <p class="pc-role mono"><b class="pc-typed">${esc(CARD.roles[0])}</b><span class="pc-caret" aria-hidden="true"></span></p>
-        <ul class="pc-lines mono" aria-label="CV summary">${CARD.cv.slice(0, 4).map(([k, v]) => `<li class="pc-line is-on"><span class="ok" aria-hidden="true">✓</span><span class="k">${esc(k)}</span><span class="v">${esc(v)}</span></li>`).join('')}</ul>
+        <span class="sr">Sahaj Saliya</span>
         <p class="pc-links mono"><a class="is-primary" href="${RESUME_PDF}" download="Sahaj-Saliya-Resume.pdf" data-resume><span data-resume-label>CV</span> <span aria-hidden="true">↓</span></a><a href="${esc(gh)}" target="_blank" rel="me noopener">GitHub <span aria-hidden="true">↗</span></a></p>
       </figcaption>
       <script type="application/json" data-pc-data>${JSON.stringify(data).replace(/</g, '\\u003c')}</script>
@@ -343,7 +341,7 @@ function aboutSection() {
   return `<section class="layer about" id="about" data-layer="2" data-layer-name="Embedding" aria-labelledby="about-h">
   <header class="layer-head">
     <p class="layer-tag mono" data-lt="Embedding">Layer 02 · Embedding</p>
-    <h2 id="about-h" class="layer-title">A dense vector of <em>one person</em>.</h2>
+    <h2 id="about-h" class="layer-title lt-one" style="--lt-r:13">A dense vector of <em>one person</em>.</h2>
   </header>
   <div class="about-grid">
     ${profileCard()}
@@ -368,7 +366,7 @@ function mapSection() {
   return `<section class="layer map" id="map" data-layer="3" data-layer-name="Latent space" aria-labelledby="map-h">
   <header class="layer-head">
     <p class="layer-tag mono" data-lt="Latent space">Layer 03 · Latent space</p>
-    <h2 id="map-h" class="layer-title">Watch it <em>learn</em>, then ask it.</h2>
+    <h2 id="map-h" class="layer-title lt-one" style="--lt-r:12.3">Watch it <em>learn</em>, then ask it.</h2>
     <p class="layer-sub">Every point is a real passage of my work: resume lines, README text, skills. Scroll and watch an embedding being trained from noise (a real t-SNE run, with its real loss). Then ask it a question: your words are embedded in your browser and land where they belong.</p>
   </header>
   <div class="map-pin" data-map-pin>
@@ -391,7 +389,7 @@ function mapSection() {
             <canvas class="map-canvas" aria-hidden="true"></canvas>
             <div class="map-labels" aria-hidden="true"></div>
             <div class="map-hud mono" aria-hidden="true"></div>
-            <div class="map-zoom" role="group" aria-label="Map zoom"><button type="button" data-z="in" aria-label="Zoom in">+</button><button type="button" data-z="out" aria-label="Zoom out">−</button><button type="button" data-z="reset" aria-label="Reset view">⟲</button></div>
+            <div class="map-zoom" role="group" aria-label="Map zoom"><button type="button" data-z="in" aria-label="Zoom in"><svg class="ico" viewBox="0 0 16 16" aria-hidden="true" focusable="false"><path d="M8 3v10M3 8h10"/></svg></button><button type="button" data-z="out" aria-label="Zoom out"><svg class="ico" viewBox="0 0 16 16" aria-hidden="true" focusable="false"><path d="M3 8h10"/></svg></button><button type="button" data-z="reset" aria-label="Reset view">⟲</button></div>
             <div class="map-nodes"></div>
             <div class="map-tip" aria-hidden="true" hidden></div>
             <div class="map-card" hidden></div>
