@@ -4,6 +4,7 @@ import { webgpuSupport, loadLLM } from './llm.js';
 import { checkOrigin } from '../origin.js';
 import { setBusy } from '../busy.js';
 import { createTools } from './tools.js';
+import { setLoading, loader } from '../loading.js';
 import { ACTION, NEAR, planRules, planLLM } from './planner.js';
 
 const STARTERS = [
@@ -39,6 +40,7 @@ export function initAsk() {
     <form class="ask-form" data-form>
       <label class="sr" for="ask-in">Your question</label>
       <input id="ask-in" class="ask-in" type="text" autocomplete="off" maxlength="300" placeholder="Ask about projects, skills, experience…" required>
+      <button class="ask-google mono" type="button" data-google title="Search Google for what you typed, in a new tab">Google <span aria-hidden="true">↗</span></button>
       <button class="ask-send shimmer" type="submit" aria-label="Send question"><span aria-hidden="true">↑</span></button>
     </form>
   </div>`;
@@ -69,9 +71,12 @@ export function initAsk() {
     onPhoneAction: () => { if (stepAside && matchMedia('(max-width: 699px)').matches) { stepAside = false; setTimeout(close, 450); } },
   });
 
-  const enginePromise = createEngine().then((eng) => {
+  // Opening the panel must stay smooth: the index is fetched and decoded only after the open animation, and the
+  // MiniLM model (≈23 MB) loads in a quiet moment after that. Until then answers use keyword retrieval (BM25).
+  const idle = (f) => (window.requestIdleCallback ? requestIdleCallback(f, { timeout: 2500 }) : setTimeout(f, 800));
+  const enginePromise = new Promise((r) => setTimeout(r, 380)).then(createEngine).then((eng) => {
     status.textContent = `retrieval ready · ${eng.qaCount} answers · ${eng.chunks.length} passages`;
-    eng.loadEmbedder().then((ok) => { if (ok) status.textContent = `semantic search on · MiniLM-L6 · ${eng.chunks.length} passages`; });
+    idle(() => eng.loadEmbedder().then((ok) => { if (ok) status.textContent = `semantic search on · MiniLM-L6 · ${eng.chunks.length} passages`; }));
     return eng;
   }).catch(() => { status.textContent = 'could not load the index, try again later'; return null; });
 
@@ -79,7 +84,7 @@ export function initAsk() {
   webgpuSupport().then((kind) => {
     if (!kind) return;
     llmBox.hidden = false;
-    const metered = navigator.connection?.saveData || /2g|3g/.test(navigator.connection?.effectiveType || '') || matchMedia('(max-width: 700px)').matches;
+    // Never automatic: downloading and compiling ≈1 GB on the GPU made the whole page stutter. One click starts it.
     const start = () => {
       if (llmLoading) return;
       llmLoading = true;
@@ -89,29 +94,42 @@ export function initAsk() {
         .then((m) => { llm = m; llmText.textContent = 'Qwen2.5-1.5B running on your GPU · conversational answers on'; llmBox.classList.add('is-ready'); })
         .catch(() => { llmText.textContent = 'local model unavailable, using retrieval answers'; llmBox.classList.add('is-ready'); });
     };
-    if (metered) {
-      llmText.textContent = 'Your device can run a local LLM for conversational answers.';
-      llmBtn.textContent = 'Load (≈1 GB)';
-      llmBtn.hidden = false;
-      llmBtn.onclick = start;
-    } else start();
+    llmText.textContent = 'Optional: a local LLM on your GPU for conversational answers.';
+    llmBtn.textContent = 'Load (≈1 GB)';
+    llmBtn.hidden = false;
+    llmBtn.onclick = start;
   });
 
   let closeTimer = 0;
+  const fab = document.querySelector('.ask-fab');
   function open(q) {
     opener = document.activeElement;
     clearTimeout(closeTimer);
+    const wasHidden = panel.hidden;
     panel.hidden = false;
-    requestAnimationFrame(() => panel.classList.add('is-open'));
-    input.focus();
-    if (q) ask(q);
+    document.documentElement.classList.add('ask-open');
+    // two frames: the first paints the closed state, the second starts the transition (one frame often skipped it)
+    requestAnimationFrame(() => requestAnimationFrame(() => {
+      panel.classList.add('is-open');
+      input.focus({ preventScroll: true });
+      if (q) setTimeout(() => ask(q), wasHidden ? 200 : 0);
+    }));
   }
   function close() {
     panel.classList.remove('is-open');
+    document.documentElement.classList.remove('ask-open');
     clearTimeout(closeTimer);
-    closeTimer = setTimeout(() => { panel.hidden = true; }, 250);
-    opener?.focus?.({ preventScroll: true }); // a focus scroll would cut short an agent's smooth scroll
+    closeTimer = setTimeout(() => { panel.hidden = true; }, 380);
+    (opener && opener !== document.body ? opener : fab)?.focus?.({ preventScroll: true }); // a focus scroll would cut short an agent's smooth scroll
   }
+  // Google: whatever is typed (or the last question) opens as a Google search in a new tab. It leaves this site,
+  // so it only ever happens on a click.
+  let lastQ = '';
+  root.querySelector('[data-google]').addEventListener('click', () => {
+    const q = input.value.trim() || lastQ;
+    if (!q) { input.focus(); input.placeholder = 'Type something, then press Google'; return; }
+    window.open(`https://www.google.com/search?q=${encodeURIComponent(q)}`, '_blank', 'noopener');
+  });
 
   root.querySelector('[data-close]').addEventListener('click', close);
   panel.addEventListener('keydown', (e) => { if (e.key === 'Escape') close(); });
@@ -125,10 +143,13 @@ export function initAsk() {
   const stageTo = (s) => { clearTimeout(txTimer); tx.dataset.stage = s; if (s === 'softmax') txTimer = setTimeout(() => { delete tx.dataset.stage; }, 900); };
 
   async function ask(q) {
+    lastQ = q;
     addMsg('user', q);
     const bubble = addMsg('bot', '');
     bubble.classList.add('is-thinking');
     bubble.querySelector('p').innerHTML = '<span class="dots mono">attending<span>.</span><span>.</span><span>.</span></span>';
+    setLoading('ask', true);
+    loader('pulse', 18).then((l) => { const d = bubble.querySelector('.dots'); if (l && d && bubble.classList.contains('is-thinking')) d.prepend(l); });
     send.classList.add('is-busy');
     setBusy('chat', true);
     stageTo('attn');
@@ -150,7 +171,7 @@ export function initAsk() {
     // Retrieval answers get rewritten conversationally by the local LLM when it is ready.
     if (llm && res.kind === 'retrieval') {
       const passages = res.hits.kb.slice(0, 4).map((s) => s.x);
-      bubble.classList.remove('is-thinking');
+      bubble.classList.remove('is-thinking'); setLoading('ask', false);
       const p = bubble.querySelector('p');
       p.textContent = '';
       let out = '';
@@ -167,7 +188,7 @@ export function initAsk() {
   // Runs a plan step by step and shows it as an agent trace: tool(args) → result. Stops at the first failure.
   async function act(bubble, plan) {
     const eng = await enginePromise;
-    bubble.classList.remove('is-thinking');
+    bubble.classList.remove('is-thinking'); setLoading('ask', false);
     bubble.querySelector('p').textContent = '';
     const trace = document.createElement('ol');
     trace.className = 'trace mono';
@@ -229,7 +250,7 @@ export function initAsk() {
     stageTo('softmax');
     send.classList.remove('is-busy');
     setBusy('chat', false);
-    bubble.classList.remove('is-thinking');
+    bubble.classList.remove('is-thinking'); setLoading('ask', false);
     const p = bubble.querySelector('p');
     p.innerHTML = linkify(text);
     if (sources?.length || by) {

@@ -11,7 +11,6 @@ import { initGwr } from './gwr.js';
 import { initBadge } from './badge.js';
 import { initFooter } from './footer.js';
 import { initBrand } from './brand.js';
-import { initTiles } from './tiles.js';
 import { checkOrigin } from './origin.js';
 import { initResume } from './resume.js';
 import { initContext } from './context.js';
@@ -59,7 +58,8 @@ document.documentElement.classList.add('hero-laid');
 await pause();
 initFooter({ reducedMotion, lowPower });
 initBrand({ reducedMotion });
-initTiles({ reducedMotion, lowPower });
+// the About photo: Sahaj's animated CV card (profile-card.js), started once it is near the screen
+{ const pc = document.querySelector('[data-pc]'); if (pc) new IntersectionObserver((es, o) => { if (es.some((e) => e.isIntersecting)) { o.disconnect(); import('./profile-card.js').then((m) => m.initProfileCard({ reducedMotion })).catch((e) => console.error('profile card', e)); } }, { rootMargin: '400px 0px' }).observe(pc); }
 initLoss();
 await pause();
 initHeader();
@@ -209,6 +209,16 @@ function initLazy() {
       ? document.addEventListener('boot:done', () => setTimeout(fn, 1200), { once: true })
       : fn());
     idle(() => afterBoot(() => import('./attention.js').then((m) => m.initAttention({ lowPower }))));
+  }
+
+  // Hero console, reads · sees · acts (rsa.js): its recorded runs are already in the HTML; the module adds the replay
+  // and the real models, so it can wait for an idle moment.
+  if (document.querySelector('[data-rsa]')) idle(() => import('./rsa.js').then((m) => m.initRsa({ reducedMotion })).catch((e) => console.error('rsa', e)));
+
+  // Neuron, the page's little bot (neuron.js): hops out of the logo once the hero has finished generating.
+  if (!reducedMotion && !window.__plain) {
+    const neuron = () => idle(() => import('./neuron.js').then((m) => { if (!m.initNeuron({ lowPower })) m.wakeButton(); }).catch((e) => console.error('neuron', e)));
+    if (window.__heroReady) neuron(); else document.addEventListener('hero:ready', neuron, { once: true });
   }
 
   // Harvard ManageMentor adapters (#adapters): the module when the block is near; the merge starts once it is in
