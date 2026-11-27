@@ -4,3 +4,9 @@
 *.webp binary
 *.woff2 binary
 *.ico binary
+*.onnx binary
+*.wasm binary
+*.otf binary
+*.ttf binary
+*.woff binary
+*.pdf binary

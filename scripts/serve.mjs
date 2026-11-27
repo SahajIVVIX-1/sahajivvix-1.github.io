@@ -11,6 +11,7 @@ const TYPES = {
   '.json': 'application/json', '.svg': 'image/svg+xml', '.png': 'image/png', '.webp': 'image/webp', '.avif': 'image/avif',
   '.jpg': 'image/jpeg', '.jpeg': 'image/jpeg', '.gif': 'image/gif',
   '.ico': 'image/x-icon', '.woff2': 'font/woff2', '.xml': 'application/xml', '.txt': 'text/plain', '.webmanifest': 'application/manifest+json',
+  '.wasm': 'application/wasm', '.onnx': 'application/octet-stream', '.otf': 'font/otf', '.ttf': 'font/ttf', '.woff': 'font/woff', '.pdf': 'application/pdf', '.md': 'text/markdown; charset=utf-8',
 };
 
 createServer(async (req, res) => {

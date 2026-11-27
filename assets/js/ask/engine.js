@@ -2,7 +2,7 @@
 //   1. BM25 over the Q&A bank and knowledge chunks (instant, no model needed)
 //   2. MiniLM query embeddings via Transformers.js once loaded (semantic match, int8 index)
 // Answers are only ever taken from the bank or the chunks, never invented.
-const TRANSFORMERS = 'https://cdn.jsdelivr.net/npm/@huggingface/transformers@4.3.0';
+import { loadTF } from '../tf.js'; // Transformers.js and MiniLM from this site (assets/vendor, assets/models)
 const STOP = new Set('a an the and or of to in on at by for with from is are was were be been it its this that he his him she her they their you your i me my do does did what which who whom how when where why can could would should will about tell me please sahaj saliya s'.split(' '));
 const tok = (s) => (s.toLowerCase().match(/[a-z0-9+#]+/g) || []).filter((w) => !STOP.has(w));
 
@@ -22,8 +22,7 @@ export async function createEngine() {
 
   let extractor = null, loading = null;
   const loadEmbedder = (onProgress) => (loading ||= (async () => {
-    const { pipeline, env } = await import(/* @vite-ignore */ TRANSFORMERS);
-    env.allowLocalModels = false;
+    const { pipeline } = await loadTF();
     extractor = await pipeline('feature-extraction', kb.model, { dtype: 'q8', progress_callback: onProgress });
     return true;
   })().catch(() => false));

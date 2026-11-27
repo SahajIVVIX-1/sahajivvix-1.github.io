@@ -3,7 +3,7 @@
         full  first visit of a session, home page: the whole "forward pass"
         calm  same, but the visitor prefers reduced motion: static network + greeting
         mini  anything else (same-session return, other pages): greeting only, ~400 ms
-   2. Looks up the visitor's public IP address (api.ipify.org, the only network call this site makes to a third
+   2. (No IP lookup any more: the site makes no third-party requests. __ipPromise resolves to null, which every
       party) for the "context window" (assets/js/context.js writes ?context=you@<address>&layer=NN into the address
       bar). A context or IP that came with a shared link is removed at once, before anything is shown. Old
       /ip=<address> links still open the right page.
@@ -71,30 +71,10 @@
   // never show an IP that came from a shared link, not even for a moment
   write();
 
-  var cached = null;
-  try { cached = sessionStorage.getItem('visitorIp'); } catch (e) { }
-  if (okIp(cached)) {
-    window.__ip = cached;
-    window.__ipPromise = Promise.resolve(cached);
-  } else {
-    window.__ipPromise = new Promise(function (resolve) {
-      var done = function (ip) {
-        if (okIp(ip)) {
-          window.__ip = ip;
-          try { sessionStorage.setItem('visitorIp', ip); } catch (e) { }
-          resolve(ip);
-        } else resolve(null);
-      };
-      try {
-        var ctl = window.AbortController ? new AbortController() : null;
-        var timer = setTimeout(function () { if (ctl) ctl.abort(); }, 3500);
-        fetch('https://api.ipify.org?format=json', ctl ? { signal: ctl.signal, cache: 'no-store', referrerPolicy: 'no-referrer' } : { cache: 'no-store' })
-          .then(function (r) { return r.json(); })
-          .then(function (j) { clearTimeout(timer); done(j && j.ip); })
-          .catch(function () { done(null); });
-      } catch (e) { resolve(null); }
-    });
-  }
+  // no IP lookup: the site makes no third-party requests; everything that used the IP handles null
+  // (you@anonymous in the address bar, nothing in the footer)
+  try { sessionStorage.removeItem('visitorIp'); } catch (e) { }
+  window.__ipPromise = Promise.resolve(null);
   };
   if (!window.__ipSwap && SEG.test(location.pathname)) {
     window.__ipSwap = true;

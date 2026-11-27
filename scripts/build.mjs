@@ -34,7 +34,7 @@ const BOOT_JS = minify(readText('scripts/boot/boot.js'));
 for (const [name, code] of [['fresh.js', BOOT_FRESH], ['head.js', BOOT_HEAD], ['boot.js', BOOT_JS]]) {
   try { new Function(code); } catch (e) { throw new Error(`scripts/boot/${name} is not valid JavaScript after minifying (${e.message}). Put comments on their own line.`); }
 }
-const bootHtml = () => `<div id="boot-live" class="bs" role="status" aria-live="polite"></div><div id="boot" aria-hidden="true"><div class="boot-box"><p class="boot-cap" id="boot-cap"><span>forward pass · layer 1/5 · 0%</span><span>τ 0.7 · weights seeded per visitor</span></p><p class="boot-feat" id="boot-feat"></p><div class="boot-stage"><canvas id="boot-cv"></canvas></div><p class="boot-greet" id="boot-greet"></p><p class="boot-clock" id="boot-clock"></p><div class="boot-bottom"><ul id="boot-log"></ul><div class="boot-mat"><canvas id="boot-mat"></canvas><p>attention · head 3</p></div></div><p class="boot-hint"><span>heuristic guess · computed in your browser; only your public IP is looked up</span><span>click or press any key to skip</span></p></div></div><script>${BOOT_JS.replace('__V__', ASSET_VERSION)}</script>`;
+const bootHtml = () => `<div id="boot-live" class="bs" role="status" aria-live="polite"></div><div id="boot" aria-hidden="true"><div class="boot-box"><p class="boot-cap" id="boot-cap"><span>forward pass · layer 1/5 · 0%</span><span>τ 0.7 · weights seeded per visitor</span></p><p class="boot-feat" id="boot-feat"></p><div class="boot-stage"><canvas id="boot-cv"></canvas></div><p class="boot-greet" id="boot-greet"></p><p class="boot-clock" id="boot-clock"></p><div class="boot-bottom"><ul id="boot-log"></ul><div class="boot-mat"><canvas id="boot-mat"></canvas><p>attention · head 3</p></div></div><p class="boot-hint"><span>heuristic guess · computed in your browser; nothing leaves your browser</span><span>click or press any key to skip</span></p></div></div><script>${BOOT_JS.replace('__V__', ASSET_VERSION)}</script>`;
 const profile = readJSON('content/profile.json');
 const gwr = readJSON('content/guinness.json');
 const harvard = readJSON('content/harvard.json', { programs: [] }).programs;
@@ -116,7 +116,7 @@ ${extra}
 </head>`;
 }
 
-const PRIVACY = 'Your IP is looked up from api.ipify.org when the page opens, shown only to you, and never stored.';
+const PRIVACY = 'No IP lookup, no cookies, no analytics: this site loads only its own files and makes no third-party requests.';
 
 function header({ home = false } = {}) {
   const base = home ? '' : '/';

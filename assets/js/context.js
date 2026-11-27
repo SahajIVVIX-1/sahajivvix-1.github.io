@@ -1,5 +1,5 @@
-// The "context window": the address bar reads like the model's context. Once the visitor's IP is known (head.js,
-// api.ipify.org) it is written in token by token, as if generated: /?context=you@152.58.62.67 (or you@anonymous),
+// The "context window": the address bar reads like the model's context. The site no longer looks up the visitor's IP (no third-party
+// requests), so it reads you@anonymous, written in token by token, as if generated: /?context=you@152.58.62.67 (or you@anonymous),
 // one history.replaceState per token, ~60 ms apart. While the visitor scrolls, &layer=NN follows the layer in view
 // (throttled, replaceState only: no history entries). The header chip shows only ctx · you · layer 03; clicking it
 // shows the address with the privacy note, so the IP is never on screen unasked. A reload starts all of it again (fresh.js, head.js strip the old values).
