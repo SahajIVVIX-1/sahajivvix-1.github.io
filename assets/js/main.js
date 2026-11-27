@@ -63,6 +63,7 @@ initTiles({ reducedMotion, lowPower });
 initLoss();
 await pause();
 initHeader();
+initMenu();
 initResume();
 initContext({ reducedMotion });
 initAnchors();
@@ -107,6 +108,32 @@ function initPlain() {
     q.set('plain', on ? '0' : '1');
     location.assign(`${location.pathname}?${q}${location.hash}`);
   });
+}
+
+// Phone menu: the burger opens a panel under the header. It closes on Escape, on a link, on a tap outside, when the
+// search palette opens and when the screen becomes wide enough for the normal navigation.
+function initMenu() {
+  const btn = document.querySelector('[data-menu]');
+  const panel = document.getElementById('mobile-menu');
+  const head = document.querySelector('[data-head]');
+  if (!btn || !panel) return;
+  const set = (open) => {
+    btn.setAttribute('aria-expanded', String(open));
+    btn.setAttribute('aria-label', open ? 'Close menu' : 'Open menu');
+    panel.classList.toggle('is-open', open);
+    panel.setAttribute('aria-hidden', String(!open));
+    panel.inert = !open;
+    head?.classList.toggle('menu-open', open);
+  };
+  btn.addEventListener('click', () => set(btn.getAttribute('aria-expanded') !== 'true'));
+  panel.addEventListener('click', (e) => { if (e.target.closest('a')) set(false); });
+  addEventListener('keydown', (e) => { if (e.key === 'Escape') set(false); });
+  document.addEventListener('pointerdown', (e) => { if (btn.getAttribute('aria-expanded') === 'true' && !head.contains(e.target)) set(false); });
+  matchMedia('(min-width: 900px)').addEventListener('change', (e) => { if (e.matches) set(false); });
+  document.querySelectorAll('[data-palette-open]').forEach((b) => b.addEventListener('click', () => set(false)));
+  // the address line of the menu follows the one in the header chip
+  const ctx = panel.querySelector('[data-mm-ctx]');
+  document.addEventListener('layer:change', () => { const who = document.querySelector('[data-ctx-who]')?.textContent; if (ctx && who) ctx.textContent = who; });
 }
 
 function initHeader() {
