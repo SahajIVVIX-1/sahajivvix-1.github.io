@@ -10,9 +10,9 @@
 // browser's own "scroll into view" cannot know where along the scroll a sideways card is shown.
 const WIDE = '(min-width: 1100px) and (min-height: 680px) and (prefers-reduced-motion: no-preference)';
 const TOP = 76; // keep in step with .hs--on .hs-pin { top } in main.css
-const HOLD = 0.28; // share of each step during which the card stays put at either end
+const HOLD = 0.05; // share of each step during which the card stays put at either end
 const clamp = (v, a, b) => Math.min(b, Math.max(a, v));
-const smooth = (t) => t * t * (3 - 2 * t);
+const smooth = (t) => t * t * t * (t * (t * 6 - 15) + 10); // smootherstep: slow start, slow finish
 
 const byTrack = new WeakMap();
 
@@ -115,6 +115,16 @@ function setup(hs) {
       const a = st.offsets[i] || 0, b = st.offsets[i + 1] ?? a;
       track.style.transform = `translate3d(${-(a + (b - a) * e).toFixed(2)}px,0,0)`;
       st.pos = i + e;
+      for (let k = 0; k < cs.length; k++) {
+        const c = cs[k], off = st.pos - k, d = Math.min(1, Math.abs(off));
+        if (!c._parts) c._parts = { side: c.querySelector('.card-side'), body: c.querySelector('.card-body'), foot: c.querySelector('.card-foot') };
+        c.style.opacity = (1 - d * 0.62).toFixed(3);
+        c.style.transform = `scale(${(1 - d * 0.045).toFixed(4)})`;
+        const o = Math.max(-1, Math.min(1, off));
+        if (c._parts.side) c._parts.side.style.transform = `translate3d(${(-o * 46).toFixed(1)}px,0,0)`;
+        if (c._parts.body) c._parts.body.style.transform = `translate3d(${(-o * 110).toFixed(1)}px,0,0)`;
+        if (c._parts.foot) c._parts.foot.style.transform = `translate3d(${(-o * 70).toFixed(1)}px,0,0)`;
+      }
       const idx = Math.round(st.pos);
       label(idx, cs.length > 1 ? st.pos / (cs.length - 1) : 1);
       announce(idx, rect);
@@ -143,8 +153,7 @@ function setup(hs) {
     st.animating = true;
     const tick = (now) => {
       const t = Math.min(1, (now - t0) / ms);
-      const e = t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2; // ease in and out
-      scrollTo({ top: Math.round(y0 + d * e), behavior: 'instant' });
+      scrollTo({ top: Math.round(y0 + d * t), behavior: 'instant' }); // even pace: the slide supplies the easing
       if (t < 1) st.raf = requestAnimationFrame(tick);
       else { st.animating = false; st.cooldown = performance.now() + 160; }
     };
@@ -166,7 +175,7 @@ function setup(hs) {
     if (st.animating || now < st.cooldown || st.used || Math.abs(e.deltaY) < 2) return true;
     st.used = true;
     const target = clamp(dir > 0 ? Math.floor(f + 0.001) + 1 : Math.ceil(f - 0.001) - 1, 0, n - 1);
-    animateTo(yFor(target), 560);
+    animateTo(yFor(target), 1050);
     return true;
   };
   // after a drag of the scroll bar, a key press or a stray scroll: settle on the nearest card
@@ -179,7 +188,7 @@ function setup(hs) {
       const n = cards().length, f = pos();
       if (f < 0 || f > n - 1) return;
       const k = Math.round(f);
-      if (Math.abs(f - k) > 0.03) animateTo(yFor(k), 360);
+      if (Math.abs(f - k) > 0.03) animateTo(yFor(k), 560);
     }, 170);
   };
 
@@ -193,7 +202,7 @@ function setup(hs) {
     if (st.on) {
       measure();
       const top = Math.max(0, yFor(i));
-      if (smoothly) animateTo(top, 700); else scrollTo({ top, behavior: 'instant' });
+      if (smoothly) animateTo(top, 950); else scrollTo({ top, behavior: 'instant' });
       return true;
     }
     return false;
@@ -203,7 +212,10 @@ function setup(hs) {
     if (on === st.on) { if (on) { measure(); update(); } return; }
     st.on = on;
     hs.classList.toggle('hs--on', on);
-    if (on) { track.scrollLeft = 0; track.style.height = ''; measure(); } else { hs.style.height = ''; track.style.transform = ''; cards().forEach((c) => c.style.removeProperty('--fs')); }
+    if (on) { track.scrollLeft = 0; track.style.height = ''; measure(); } else {
+      hs.style.height = ''; track.style.transform = '';
+      cards().forEach((c) => { c.style.removeProperty('--fs'); c.style.opacity = ''; c.style.transform = ''; for (const part of Object.values(c._parts || {})) if (part) part.style.transform = ''; });
+    }
     update();
   };
 
