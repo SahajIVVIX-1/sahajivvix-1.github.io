@@ -133,7 +133,7 @@ export function renumberLayers() {
       if (ci) ci.textContent = pad(k);
     }
   });
-  for (const sec of main.querySelectorAll('section:has(> .layer-head [data-lt-range])')) {
+  for (const sec of new Set([...main.querySelectorAll('[data-lt-range]')].map((t) => t.closest('section')).filter(Boolean))) {
     const nums = [...sec.querySelectorAll('[data-hs-track] > .card')].map((c) => Number(c.dataset.layer));
     const rangeTag = sec.querySelector('.layer-tag[data-lt-range]');
     if (rangeTag && nums.length) rangeTag.textContent = `Layers ${pad(Math.min(...nums))}–${pad(Math.max(...nums))} · ${rangeTag.dataset.ltRange}`;

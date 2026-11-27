@@ -1386,7 +1386,7 @@ html.plain .ad-plain, html[data-persona="recruiter"] .ad-plain { display: grid; 
 .hs-hint::before { content: "swipe"; }
 .hs--on .hs-hint::before { content: "scroll"; }
 .hs-hint::after { content: " →"; }
-.hs-track { display: flex; gap: 14px; overflow-x: auto; overscroll-behavior-x: contain; scroll-snap-type: x mandatory; padding: 2px 2px 16px; scrollbar-width: none; }
+.hs-track { display: flex; align-items: flex-start; gap: 14px; overflow-x: auto; overflow-y: hidden; transition: height .3s var(--ease-out); overscroll-behavior-x: contain; scroll-snap-type: x mandatory; padding: 2px 2px 16px; scrollbar-width: none; }
 .hs-track::-webkit-scrollbar { display: none; }
 
 /* ----- the card ----- */
@@ -1444,7 +1444,7 @@ html.plain .ad-plain, html[data-persona="recruiter"] .ad-plain { display: grid; 
 @media (min-width: 700px) { .feat { grid-template-columns: 1fr 1fr; } .hs-track > .card.layer { flex-basis: min(86%, 1020px); } }
 /* phones: the counter stays under the header while a tall card is read */
 @media (max-width: 699px) {
-  .hs-bar { position: sticky; top: 60px; z-index: 6; margin: 0 -2px 8px; padding: 8px 4px; background: color-mix(in srgb, var(--paper) 86%, transparent); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); border-bottom: 1px solid var(--rule); }
+  .hs-bar { position: sticky; top: 102px; z-index: 6; margin: 0 -2px 8px; padding: 8px 4px; background: color-mix(in srgb, var(--paper) 86%, transparent); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); border-bottom: 1px solid var(--rule); }
   .hs-tabs { flex: 1 1 auto; }
   .hs-rule, .hs-hint { display: none; }
   .hs-track > .card.layer { flex-basis: 90%; gap: 18px; border-radius: 20px; }
@@ -1460,9 +1460,9 @@ html.plain .ad-plain, html[data-persona="recruiter"] .ad-plain { display: grid; 
   .hs--on .hs-bar { position: static; margin: 0 0 10px; padding: 2px; background: none; backdrop-filter: none; border: 0; }
   .hs--on .hs-rule { display: block; }
   .hs--on .hs-tabs { flex: 0 1 auto; }
-  .hs--on .hs-track > .card.layer { transition: opacity .45s var(--ease-out), filter .45s var(--ease-out); }
-  .hs--on .hs-track > .card.layer:not(.is-active) { opacity: .45; filter: saturate(.7); }
-  .hs--on .hs-track { flex: 1; min-height: 0; overflow: visible; scroll-snap-type: none; padding: 0; gap: 20px; will-change: transform; }
+  .hs--on .hs-track > .card.layer { transition: opacity .4s var(--ease-out); }
+  .hs--on .hs-track > .card.layer:not(.is-active) { opacity: .45; }
+  .hs--on .hs-track { flex: 1; min-height: 0; align-items: stretch; transition: none; overflow: visible; scroll-snap-type: none; padding: 0; gap: 20px; will-change: transform; }
   .hs--on .hs-track > .card.layer { flex: 0 0 calc(100% - 44px); height: 100%; min-height: 0; display: grid; grid-template-columns: minmax(260px, 32%) minmax(0, 1fr); grid-template-rows: minmax(0, 1fr) auto; column-gap: clamp(26px, 3vw, 46px); row-gap: 12px; padding: clamp(16px, 2.6vh, 28px) clamp(22px, 2.6vw, 36px); overflow: hidden; }
   .hs--on .card-side { display: flex; flex-direction: column; gap: calc(14px * var(--fs)); grid-column: 1; grid-row: 1; min-height: 0; overflow: hidden auto; scrollbar-width: none; }
   .hs--on .card-head { flex: 0 0 auto; gap: calc(11px * var(--fs)); }
