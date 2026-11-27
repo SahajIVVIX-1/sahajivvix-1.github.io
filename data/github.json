@@ -1,5 +1,5 @@
 {
- "fetched_at": "2026-11-26T21:31:34.788Z",
+ "fetched_at": "2026-11-27T08:32:49.512Z",
  "user": {
   "login": "SahajIVVIX-1",
   "public_repos": 21,
@@ -13,11 +13,11 @@
  },
  "languages": {
   "Python": 12345686,
-  "JavaScript": 1648216,
-  "HTML": 2050635,
-  "CSS": 227944,
+  "JavaScript": 1710536,
+  "TypeScript": 366224,
+  "CSS": 262901,
+  "HTML": 2056875,
   "Shell": 9251,
-  "TypeScript": 362370,
   "Batchfile": 8494,
   "PowerShell": 11451,
   "Dockerfile": 10639,
@@ -35,7 +35,19 @@
    "topics": [],
    "fork": false,
    "created_at": "2024-01-24T19:11:08Z",
-   "pushed_at": "2026-11-26T21:00:53Z"
+   "pushed_at": "2026-11-27T07:05:50Z"
+  },
+  {
+   "name": "blogs",
+   "description": "",
+   "url": "https://github.com/SahajIVVIX-1/blogs",
+   "language": "JavaScript",
+   "stars": 0,
+   "forks": 0,
+   "topics": [],
+   "fork": false,
+   "created_at": "2026-10-29T17:44:16Z",
+   "pushed_at": "2026-11-27T04:21:33Z"
   },
   {
    "name": "sahajivvix-1.github.io",
@@ -51,19 +63,7 @@
    ],
    "fork": false,
    "created_at": "2026-04-25T07:43:48Z",
-   "pushed_at": "2026-11-26T20:24:37Z"
-  },
-  {
-   "name": "blogs",
-   "description": "",
-   "url": "https://github.com/SahajIVVIX-1/blogs",
-   "language": "JavaScript",
-   "stars": 0,
-   "forks": 0,
-   "topics": [],
-   "fork": false,
-   "created_at": "2026-10-29T17:44:16Z",
-   "pushed_at": "2026-11-26T18:13:49Z"
+   "pushed_at": "2026-11-27T02:37:13Z"
   },
   {
    "name": "Smaran-Studio",
@@ -258,6 +258,39 @@
  "events": [
   {
    "type": "PushEvent",
+   "repo": "blogs",
+   "at": "2026-11-26T18:13:50Z",
+   "head": "40e43093a2aa1492453a419af1746ed668466e16",
+   "commits": 1
+  },
+  {
+   "type": "PushEvent",
+   "repo": "Sleep-Consolidating-LLM",
+   "at": "2026-11-25T16:55:54Z",
+   "head": "144a2d2ae1c2b444b6721d655154e136ee1df772",
+   "commits": 1
+  },
+  {
+   "type": "PullRequestEvent",
+   "repo": "blogs",
+   "at": "2026-11-27T02:00:43Z"
+  },
+  {
+   "type": "PushEvent",
+   "repo": "blogs",
+   "at": "2026-11-26T16:02:04Z",
+   "head": "a7af26a4322f648594399488b0109da9241744d9",
+   "commits": 1
+  },
+  {
+   "type": "PushEvent",
+   "repo": "Sleep-Consolidating-LLM",
+   "at": "2026-11-25T01:11:04Z",
+   "head": "d8221a8e652ac20690d3ce4d1fe6be70a1c6f922",
+   "commits": 1
+  },
+  {
+   "type": "PushEvent",
    "repo": "Sleep-Consolidating-LLM",
    "at": "2026-11-25T14:29:48Z",
    "head": "df0c5a7ad86f84943d76fd48f037294a97c56330",
@@ -378,20 +411,6 @@
    "repo": "Smaran-Studio",
    "at": "2026-11-22T19:48:01Z",
    "head": "f1d4d18945bb138f87e54e7bc633f580616502c7",
-   "commits": 1
-  },
-  {
-   "type": "PushEvent",
-   "repo": "Smaran-Studio",
-   "at": "2026-11-22T18:32:50Z",
-   "head": "10efcb64734cc5dd3d21cbcf1a81cacc9f3ea39e",
-   "commits": 1
-  },
-  {
-   "type": "PushEvent",
-   "repo": "Smaran-Studio",
-   "at": "2026-11-22T17:49:21Z",
-   "head": "55c533376f9f8b35ed354dd1b2cd442f17f1fd12",
    "commits": 1
   }
  ],
@@ -1758,11 +1777,11 @@
   ],
   [
    "2026-10-29",
-   63
+   88
   ],
   [
    "2026-10-30",
-   99
+   190
   ],
   [
    "2026-10-31",
@@ -1778,11 +1797,11 @@
   ],
   [
    "2026-11-03",
-   30
+   48
   ],
   [
    "2026-11-04",
-   5
+   7
   ],
   [
    "2026-11-05",
@@ -1822,7 +1841,7 @@
   ],
   [
    "2026-11-14",
-   3
+   4
   ],
   [
    "2026-11-15",
@@ -1830,7 +1849,7 @@
   ],
   [
    "2026-11-16",
-   5
+   7
   ],
   [
    "2026-11-17",
@@ -1870,13 +1889,17 @@
   ],
   [
    "2026-11-26",
-   15
+   18
+  ],
+  [
+   "2026-11-27",
+   30
   ]
  ],
  "work": {
   "issuesOpen": 0,
   "issuesClosed": 1,
-  "prsOpen": 6,
+  "prsOpen": 5,
   "prsMerged": 7
  }
 }
