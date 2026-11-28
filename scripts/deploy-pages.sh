@@ -22,7 +22,7 @@ attempt() {
     find . -mindepth 1 -maxdepth 1 ! -name .git ! -name CNAME ! -name .nojekyll -exec rm -rf {} +
   )
   local FILES
-  FILES=$(git ls-tree -r --name-only HEAD -- 404.html assets blogs blog resume favicon.ico index.html robots.txt site.webmanifest sitemap.xml; git ls-tree --name-only HEAD data/ | grep '\.json$')
+  FILES=$(git ls-tree -r --name-only HEAD -- .well-known 404.html assets blogs blog resume favicon.ico index.html robots.txt site.webmanifest sitemap.xml; git ls-tree --name-only HEAD data/ | grep '\.json$')
   # shellcheck disable=SC2086
   git archive HEAD $FILES | tar -x -m -C "$W"
   local rc=0
