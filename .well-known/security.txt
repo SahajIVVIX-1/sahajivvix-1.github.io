@@ -1,0 +1,7 @@
+# Security contact for info.sahaj.si (RFC 9116). Full policy: the Policy link below.
+Contact: mailto:sahajs7959@gmail.com
+Contact: https://github.com/SahajIVVIX-1/sahajivvix-1.github.io/security/advisories/new
+Expires: 2027-11-28T00:00:00.000Z
+Preferred-Languages: en
+Canonical: https://info.sahaj.si/.well-known/security.txt
+Policy: https://github.com/SahajIVVIX-1/sahajivvix-1.github.io/blob/info.sahaj.si/SECURITY.md
